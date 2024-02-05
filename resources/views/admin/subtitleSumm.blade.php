@@ -43,7 +43,7 @@
                                                 <td>{{ $subtitle->s_sequence }}</td>
                                                 <td>{{ $subtitle->subtitle_name }}</td>
                                                 <td class="text-center">
-                                                    <div style="display: flex; justify-content: space-evenly;">
+                                                    <div style="display: flex; justify-content: center; gap: 10px;">
 
                                                         {{-- <a href="{{ route('viewMoreContent', ['id' => $subtitle->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
                                                             <i class="dripicons-preview"></i>

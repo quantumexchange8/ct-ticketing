@@ -60,16 +60,15 @@
                             </div><!--end col-->
                         </div>
 
-
                         <hr class="hr-dashed">
 
                         @foreach ($title->subtitles as $subtitle)
                             <h5 class="subtitle-name">{{ $subtitle->subtitle_name }}</h5>
                             @foreach ($subtitle->contents as $content)
                                 <div class="content-name" id="{{$content->id}}">
-                                    <p>{!! $content->content_name !!} - {{$content->id}}</p>
+                                    <p>{!! $content->content_name !!}</p>
                                 </div>
-                                
+
                                 <div class="text-center">
                                     @forelse($content->documentationImages as $image)
                                     <img src="{{ asset('storage/documentations/' . $image->d_image) }}" alt="Image" class="image-fluid w-50 h-50">

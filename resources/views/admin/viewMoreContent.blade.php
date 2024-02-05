@@ -49,7 +49,7 @@
                                             @endforelse
                                         </td>
                                         <td class="text-center">
-                                            <div style="display: flex; justify-content: space-evenly;">
+                                            <div style="display: flex; justify-content: center; gap: 10px;">
 
                                                 <a href="{{ route('editContent', ['id' => $content->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
                                                     <i class="dripicons-pencil"></i>

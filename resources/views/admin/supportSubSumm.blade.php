@@ -45,7 +45,7 @@
                                                 <td>{!! $supportSubCategory->sub_description !!}</td>
                                                 <td>{{ $supportSubCategory->subtitles->title->title_name }} - {{ $supportSubCategory->subtitles->subtitle_name }}</td>
                                                 <td class="text-center">
-                                                    <div style="display: flex; justify-content: space-evenly;">
+                                                    <div style="display: flex; justify-content: center; gap: 10px;">
                                                         <a href="{{ route('editSub', ['id' => $supportSubCategory->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
                                                             <i class="dripicons-pencil"></i>
                                                         </a>

@@ -121,7 +121,7 @@
                                         </td>
                                         <td>{{ $ticket->pic_id }}</td>
                                         <td>{{ $ticket->remarks }}</td>
-                                        <td class="text-center" style="display: flex; justify-content: space-evenly;">
+                                        <td class="text-center" style="display: flex; justify-content: center; gap: 10px;">
                                             {{-- @if ($ticket->ticketImages->isNotEmpty())
                                                 <a href="{{ route('viewTicketImage', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
                                                     <i class="dripicons-preview"></i>
