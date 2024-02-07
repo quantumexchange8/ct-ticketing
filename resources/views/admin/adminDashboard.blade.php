@@ -203,6 +203,9 @@
     });
 </script>
 
+<script src="{{ asset('assets/plugins/apex-charts/apexcharts.min.js') }}"></script>
+<script src="{{ asset('assets/pages/jquery.helpdesk-dashboard.init.js') }}"></script>
+<script src="{{ asset('assets/pages/jquery.analytics_dashboard.init.js') }}"></script>
 
 
 @endsection

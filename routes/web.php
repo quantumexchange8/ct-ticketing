@@ -35,7 +35,7 @@ Route::get('/search-support-tools', [SearchController::class, 'searchSupportTool
 
 Route::get('/search-documentation', [SearchController::class, 'searchDocumentation'])->name('searchDocumentation');
 
-Route::get('/testing', [MemberController::class, 'testing'])->name('testing');
+
 
 // Admin
 
@@ -47,7 +47,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [AdminController::class, 'adminDashboard'])->name('adminDashboard');
     Route::get('/helpdesk', [AdminController::class, 'helpdesk'])->name('helpdesk');
+    Route::get('/get-ticket', [AdminController::class, 'getTicket'])->name('getTicket');
     Route::get('/filter-ticket', [SearchController::class, 'filterTicket'])->name('filterTicket');
+    Route::get('/search-ticket', [SearchController::class, 'searchTicket'])->name('searchTicket');
 
     Route::get('/ticket-summary/{status}', [AdminController::class, 'ticketSumm'])->name('ticketSumm');
     Route::get('/view-ticket-image/{id}', [AdminController::class, 'viewTicketImage'])->name('viewTicketImage');
@@ -100,6 +102,13 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Preview documentation
     Route::get('/view-content/{title}', [AdminController::class, 'viewContent'])->name('viewContent');
+
+
+
+    Route::get('/testing', [AdminController::class, 'testing'])->name('testing');
+
+
+    Route::get('/backup', [AdminController::class, 'backup'])->name('backup');
 });
 
 

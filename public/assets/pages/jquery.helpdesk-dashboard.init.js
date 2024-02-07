@@ -21,8 +21,6 @@ $(function() {
     }, []);
 
 
-    // console.log(statusNames);
-
     // Loop through unique status names and generate series data
     statusNames.forEach(function(statusName) {
         var data = chartData.filter(function(data) {
@@ -40,6 +38,20 @@ $(function() {
         });
     });
 
+    // Extract unique month values from chartData
+    var uniqueMonths = chartData.reduce(function(acc, curr) {
+        if (!acc.includes(curr.month)) {
+            acc.push(curr.month);
+        }
+        return acc;
+    }, []);
+
+    // Map numerical month values to month names (optional)
+    var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var labels = uniqueMonths.map(function(month) {
+        return monthNames[month - 1]; // Adjust index to match month names array (January is 1, February is 2, etc.)
+    });
+
     var options = {
         chart: {
         height: 350,
@@ -48,7 +60,7 @@ $(function() {
             show: false
         },
         },
-        colors: ['#bed3fe', '#e3e6f0', '#b8f4db', '#bde6fa', '#ffebc1', '#99a1b7', '#b2bfc2'],
+        colors: ['#EDAE49', '#D1495B', '#00798C', '#30638E', '#003D5B'],
         dataLabels: {
             enabled: false
         },
@@ -75,7 +87,7 @@ $(function() {
             lineCap: 'square'
         },
         series: series, // Use dynamically generated series data
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        labels: labels,
 
 
         yaxis: {

@@ -4,7 +4,7 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Helpdesk-Support</title>
+        <title>CT-Ticketing</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
         <meta content="" name="author" />
@@ -349,9 +349,7 @@
         <script src="{{ asset('assets/js/moment.js') }}"></script>
         <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
 
-        <script src="{{ asset('assets/plugins/apex-charts/apexcharts.min.js') }}"></script>
-        <script src="{{ asset('assets/pages/jquery.helpdesk-dashboard.init.js') }}"></script>
-        <script src="{{ asset('assets/pages/jquery.analytics_dashboard.init.js') }}"></script>
+
 
         <script src="{{ asset('assets/plugins/tiny-editable/mindmup-editabletable.js') }}"></script>
         <script src="{{ asset('assets/plugins/tiny-editable/numeric-input-example.js') }}"></script>

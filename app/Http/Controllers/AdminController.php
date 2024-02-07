@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -22,9 +23,7 @@ class AdminController extends Controller
     public function adminDashboard(Request $request)
     {
         $ticketStatuses = TicketStatus::all();
-
         $ticketCounts = [];
-
         $currentYear = now()->year;
 
         foreach ($ticketStatuses as $status) {
@@ -49,7 +48,6 @@ class AdminController extends Controller
                     case 'Low':
                         $lowCount++;
                         break;
-                    // You can add more cases for other priority levels if needed
                 }
             }
 
@@ -113,15 +111,192 @@ class AdminController extends Controller
         return view('admin.adminDashboard', compact('ticketStatuses', 'ticketCounts', 'currentYear', 'ticketsByStatus', 'ticketsByCategory'));
     }
 
-    public function helpdesk()
+    public function helpdesk(Request $request)
     {
-        $tickets = Ticket::with('supportCategories', 'ticketImages')
-                            ->get();
-
+        $tickets = Ticket::with('supportCategories', 'ticketImages')->get();
         $categories = SupportCategory::all();
 
-        return view('admin.helpdesk', compact('tickets', 'categories'));
+        return view('admin.helpdesk', compact('tickets','categories'));
     }
+
+    public function getTicket(Request $request)
+    {
+        // Get filter values from the request
+        $category_id = $request->input('category_id');
+        $operator = $request->input('operator');
+        $priority = $request->input('priority');
+        $date = $request->input('filter_date');
+
+        // Get search value from the request
+        $searchTerm = $request->input('searchTerm');
+
+        // Get the page and per_page values from the request, default to 1 and 10 if not provided
+        $page = $request->query('page', 1);
+        $perPage = $request->query('per_page', 10);
+
+          // Start building the database query
+        $query = DB::table('tickets')
+        ->join('support_categories', 'support_categories.id', 'tickets.category_id')
+        ->join('ticket_statuses', 'tickets.status_id', 'ticket_statuses.id')
+        ->select('tickets.*', 'support_categories.*', 'ticket_statuses.*','tickets.id as ticket_id', 'tickets.created_at as t_created_at')
+        ->orderByDesc('ticket_id');
+
+        // Apply filters if they are provided
+        if (isset($category_id) && !empty($category_id) && isset($priority) && !empty($priority)) {
+            if ($operator == 'AND') {
+                // Apply AND logic
+                $query->where('tickets.category_id', $category_id)
+                    ->where('tickets.priority', $priority);
+            } else {
+                // Apply OR logic
+                $query->where('tickets.category_id', $category_id)
+                    ->orWhere('tickets.priority', $priority);
+
+            }
+        } elseif (isset($category_id) && !empty($category_id) && (!isset($priority) || empty($priority))) {
+            // Only category_id is provided
+            $query->where('tickets.category_id', $category_id);
+        } elseif (isset($priority) && !empty($priority) && (!isset($category_id) || empty($category_id))) {
+            // Only priority is provided
+            $query->where('tickets.priority', $priority);
+        } elseif (isset($searchTerm) && !empty($searchTerm)) {
+            // Search term is provided
+            $query->where('tickets.ticket_no', 'LIKE', "%$searchTerm%")
+                ->orWhere('tickets.sender_name', 'LIKE', "%$searchTerm%")
+                ->orWhere('tickets.sender_email', 'LIKE', "%$searchTerm%")
+                ->orWhere('tickets.subject', 'LIKE', "%$searchTerm%")
+                ->orWhere('tickets.message', 'LIKE', "%$searchTerm%")
+                ->orWhere('tickets.priority', 'LIKE', "%$searchTerm%")
+                ->orWhere('support_categories.category_name', 'LIKE', "%$searchTerm%")
+                ->orWhere('tickets.remarks', 'LIKE', "%$searchTerm%")
+                ->orWhere('ticket_statuses.status', 'LIKE', "%$searchTerm%")
+                ->orWhere('tickets.pic_id','LIKE', "%$searchTerm%");
+
+        }
+
+        // Apply filters if they are provided
+        // if (isset($date) && !empty($date) || isset($category_id) && !empty($category_id) && isset($priority) && !empty($priority)) {
+
+        //     if ($operator == 'AND') {
+        //         // Apply AND logic
+        //         $query->whereDate('tickets.created_at', '=', $date)
+        //             ->where('tickets.category_id', $category_id)
+        //             ->where('tickets.priority', $priority);
+        //     } else {
+        //         // Apply OR logic
+        //         // $query->where(function ($query) use ($category_id, $priority) {
+        //         //     $query->whereDate('tickets.created_at', '=', $date)
+        //         //         ->where('tickets.category_id', $category_id)
+        //         //         ->orWhere('tickets.priority', $priority);
+        //         // });
+
+        //         $query->where(function ($query) use ($category_id, $priority, $date) {
+        //             $query->whereDate('tickets.created_at', '=', $date)
+        //                 ->where('tickets.category_id', $category_id)
+        //                 ->orWhere('tickets.priority', $priority);
+        //         });
+        //     }
+
+        // } else if (isset($date) && !empty($date) && (!isset($category_id) && !empty($category_id)) && (!isset($priority) || empty($priority))) {
+
+        //     // Only date is provided
+        //     $query->whereDate('tickets.created_at', '=', $date);
+
+        // } elseif (isset($category_id) && !empty($category_id) && (!isset($date) && !empty($date)) && (!isset($priority) || empty($priority))) {
+
+        //     // Only category_id is provided
+        //     $query->where('tickets.category_id', $category_id);
+
+        // } elseif (isset($priority) && !empty($priority) && (!isset($date) && !empty($date)) && (!isset($category_id) || empty($category_id))) {
+
+        //     // Only priority is provided
+        //     $query->where('tickets.priority', $priority);
+
+        // } elseif (isset($searchTerm) && !empty($searchTerm)) {
+
+        //     // Search term is provided
+        //     $query->where('tickets.ticket_no', 'LIKE', "%$searchTerm%")
+        //         ->orWhere('tickets.sender_name', 'LIKE', "%$searchTerm%")
+        //         ->orWhere('tickets.sender_email', 'LIKE', "%$searchTerm%")
+        //         ->orWhere('tickets.subject', 'LIKE', "%$searchTerm%")
+        //         ->orWhere('tickets.message', 'LIKE', "%$searchTerm%")
+        //         ->orWhere('tickets.priority', 'LIKE', "%$searchTerm%")
+        //         ->orWhere('support_categories.category_name', 'LIKE', "%$searchTerm%")
+        //         ->orWhere('tickets.remarks', 'LIKE', "%$searchTerm%")
+        //         ->orWhere('ticket_statuses.status', 'LIKE', "%$searchTerm%")
+        //         ->orWhere('tickets.pic_id','LIKE', "%$searchTerm%");
+        // }
+
+        // dd($query->toSql(), $query->getBindings());
+
+        // Check if perPage is -1 (indicating "All")
+        if ($perPage == -1) {
+            // Load all tickets without pagination
+            $tickets = $query->get();
+
+            // Set the total_pages to 1 since all tickets are loaded in one page
+            $totalPages = 1;
+
+             // Count the total number of tickets
+            $currentEntries = $tickets->count();
+
+        } else {
+            // Perform your database query with pagination
+            $tickets = $query->paginate($perPage, ['*'], 'page', $page);
+
+            // Get the total pages from the paginator
+            $totalPages = $tickets->lastPage();
+
+            // Count the total number of tickets
+            $currentEntries = $tickets->total();
+        }
+
+        // Check if $tickets is a paginator instance
+        if ($tickets instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            // If $tickets is a paginator instance, return the items
+            $ticketsData = $tickets->items();
+        } else {
+            // If $tickets is a collection, return it directly
+            $ticketsData = $tickets;
+        }
+
+        // Fetch tickets from the database, excluding soft deleted records
+        $totalTickets = Ticket::whereNull('deleted_at')->get();
+
+        // Count the total number of tickets
+        $totalEntries = $totalTickets->count();
+
+        $response = [
+            'tickets' => $ticketsData,
+            'total_pages' => $totalPages,
+            'total_entries' => $totalEntries,
+            'current_entries' => $currentEntries
+        ];
+
+        return response()->json($response);
+    }
+
+    public function backup(Request $request)
+    {
+
+        $perPage = $request->input('perPage', 10);
+        if ($perPage == -1) {
+            $tickets = Ticket::with('supportCategories', 'ticketImages')->get();
+            $totalPages = 1; // Set total pages to 1 when displaying all items
+        } else {
+            $tickets = Ticket::with('supportCategories', 'ticketImages')->paginate($perPage);
+            $totalPages = (int) ceil($tickets->total() / $perPage);
+        }
+
+        // $totalPages = $tickets instanceof \Illuminate\Pagination\LengthAwarePaginator ? (int) ceil($tickets->total() / $perPage) : 1;
+
+        // dd($totalPages);
+        $categories = SupportCategory::all();
+
+        return view('admin.backup', compact('tickets', 'totalPages','categories', 'perPage'));
+        // return response()->json(['data' => ['tickets' => $tickets, 'totalPages' => $totalPages, 'categories' => $categories]]);
+    }
+
 
     public function viewTicketImage($id)
     {
@@ -1009,7 +1184,6 @@ class AdminController extends Controller
         return view('admin.viewTicket', compact('ticket', 'supportCategories', 'ticketStatuses', 'ticketImages'));
     }
 
-
     public function createTicket()
     {
         $supportCategories = SupportCategory::all();
@@ -1222,5 +1396,14 @@ class AdminController extends Controller
 
         return view('admin.categorySumm', compact('supportCategory'));
     }
+
+    public function testing()
+    {
+        $tickets = Ticket::first();
+
+        return view('admin.helpdesk', compact('tickets'));
+    }
+
+
 
 }

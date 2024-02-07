@@ -19,8 +19,6 @@ $(function() {
     }, []);
 
 
-    console.log(chartData);
-
     // Loop through unique status names and generate series data
     categoryNames.forEach(function(categoryNames) {
         var data = chartData.filter(function(data) {
@@ -29,7 +27,7 @@ $(function() {
             return data.ticket_count;
         });
 
-        console.log('ticket_count for ' + categoryNames + ':', data);
+        // console.log('ticket_count for ' + categoryNames + ':', data);
 
         // Push series object with dynamically generated data and series name
         series.push({
@@ -74,7 +72,7 @@ $(function() {
             width: 1,
             colors: ['transparent']
         },
-        colors: ['#bed3fe', '#e3e6f0', '#b8f4db', '#bde6fa', '#ffebc1', '#99a1b7', '#b2bfc2'],
+        colors: ['#ED6A5A', '#F4F1BB', '#9BC1BC', '#E6EBE0', '#36C9C6',],
         series: series,
         xaxis: {
             categories: categories,

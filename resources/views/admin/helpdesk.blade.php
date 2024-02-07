@@ -21,14 +21,6 @@
                             </button>
                         </div>
 
-                        {{-- <div class="btn-group mb-md-0 mr-4">
-                            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Export<i class="mdi mdi-chevron-down"></i></button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#">Excel</a>
-                                <a class="dropdown-item" href="#">PDF</a>
-                            </div>
-                        </div><!-- /btn-group --> --}}
-
                     </div><!--end row-->
                 </div><!--end page-title-box-->
             </div><!--end col-->
@@ -37,32 +29,39 @@
 
         <div class="filter-options" style="display: none;">
             <div class="row" style="flex-direction: row; align-items: center;">
-                <div class="col-md-3">
+                {{-- <div class="col-sm-2">
+                    <div class="form-group">
+                        <label for="username">Category</label>
+                        <input type="text" class="form-control" id="filterdate" name="date">
+
+                    </div>
+                </div> --}}
+                <div class="col-sm-2">
                     <div class="form-group">
                         <label for="username">Category</label>
                         <select class="form-control" name="category_id" id="category">
-                            <option value="">Select Category</option>
+                            <option value="">Category</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{!! $category->category_name !!}</option>
                             @endforeach
                         </select>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-sm-2">
                     <div class="form-group">
                         <label for="useremail">Operator</label>
                         <select class="form-control" name="operator" id="operator">
-                            <option value="">Select Operator</option>
+                            <option value="">Operator</option>
                             <option value="AND" {{ old('operator') == 'AND' ? 'selected' : '' }}>AND</option>
                             <option value="OR" {{ old('operator') == 'OR' ? 'selected' : '' }}>OR</option>
                         </select>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-sm-2">
                     <div class="form-group">
                         <label for="useremail">Priority</label>
                         <select class="form-control" name="priority" id="priority">
-                            <option value="">Select Priority</option>
+                            <option value="">Priority</option>
                             <option value="Low" {{ old('priority') == 'Low' ? 'selected' : '' }}>Low</option>
                             <option value="Medium" {{ old('priority') == 'Medium' ? 'selected' : '' }}>Medium</option>
                             <option value="High" {{ old('priority') == 'High' ? 'selected' : '' }}>High</option>
@@ -73,206 +72,354 @@
                     <button type="button" class="btn btn-info waves-effect waves-light" id="reset">Reset</button>
                 </div><!--end col-->
             </div>
-
-            <div class="row">
-               <div class="col-md-3">
-                <p>Return: <span id="matchedCount">0</span></p>
-               </div>
-            </div>
         </div><!--end row-->
-
-
 
         <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
+                        <div class="row" style="display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; align-content: flex-end;">
+                            <div class="col-sm-12 col-md-6">
+                                <div style="display: flex; align-items: flex-end; flex-wrap: nowrap; gap:8px; margin-bottom: 8px;">
+                                    <label>Show</label>
+                                        <div style="width:60px;">
+                                            <select id="perPageSelect" name="datatable2_length" aria-controls="datatable2" class="custom-select custom-select-sm form-control form-control-sm">
+                                                <option value="10">10</option>
+                                                <option value="25">25</option>
+                                                <option value="50">50</option>
+                                                <option value="-1">All</option>
+                                            </select>
+                                        </div>
+                                    <label>Entries</label>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 col-md-6">
+                                <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 5px;">
+                                    <label>Search: </label>
+                                    <div class="col-sm-5">
+                                        <input class="form-control form-control-sm" type="search" id="searchInput" name="search" autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="table-responsive">
-                            <table id="datatable2" class="table table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <table class="table table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
-                                        {{-- <th>Ticket ID</th> --}}
                                         <th>Date</th>
                                         <th>Ticket No.</th>
                                         <th>Name</th>
                                         <th>Email</th>
-                                        {{-- <th>Subject</th>
-                                        <th>Message</th> --}}
                                         <th>Category</th>
                                         <th>Priority</th>
-                                        <th>Assignee</th>
+                                        {{-- <th>Status</th> --}}
+                                        <th>PIC</th>
                                         <th>Remarks</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @foreach($tickets as $ticket)
-                                    <tr id="{{ $ticket->id }}">
-                                        {{-- <td>{{ $ticket->id }}</td> --}}
-                                        <td>{{ Carbon\Carbon::parse($ticket->created_at)->format('d M Y') }}</td>
-                                        <td>{{ $ticket->ticket_no }}</td>
-                                        <td>{{ $ticket->sender_name }}</td>
-                                        <td>{{ $ticket->sender_email }}</td>
-                                        {{-- <td>{{ $ticket->subject }}</td>
-                                        <td>{{ $ticket->message }}</td> --}}
-                                        <td>{!! $ticket->supportCategories->category_name !!}</td>
-                                        <td style ="{{ $ticket->priority === 'Medium' ? 'color: orange; font-weight: bold;' : ($ticket->priority === 'Low' ? 'color: #84f542; font-weight: bold;' : 'color: red; font-weight: bold;') }}">
-                                            {{ $ticket->priority }}
-                                        </td>
-                                        <td>{{ $ticket->pic_id }}</td>
-                                        <td>{{ $ticket->remarks }}</td>
-                                        <td class="text-center" style="display: flex; justify-content: center; gap: 10px;">
-                                            {{-- @if ($ticket->ticketImages->isNotEmpty())
-                                                <a href="{{ route('viewTicketImage', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
-                                                    <i class="dripicons-preview"></i>
-                                                </a>
-                                            @endif --}}
-                                            <a href="{{ route('viewTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
-                                                <i class="dripicons-preview"></i>
-                                            </a>
+                                <tbody id="ticketTableBody">
 
-                                            <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                <i class="dripicons-pencil"></i>
-                                            </a>
-
-                                            <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST">
-                                                @method('DELETE')
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm btn-soft-danger btn-circle">
-                                                    <i class="dripicons-trash"></i>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    @endforeach
                                 </tbody>
                             </table><!--end /table-->
-                            {{-- <livewire:tickets/> --}}
                         </div><!--end /tableresponsive-->
+
+
+                        <div style="display:flex; flex-direction: row; flex-wrap: wrap; align-items: center;">
+                            <div id="entriesDisplay" class="col-md-6">
+
+                            </div>
+                            <div id="pagination" class="col-md-6" style="display: flex; justify-content: flex-end;">
+                                <nav aria-label="...">
+                                    <ul id="paginationLinks" class="pagination">
+                                        <li class="page-item">
+                                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                        </li>
+
+                                        <li class="page-item active">
+                                            <a class="page-link" href="#">1</a>
+                                        </li>
+
+                                        <li class="page-item">
+                                            <a class="page-link" href="#">Next</a>
+                                        </li>
+                                    </ul><!--end pagination-->
+                                </nav><!--end nav-->
+                            </div>
+                        </div>
                     </div><!--end card-body-->
                 </div><!--end card-->
             </div> <!-- end col -->
         </div> <!-- end row -->
-    </div><!-- container -->
 
+    </div><!-- container -->
 
 </div>
 <!-- end page content -->
 
+
+
+{{-- Load ticket with pagination and filter, search function --}}
 <script>
     $(document).ready(function() {
 
-        console.log('Jquery is working');
-
-        $('#filterButton').click(function() {
+        $('#filterButton').click(function(event) {
             $('.filter-options').toggle();
+
+            if ($('.filter-options').is(':hidden')) {
+                // If filter options are hidden, clear filter values
+                $('#category').val('');
+                $('#priority').val('');
+                $('#operator').val('');
+                // Trigger change event to ensure the loadTickets function is called with the updated filter values
+                $('#category, #priority, #operator').trigger('change');
+            }
         });
 
         $('#reset').click(function(e) {
             e.preventDefault();
-
-            $('tbody tr').css('background-color', 'white');
-
             // Reset the input values
             $('#category').val('');
             $('#priority').val('');
             $('#operator').val('');
+
+             // Reload tickets with default values
+            currentPage = 1;
+            loadTickets(currentPage, perPage);
         });
 
+        // Event listener for changes in select options
         $('#category, #priority, #operator').change(function(e) {
             e.preventDefault();
-
-            var category_id = $('#category').val();
-            var priority = $('#priority').val();
+            currentPage = 1; // Reset to first page when changing select options
+            clearInputValue(); // Clear input value when select options are used
+            var categoryId = $('#category').val();
             var operator = $('#operator').val();
+            var priority = $('#priority').val();
+            loadTickets(currentPage, perPage, categoryId, operator, priority);
+        });
 
-            console.log(category_id, priority, operator);
+        // Event listener for input field
+        $('#searchInput').on('input', function(e) {
+            e.preventDefault();
+            currentPage = 1;
+            clearSelectOptions(); // Clear select options when input field is used
+            var searchTerm = $(this).val().trim();
+            var categoryId = $('#category').val();
+            var operator = $('#operator').val();
+            var priority = $('#priority').val();
+            loadTickets(currentPage, perPage, categoryId, operator, priority, searchTerm);
+        });
 
-            // AJAX request
+        // Function to clear select options
+        function clearSelectOptions() {
+            console.log('Clearing select options');
+            $('#category').val('');
+            $('#priority').val('');
+            $('#operator').val('');
+        }
+
+        // Function to clear input value
+        function clearInputValue() {
+            $('#searchInput').val('');
+        }
+
+        var perPage = 10; // Default items per page
+        var currentPage = 1; // Default current page
+        var currentEntries;
+        var totalEntries;
+
+        function loadTickets(page, perPage, categoryId, operator, priority, searchTerm) {
+
             $.ajax({
-                url: '/filter-ticket',
+                url: '/get-ticket',
                 method: 'GET',
                 data: {
-                    category_id: category_id,
-                    priority: priority,
+                    page: page,
+                    per_page: perPage,
+                    category_id: categoryId,
                     operator: operator,
+                    priority: priority,
+                    searchTerm: searchTerm
                 },
                 success: function(response) {
-                    var allTicketIds = response.allTicketIds;
-                    var matchedTicketIds = response.matchedTicketIds;
-                    var unmatchedTicketIds = response.unmatchedTicketIds;
 
-                    console.log('Matched IDs:', matchedTicketIds);
-                    console.log('Unmatched IDs:', unmatchedTicketIds);
+                    // console.log('Search Term:', searchTerm);
+                    // console.log('Category ID:', categoryId);
+                    // console.log('Operator:', operator);
+                    // console.log('Priority:', priority);
 
-                    // Display the count of matched tickets
-                    $('#matchedCount').text(matchedTicketIds.length);
+                    var tickets = response.tickets;
 
-                    if (matchedTicketIds.length > 0) {
-                        matchedTicketIds.forEach(function (ticketId) {
-                            var tr = $('#' + ticketId);
+                    // Total entries before filtering or searching
+                    totalEntries = response.total_entries;
 
-                            if (tr.length > 0) {
-                                // if (cardHeader.css('background-color') !== 'rgba(0, 0, 0, 0)') {
-                                // }
+                    // Total entries after filtering or searching
+                    currentEntries = response.current_entries;
 
-                                tr.css('background-color', '#ffebc1');
+                    console.log('Current entries: ', currentEntries);
 
-                            }
+
+                    // Clear existing table rows
+                    $('#ticketTableBody').empty();
+
+                    tickets.forEach(function(ticket) {
+
+                        var createdAt = new Date(ticket.t_created_at);
+                        var formattedDate = createdAt.toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
                         });
+
+                        var categoryName = (ticket.category_name) ? ticket.category_name : '';
+                        var picId = (ticket.pic_id) ? ticket.pic_id : '';
+                        var remarks = (ticket.remarks) ? ticket.remarks : '';
+                        var ticketId = (ticket.ticket_id) ? ticket.ticket_id : '';
+
+                        var viewRoute = "/view-ticket/" + ticketId; // Construct the view route
+                        var editRoute = "/edit-ticket/" + ticketId; // Construct the edit route
+                        var deleteRoute = "/delete-ticket/" + ticketId;
+
+                        var actions = `<a href="${viewRoute}" class="btn btn-sm btn-soft-purple btn-circle"><i class="dripicons-preview"></i></a>
+                                    <a href="${editRoute}" class="btn btn-sm btn-soft-success btn-circle"><i class="dripicons-pencil"></i></a>
+                                    <form action="${deleteRoute}" method="POST">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-soft-danger btn-circle"><i class="dripicons-trash"></i></button>
+                                    </form>`;
+
+                        var priorityStyle = '';
+                        if (ticket.priority === 'Medium') {
+                            priorityStyle = 'color: orange; font-weight: bold;';
+                        } else if (ticket.priority === 'Low') {
+                            priorityStyle = 'color: #84f542; font-weight: bold;';
+                        } else {
+                            priorityStyle = 'color: red; font-weight: bold;';
+                        }
+
+                        var statusStyle = '';
+                        if (ticket.status === 'Pending') {
+                            statusStyle = 'color: orange; font-weight: bold;';
+                        } else if (ticket.status === 'Solved') {
+                            statusStyle = 'color: #84f542; font-weight: bold;';
+                        } else if (ticket.status === 'New Ticket') {
+                            statusStyle = 'color: #4684fc; font-weight: bold;';
+                        } else {
+                            statusStyle = 'color: red; font-weight: bold;';
+                        }
+
+                        var row = '<tr id="' + ticketId + '">' +
+                                    '<td>' + formattedDate + '</td>' +
+                                    '<td>' + ticket.ticket_no + '</td>' +
+                                    '<td>' + ticket.sender_name + '</td>' +
+                                    '<td>' + ticket.sender_email + '</td>' +
+                                    '<td>' + categoryName + '</td>' +
+                                    '<td style="' + priorityStyle + '">' + ticket.priority + '</td>' +
+                                    // '<td style="' + statusStyle + '">' + ticket.status + '</td>' +
+                                    '<td>' + picId + '</td>' +
+                                    '<td>' + remarks + '</td>' +
+                                    '<td class="text-center" style="display: flex; justify-content: center; gap: 10px;">' + actions + '</td>' +
+                                '</tr>';
+
+                        // Append the row to the table body
+                        $('#ticketTableBody').append(row);
+                    });
+
+                    // Update the display of number of entries
+                    updateEntriesDisplay(currentEntries, totalEntries, currentPage, perPage);
+
+                     // Update pagination links
+                    if (perPage === -1) {
+                        // If "All" is selected, hide pagination links
+                        $('#paginationLinks').empty();
+                    } else {
+                        // Update pagination links
+                        updatePagination(response.total_pages, currentPage);
                     }
-
-                    if (unmatchedTicketIds.length > 0) {
-                        unmatchedTicketIds.forEach(function (ticketId) {
-                            var tr = $('#' + ticketId);
-
-                            if (tr.length > 0) {
-                                // if (cardHeader.css('background-color') !== 'rgba(0, 0, 0, 0)') {
-                                // }
-
-                                tr.css('background-color', 'white');
-
-                            }
-                        });
-                    }
-
-                    // // Clear the existing table rows
-                    // $('#table tbody').empty();
-
-                    // // Iterate through matched ticket IDs and populate the table rows
-                    // matchedTicketIds.forEach(function(ticketId) {
-                    //     var ticket = response.tickets.find(function(item) {
-                    //         return item.id === ticketId;
-                    //     });
-
-
-                    //     if (ticket) {
-                    //         var row = '<tr>' +
-                    //             '<td>' + ticket.date + '</td>' +
-                    //             '<td>' + ticket.ticket_number + '</td>' +
-                    //             '<td>' + ticket.name + '</td>' +
-                    //             '<td>' + ticket.email + '</td>' +
-                    //             '<td>' + ticket.category + '</td>' +
-                    //             '<td>' + ticket.priority + '</td>' +
-                    //             '<td>' + ticket.assignee + '</td>' +
-                    //             '<td>' + ticket.remarks + '</td>' +
-                    //             '<td>' + ticket.actions + '</td>' +
-                    //             '</tr>';
-
-                    //         $('#table tbody').append(row);
-                    //     }else {
-                    //         // Log a message if the ticket is not found (this can help with debugging)
-                    //         console.log('Ticket with ID ' + ticketId + ' not found in response.tickets');
-                    //     }
-                    // });
-
 
                 },
                 error: function(xhr, status, error) {
                     console.error('Error:', error);
+                    console.error('Error fetching tickets:', error);
                 }
             });
+        }
+
+
+
+        // Function to update pagination links
+        function updatePagination(totalPages, currentPage) {
+            var paginationLinks = $('#paginationLinks');
+            paginationLinks.empty();
+            // Add Previous button
+            paginationLinks.append(`<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                                        <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+                                    </li>`);
+            // Add page numbers
+            for (var i = 1; i <= totalPages; i++) {
+                paginationLinks.append(`<li class="page-item ${currentPage === i ? 'active' : ''}">
+                                            <a class="page-link" href="#" data-page="${i}">${i}</a>
+                                        </li>`);
+            }
+            // Add Next button
+            paginationLinks.append(`<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                                        <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+                                    </li>`);
+        }
+
+        // Event listener for pagination links
+        $('#paginationLinks').on('click', 'a.page-link', function(e) {
+            e.preventDefault();
+            var page = parseInt($(this).data('page'));
+            if (!isNaN(page)) {
+                currentPage = page;
+                loadTickets(currentPage, perPage);
+            }
         });
+
+        // Event listener for per page select
+        $('#perPageSelect').on('change', function() {
+            perPage = parseInt($(this).val());
+            currentPage = 1; // Reset to first page when changing per page
+            if (perPage === -1) {
+                // If "All" is selected, load all tickets
+                loadTickets(currentPage, perPage); // Pass 0 as perPage to indicate loading all tickets
+            } else {
+                loadTickets(currentPage, perPage);
+                // Update the display of number of entries
+                updateEntriesDisplay(currentEntries ,totalEntries, currentPage, perPage);
+            }
+        });
+
+        // Function to update the display of number of entries
+        function updateEntriesDisplay(currentEntries, totalEntries, currentPage, perPage) {
+
+            var startIndex = (currentPage - 1) * perPage + 1;
+            var endIndex = Math.min(startIndex + currentEntries - 1, totalEntries);
+            var displayMessage;
+
+            // Check if startIndex or endIndex is NaN, then fallback to 1
+            if (isNaN(startIndex) || isNaN(endIndex)) {
+                startIndex = 0;
+                endIndex = 0;
+            }
+
+            // Construct the display message
+            if (totalEntries === currentEntries) {
+                displayMessage = `Showing ${startIndex} to ${endIndex} of ${currentEntries} entries`;
+            } else {
+                displayMessage = `Showing ${startIndex} to ${endIndex} of ${currentEntries} entries (filtered by ${totalEntries} entries)`;
+            }
+
+            $('#entriesDisplay').text(displayMessage);
+        }
+
+        // Initial load
+        loadTickets(currentPage, perPage);
+        updateEntriesDisplay(currentPage, perPage);
     });
 </script>
 

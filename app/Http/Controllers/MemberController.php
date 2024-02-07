@@ -192,9 +192,6 @@ class MemberController extends Controller
         return redirect()->route('dashboard')->with('success', 'Ticket submitted successfully');
     }
 
-    public function testing()
-    {
-        return view('user.testing');
-    }
+
 
 }

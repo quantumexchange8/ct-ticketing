@@ -42,7 +42,7 @@
                                             <th>Message</th> --}}
                                             <th>Category</th>
                                             <th>Priority</th>
-                                            <th>Assignee</th>
+                                            <th>PIC</th>
                                             <th>Remarks</th>
                                             <th>Actions</th>
                                         </tr>

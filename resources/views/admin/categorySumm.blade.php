@@ -38,7 +38,7 @@
                                             <th>Message</th> --}}
                                             <th>Status</th>
                                             <th>Priority</th>
-                                            <th>Assignee</th>
+                                            <th>PIC</th>
                                             <th>Remarks</th>
                                             <th>Actions</th>
                                         </tr>
