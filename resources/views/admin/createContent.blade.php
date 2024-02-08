@@ -47,16 +47,7 @@
                                 </div>
                             </div>
 
-
                             <div class="row">
-                                {{-- @if($errors->any())
-                                    <ul>
-                                        @foreach($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                @endif --}}
-
                                 <div class="col-lg-6" >
                                     <div class="form-group" id="existingSubtitle" style="display: none;">
                                         <label for="exampleInputPassword1">Existing Subtitle</label>

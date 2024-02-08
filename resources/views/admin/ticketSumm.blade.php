@@ -73,10 +73,10 @@
                                                     <i class="dripicons-pencil"></i>
                                                 </a>
 
-                                                <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST">
+                                                <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
                                                     @method('DELETE')
                                                     @csrf
-                                                    <button type="submit" class="btn btn-sm btn-soft-danger btn-circle">
+                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
                                                         <i class="dripicons-trash"></i>
                                                     </button>
                                                 </form>
@@ -104,7 +104,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('test');
         @if(session('success'))
             Swal.fire({
                 title: 'Done',
@@ -115,6 +114,27 @@
             });
         @endif
     });
+</script>
+
+<script>
+    function confirmDelete(formId) {
+        var ticketId = document.getElementById(formId).getAttribute('data-ticket-id');
+        // console.log('Ticket ID:', ticketId);
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This action will delete the ticket.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    }
 </script>
 @endsection
 

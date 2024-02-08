@@ -7,65 +7,6 @@ use Illuminate\Support\Facades\DB;
 
 class SearchController extends Controller
 {
-
-    public function filterTicket(Request $request)
-    {
-        $category_id = $request->input('category_id');
-        $priority = $request->input('priority');
-        $operator = $request->input('operator');
-
-       $allTicketIds = DB::table('tickets')
-                        ->select('id as ticket_id')
-                        ->pluck('ticket_id')
-                        ->toArray();
-
-        if (isset($category_id) && !empty($category_id) && isset($priority) && !empty($priority)) {
-
-            if ($operator == 'AND') {
-
-                $matchedTicketIds = DB::table('tickets')
-                                    ->where('category_id', $category_id)
-                                    ->where('priority', $priority)
-                                    ->select('id as ticket_id')
-                                    ->pluck('ticket_id')
-                                    ->toArray();
-            } else {
-
-                $matchedTicketIds = DB::table('tickets')
-                                ->where('category_id', $category_id)
-                                ->orWhere('priority', $priority)
-                                ->select('id as ticket_id')
-                                ->pluck('ticket_id')
-                                ->toArray();
-            }
-
-        } elseif (isset($category_id) && !empty($category_id) && (!isset($priority) || empty($priority))) {
-
-            $matchedTicketIds = DB::table('tickets')
-                                ->where('category_id', $category_id)
-                                ->select('id as ticket_id')
-                                ->pluck('ticket_id')
-                                ->toArray();
-        } else {
-
-            $matchedTicketIds = DB::table('tickets')
-                                ->where('priority', $priority)
-                                ->select('id as ticket_id')
-                                ->pluck('ticket_id')
-                                ->toArray();
-        }
-
-        $unmatchedTicketIds = array_diff($allTicketIds, $matchedTicketIds);
-
-        $response = [
-            'allTicketIds' => $allTicketIds,
-            'matchedTicketIds' => $matchedTicketIds,
-            'unmatchedTicketIds' => array_values($unmatchedTicketIds)
-        ];
-
-        return response()->json($response);
-    }
-
     public function searchSupportTools(Request $request)
     {
         $searchTerm = $request->input('searchTerm');

@@ -24,12 +24,12 @@
                         <form action="{{ route('addTicket') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @if($errors->any())
-                                    <ul>
-                                        @foreach($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                @endif
+                                <ul>
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            @endif
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
@@ -80,7 +80,7 @@
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label for="message">Message</label>
-                                        <textarea type="text" class="form-control" name="message" placeholder="Enter Message" rows="5">{{ old('message') }}</textarea>
+                                        <textarea type="text" class="form-control" name="message" placeholder="Enter Message" autocomplete="off" rows="5">{{ old('message') }}</textarea>
                                         @error('message')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror

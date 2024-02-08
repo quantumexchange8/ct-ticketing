@@ -29,13 +29,12 @@
 
         <div class="filter-options" style="display: none;">
             <div class="row" style="flex-direction: row; align-items: center;">
-                {{-- <div class="col-sm-2">
+                <div class="col-sm-2">
                     <div class="form-group">
-                        <label for="username">Category</label>
-                        <input type="text" class="form-control" id="filterdate" name="date">
-
+                        <label for="username">Date</label>
+                        <input type="date" class="form-control" id="datepick" name="date">
                     </div>
-                </div> --}}
+                </div>
                 <div class="col-sm-2">
                     <div class="form-group">
                         <label for="username">Category</label>
@@ -47,7 +46,8 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-sm-2">
+
+                {{-- <div class="col-sm-2">
                     <div class="form-group">
                         <label for="useremail">Operator</label>
                         <select class="form-control" name="operator" id="operator">
@@ -56,7 +56,8 @@
                             <option value="OR" {{ old('operator') == 'OR' ? 'selected' : '' }}>OR</option>
                         </select>
                     </div>
-                </div>
+                </div> --}}
+
                 <div class="col-sm-2">
                     <div class="form-group">
                         <label for="useremail">Priority</label>
@@ -87,6 +88,7 @@
                                                 <option value="10">10</option>
                                                 <option value="25">25</option>
                                                 <option value="50">50</option>
+                                                <option value="100">100</option>
                                                 <option value="-1">All</option>
                                             </select>
                                         </div>
@@ -173,8 +175,9 @@
                 $('#category').val('');
                 $('#priority').val('');
                 $('#operator').val('');
+                $('#datepick').val('');
                 // Trigger change event to ensure the loadTickets function is called with the updated filter values
-                $('#category, #priority, #operator').trigger('change');
+                $('#category, #priority, #operator, #datepick').trigger('change');
             }
         });
 
@@ -184,6 +187,7 @@
             $('#category').val('');
             $('#priority').val('');
             $('#operator').val('');
+            $('#datepick').val('');
 
              // Reload tickets with default values
             currentPage = 1;
@@ -191,14 +195,17 @@
         });
 
         // Event listener for changes in select options
-        $('#category, #priority, #operator').change(function(e) {
+        $('#category, #priority, #operator, #datepick').on('change input', function(e) {
             e.preventDefault();
             currentPage = 1; // Reset to first page when changing select options
             clearInputValue(); // Clear input value when select options are used
             var categoryId = $('#category').val();
             var operator = $('#operator').val();
             var priority = $('#priority').val();
-            loadTickets(currentPage, perPage, categoryId, operator, priority);
+            var datepick = $('#datepick').val();
+
+            console.log(datepick);
+            loadTickets(currentPage, perPage, categoryId, operator, priority, datepick);
         });
 
         // Event listener for input field
@@ -210,7 +217,8 @@
             var categoryId = $('#category').val();
             var operator = $('#operator').val();
             var priority = $('#priority').val();
-            loadTickets(currentPage, perPage, categoryId, operator, priority, searchTerm);
+            var datepick = $('#datepick').val();
+            loadTickets(currentPage, perPage, categoryId, operator, priority, datepick, searchTerm,);
         });
 
         // Function to clear select options
@@ -219,6 +227,7 @@
             $('#category').val('');
             $('#priority').val('');
             $('#operator').val('');
+            $('#datepick').val('');
         }
 
         // Function to clear input value
@@ -231,7 +240,7 @@
         var currentEntries;
         var totalEntries;
 
-        function loadTickets(page, perPage, categoryId, operator, priority, searchTerm) {
+        function loadTickets(page, perPage, categoryId, operator, priority, datepick, searchTerm) {
 
             $.ajax({
                 url: '/get-ticket',
@@ -242,6 +251,7 @@
                     category_id: categoryId,
                     operator: operator,
                     priority: priority,
+                    filter_date: datepick,
                     searchTerm: searchTerm
                 },
                 success: function(response) {
@@ -250,6 +260,7 @@
                     // console.log('Category ID:', categoryId);
                     // console.log('Operator:', operator);
                     // console.log('Priority:', priority);
+                    // console.log('Date:', datepick);
 
                     var tickets = response.tickets;
 
@@ -259,8 +270,8 @@
                     // Total entries after filtering or searching
                     currentEntries = response.current_entries;
 
-                    console.log('Current entries: ', currentEntries);
-
+                    // console.log('Current entries: ', currentEntries);
+                    // console.log('Total entries: ', totalEntries);
 
                     // Clear existing table rows
                     $('#ticketTableBody').empty();
@@ -348,8 +359,6 @@
             });
         }
 
-
-
         // Function to update pagination links
         function updatePagination(totalPages, currentPage) {
             var paginationLinks = $('#paginationLinks');
@@ -397,25 +406,73 @@
         // Function to update the display of number of entries
         function updateEntriesDisplay(currentEntries, totalEntries, currentPage, perPage) {
 
-            var startIndex = (currentPage - 1) * perPage + 1;
-            var endIndex = Math.min(startIndex + currentEntries - 1, totalEntries);
+            var startIndex = 0;
+            var endIndex = 0;
             var displayMessage;
 
-            // Check if startIndex or endIndex is NaN, then fallback to 1
-            if (isNaN(startIndex) || isNaN(endIndex)) {
+            // Construct the display message
+            if (totalEntries === currentEntries && perPage !== -1) {
+                startIndex = (currentPage - 1) * perPage + 1;
+                endIndex = Math.min(startIndex + perPage - 1, totalEntries);
+
+                displayMessage = `Showing ${startIndex} to ${endIndex} of ${currentEntries} entries`;
+            } else if (currentEntries == 0 ){
                 startIndex = 0;
                 endIndex = 0;
-            }
 
-            // Construct the display message
-            if (totalEntries === currentEntries) {
+                displayMessage = `Showing ${startIndex} to ${endIndex} of ${currentEntries} entries (filtered by ${totalEntries} entries)`;
+            } else if (currentEntries < totalEntries && currentEntries > 1){
+                startIndex = (currentPage - 1) * perPage + 1;
+                endIndex = Math.min(startIndex + currentEntries - 1, totalEntries);
+
+                displayMessage = `Showing ${startIndex} to ${endIndex} of ${currentEntries} entries (filtered by ${totalEntries} entries)`;
+            } else if (totalEntries === currentEntries && perPage === -1) {
+                startIndex = 1;
+                endIndex = currentEntries;
+
+                displayMessage = `Showing ${startIndex} to ${endIndex} of ${totalEntries} entries`;
+            } else if (totalEntries === currentEntries) {
+                startIndex = (currentPage - 1) * perPage + 1;
+                endIndex = Math.min(startIndex + perPage - 1, totalEntries);
+
                 displayMessage = `Showing ${startIndex} to ${endIndex} of ${currentEntries} entries`;
             } else {
-                displayMessage = `Showing ${startIndex} to ${endIndex} of ${currentEntries} entries (filtered by ${totalEntries} entries)`;
+                startIndex = 0;
+                endIndex = 0;
+
+                displayMessage = `Showing ${startIndex} to ${endIndex} of ${currentEntries} entries`;
             }
 
             $('#entriesDisplay').text(displayMessage);
         }
+
+        // function updateEntriesDisplay(currentEntries, totalEntries, currentPage, perPage) {
+
+        //     // var startIndex = (currentPage - 1) * perPage + 1;
+        //     // var endIndex = Math.min(startIndex + perPage - 1, totalEntries);
+        //     var startIndex = 0;
+        //     var endIndex = 0;
+        //     var displayMessage;
+
+        //     // Check if startIndex or endIndex is NaN, then fallback to 1
+        //     // if (isNaN(startIndex) || isNaN(endIndex)) {
+        //     //     startIndex = 0;
+        //     //     endIndex = 0;
+        //     // }
+
+        //     // Construct the display message
+        //     if (totalEntries === currentEntries) {
+        //         startIndex = (currentPage - 1) * perPage + 1;
+        //         endIndex = Math.min(startIndex + perPage - 1, totalEntries);
+        //         displayMessage = `Showing ${startIndex} to ${endIndex} of ${currentEntries} entries`;
+        //     } else {
+        //         startIndex = (currentPage - 1) * perPage + 1;
+        //         endIndex = Math.min(startIndex + currentEntries - 1, totalEntries);
+        //         displayMessage = `Showing ${startIndex} to ${endIndex} of ${currentEntries} entries (filtered by ${totalEntries} entries)`;
+        //     }
+
+        //     $('#entriesDisplay').text(displayMessage);
+        // }
 
         // Initial load
         loadTickets(currentPage, perPage);

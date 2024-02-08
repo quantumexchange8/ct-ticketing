@@ -10,7 +10,7 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title">Create Sub-Category</h4>
+                            <h4 class="page-title">Edit Subcategory</h4>
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -24,18 +24,10 @@
                         <form action="{{ route('updateSub', $supportSubCategories->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
-                                {{-- @if($errors->any())
-                                    <ul>
-                                        @foreach($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                @endif --}}
-
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label for="title-name">Name</label>
-                                        <input type="text" class="form-control" name="sub_name" placeholder="Enter Name" value="{{ $supportSubCategories->sub_name }}">
+                                        <input type="text" class="form-control" name="sub_name" placeholder="Enter Name" autocomplete="off" value="{{ $supportSubCategories->sub_name }}">
                                         @error('sub_name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -45,7 +37,7 @@
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label for="exampleInputPassword1">Description</label>
-                                        <input type="text" class="form-control" name="sub_description" placeholder="Enter Description" value="{{ $supportSubCategories->sub_description }}">
+                                        <input type="text" class="form-control" name="sub_description" placeholder="Enter Description" autocomplete="off" value="{{ $supportSubCategories->sub_description }}">
                                         @error('sub_description')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -61,7 +53,7 @@
                                             <option>Select Related Topic</option>
                                             @foreach ($contents as $content)
                                                 <option value="{{ $content->id }}" {{ $supportSubCategories->contents->id == $content->id ? 'selected' : '' }}>
-                                                    {{ $content->title->title_name }} - {{ $content->subtitle_name }}
+                                                    {{ $content->subtitle->title->title_name }} - {{ $content->subtitle_name }}
                                                 </option>
                                             @endforeach
                                         </select>

@@ -43,17 +43,17 @@
                                                 <td style="display: none;">{{ $supportSubCategory->id }}</td>
                                                 <td>{{ $supportSubCategory->sub_name }}</td>
                                                 <td>{!! $supportSubCategory->sub_description !!}</td>
-                                                <td>{{ $supportSubCategory->subtitles->title->title_name }} - {{ $supportSubCategory->subtitles->subtitle_name }}</td>
+                                                <td>{{ $supportSubCategory->contents->subtitle->title->title_name }} - {{ $supportSubCategory->contents->subtitle->subtitle_name }}</td>
                                                 <td class="text-center">
                                                     <div style="display: flex; justify-content: center; gap: 10px;">
                                                         <a href="{{ route('editSub', ['id' => $supportSubCategory->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
                                                             <i class="dripicons-pencil"></i>
                                                         </a>
 
-                                                        <form action="{{ route('deleteSub', ['id' => $supportSubCategory->id]) }}" method="POST">
+                                                        <form action="{{ route('deleteSub', ['id' => $supportSubCategory->id]) }}" method="POST" id="deleteForm{{ $supportSubCategory->id }}" data-subcategory-id="{{ $supportSubCategory->id }}">
                                                             @method('DELETE')
                                                             @csrf
-                                                            <button type="submit" class="btn btn-sm btn-soft-danger btn-circle">
+                                                            <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $supportSubCategory->id }}')">
                                                                 <i class="dripicons-trash"></i>
                                                             </button>
                                                         </form>
@@ -82,7 +82,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('test');
         @if(session('success'))
             Swal.fire({
                 title: 'Done',
@@ -93,6 +92,27 @@
             });
         @endif
     });
+</script>
+
+<script>
+    function confirmDelete(formId) {
+        var subcategoryId = document.getElementById(formId).getAttribute('data-subcategory-id');
+        console.log('Subcategory ID:', subcategoryId);
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This action will delete the subcategory.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    }
 </script>
 @endsection
 

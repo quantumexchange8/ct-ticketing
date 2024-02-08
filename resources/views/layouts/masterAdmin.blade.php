@@ -109,15 +109,6 @@
                         </ul>
                     </li>
 
-                    {{-- <li>
-                        <a href="javascript: void(0);"><i data-feather="file-text" class="align-self-center menu-icon"></i><span>Content</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
-                        <ul class="nav-second-level" aria-expanded="false">
-                            @foreach ($subtitles as $subtitle)
-                                <li class="nav-item"><a class="nav-link" href="{{ route('contentSumm', $subtitle) }}"><i class="ti-control-record"></i>{{$subtitle->title->title_name}} - {{ $subtitle->subtitle_name }}</a></li>
-                            @endforeach
-                        </ul>
-                    </li> --}}
-
                     <li>
                         <a href="javascript: void(0);"><i data-feather="file-text" class="align-self-center menu-icon"></i><span>Content</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
                         <ul class="nav-second-level" aria-expanded="false">
@@ -138,7 +129,7 @@
                         </ul>
                     </li>
 
-                    <li>
+                    {{-- <li>
                         <a href="javascript: void(0);"><i data-feather="tool" class="align-self-center menu-icon"></i><span>Support Tool</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
                         <ul class="nav-second-level" aria-expanded="false">
                             <li class="nav-item"><a class="nav-link" href="{{ route('supportCategorySumm') }}"><i class="ti-control-record"></i>*Categories</a></li>
@@ -146,6 +137,10 @@
                                 <li class="nav-item"><a class="nav-link" href="{{ route('supportSubSumm', $supportCategory) }}"><i class="ti-control-record"></i>{!! $supportCategory->category_name !!}</a></li>
                             @endforeach
                         </ul>
+                    </li> --}}
+
+                    <li>
+                        <a href="{{ route('supportCategorySumm') }}"><i data-feather="tool" class="align-self-center menu-icon"></i><span>Support Tool</span></a>
                     </li>
 
                     <li>

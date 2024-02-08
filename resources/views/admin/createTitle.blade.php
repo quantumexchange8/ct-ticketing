@@ -24,14 +24,6 @@
                         <form action="{{ route('addTitle') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
-                                {{-- @if($errors->any())
-                                    <ul>
-                                        @foreach($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                @endif --}}
-
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label for="title-name">Title</label>
@@ -43,11 +35,9 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
-
                         </form>
                     </div><!--end card-body-->
                 </div><!--end card-->

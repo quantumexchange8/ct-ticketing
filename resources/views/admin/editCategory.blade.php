@@ -10,7 +10,7 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title">Create Subtitle</h4>
+                            <h4 class="page-title">Edit Category</h4>
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -21,25 +21,23 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <form action="{{ route('addSubtitle', ['title' => $title]) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('updateCategory', $category->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="title-name">Subtitle</label>
-                                        <input type="text" class="form-control" name="subtitle_name" placeholder="Enter Subtitle" autocomplete="off" value="{{ old('subtitle_name') }}">
-
-                                        @error('subtitle_name')
+                                        <label for="title-name">Category</label>
+                                        <input type="text" class="form-control" name="category_name" placeholder="Enter Category Name" autocomplete="off" value="{{ $category->category_name }}">
+                                        @error('category_name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
                                 </div>
-                            </div>
 
+                            </div>
                             <div class="col-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
-
                         </form>
                     </div><!--end card-body-->
                 </div><!--end card-->

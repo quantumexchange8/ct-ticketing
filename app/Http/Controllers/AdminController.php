@@ -30,6 +30,7 @@ class AdminController extends Controller
             // Get ticket counts for each priority within the status
             $tickets = Ticket::where('status_id', $status->id)
                 ->whereYear('created_at', $currentYear)
+                ->whereNull('deleted_at')
                 ->get();
 
             // Initialize priority counts for this status
@@ -121,113 +122,49 @@ class AdminController extends Controller
 
     public function getTicket(Request $request)
     {
-        // Get filter values from the request
-        $category_id = $request->input('category_id');
         $operator = $request->input('operator');
+        $category_id = $request->input('category_id');
         $priority = $request->input('priority');
         $date = $request->input('filter_date');
-
-        // Get search value from the request
         $searchTerm = $request->input('searchTerm');
 
         // Get the page and per_page values from the request, default to 1 and 10 if not provided
         $page = $request->query('page', 1);
         $perPage = $request->query('per_page', 10);
 
-          // Start building the database query
         $query = DB::table('tickets')
         ->join('support_categories', 'support_categories.id', 'tickets.category_id')
         ->join('ticket_statuses', 'tickets.status_id', 'ticket_statuses.id')
         ->select('tickets.*', 'support_categories.*', 'ticket_statuses.*','tickets.id as ticket_id', 'tickets.created_at as t_created_at')
-        ->orderByDesc('ticket_id');
+        ->orderByDesc('ticket_id')
+        ->whereNull('tickets.deleted_at');
 
-        // Apply filters if they are provided
-        if (isset($category_id) && !empty($category_id) && isset($priority) && !empty($priority)) {
-            if ($operator == 'AND') {
-                // Apply AND logic
-                $query->where('tickets.category_id', $category_id)
-                    ->where('tickets.priority', $priority);
-            } else {
-                // Apply OR logic
-                $query->where('tickets.category_id', $category_id)
-                    ->orWhere('tickets.priority', $priority);
-
-            }
-        } elseif (isset($category_id) && !empty($category_id) && (!isset($priority) || empty($priority))) {
-            // Only category_id is provided
-            $query->where('tickets.category_id', $category_id);
-        } elseif (isset($priority) && !empty($priority) && (!isset($category_id) || empty($category_id))) {
-            // Only priority is provided
-            $query->where('tickets.priority', $priority);
-        } elseif (isset($searchTerm) && !empty($searchTerm)) {
-            // Search term is provided
-            $query->where('tickets.ticket_no', 'LIKE', "%$searchTerm%")
-                ->orWhere('tickets.sender_name', 'LIKE', "%$searchTerm%")
-                ->orWhere('tickets.sender_email', 'LIKE', "%$searchTerm%")
-                ->orWhere('tickets.subject', 'LIKE', "%$searchTerm%")
-                ->orWhere('tickets.message', 'LIKE', "%$searchTerm%")
-                ->orWhere('tickets.priority', 'LIKE', "%$searchTerm%")
-                ->orWhere('support_categories.category_name', 'LIKE', "%$searchTerm%")
-                ->orWhere('tickets.remarks', 'LIKE', "%$searchTerm%")
-                ->orWhere('ticket_statuses.status', 'LIKE', "%$searchTerm%")
-                ->orWhere('tickets.pic_id','LIKE', "%$searchTerm%");
-
+        if (isset($date) && !empty($date)) {
+            $query->whereDate('tickets.created_at', $date);
         }
 
-        // Apply filters if they are provided
-        // if (isset($date) && !empty($date) || isset($category_id) && !empty($category_id) && isset($priority) && !empty($priority)) {
+        if (isset($category_id) && !empty($category_id)) {
+            $query->where('tickets.category_id', $category_id);
+        }
 
-        //     if ($operator == 'AND') {
-        //         // Apply AND logic
-        //         $query->whereDate('tickets.created_at', '=', $date)
-        //             ->where('tickets.category_id', $category_id)
-        //             ->where('tickets.priority', $priority);
-        //     } else {
-        //         // Apply OR logic
-        //         // $query->where(function ($query) use ($category_id, $priority) {
-        //         //     $query->whereDate('tickets.created_at', '=', $date)
-        //         //         ->where('tickets.category_id', $category_id)
-        //         //         ->orWhere('tickets.priority', $priority);
-        //         // });
+        if (isset($priority) && !empty($priority)) {
+            $query->where('tickets.priority', $priority);
+        }
 
-        //         $query->where(function ($query) use ($category_id, $priority, $date) {
-        //             $query->whereDate('tickets.created_at', '=', $date)
-        //                 ->where('tickets.category_id', $category_id)
-        //                 ->orWhere('tickets.priority', $priority);
-        //         });
-        //     }
-
-        // } else if (isset($date) && !empty($date) && (!isset($category_id) && !empty($category_id)) && (!isset($priority) || empty($priority))) {
-
-        //     // Only date is provided
-        //     $query->whereDate('tickets.created_at', '=', $date);
-
-        // } elseif (isset($category_id) && !empty($category_id) && (!isset($date) && !empty($date)) && (!isset($priority) || empty($priority))) {
-
-        //     // Only category_id is provided
-        //     $query->where('tickets.category_id', $category_id);
-
-        // } elseif (isset($priority) && !empty($priority) && (!isset($date) && !empty($date)) && (!isset($category_id) || empty($category_id))) {
-
-        //     // Only priority is provided
-        //     $query->where('tickets.priority', $priority);
-
-        // } elseif (isset($searchTerm) && !empty($searchTerm)) {
-
-        //     // Search term is provided
-        //     $query->where('tickets.ticket_no', 'LIKE', "%$searchTerm%")
-        //         ->orWhere('tickets.sender_name', 'LIKE', "%$searchTerm%")
-        //         ->orWhere('tickets.sender_email', 'LIKE', "%$searchTerm%")
-        //         ->orWhere('tickets.subject', 'LIKE', "%$searchTerm%")
-        //         ->orWhere('tickets.message', 'LIKE', "%$searchTerm%")
-        //         ->orWhere('tickets.priority', 'LIKE', "%$searchTerm%")
-        //         ->orWhere('support_categories.category_name', 'LIKE', "%$searchTerm%")
-        //         ->orWhere('tickets.remarks', 'LIKE', "%$searchTerm%")
-        //         ->orWhere('ticket_statuses.status', 'LIKE', "%$searchTerm%")
-        //         ->orWhere('tickets.pic_id','LIKE', "%$searchTerm%");
-        // }
-
-        // dd($query->toSql(), $query->getBindings());
+        if (isset($searchTerm) && !empty($searchTerm)) {
+            $query->where(function ($query) use ($searchTerm) {
+                $query->where('tickets.ticket_no', 'LIKE', "%$searchTerm%")
+                    ->orWhere('tickets.sender_name', 'LIKE', "%$searchTerm%")
+                    ->orWhere('tickets.sender_email', 'LIKE', "%$searchTerm%")
+                    ->orWhere('tickets.subject', 'LIKE', "%$searchTerm%")
+                    ->orWhere('tickets.message', 'LIKE', "%$searchTerm%")
+                    ->orWhere('tickets.priority', 'LIKE', "%$searchTerm%")
+                    ->orWhere('support_categories.category_name', 'LIKE', "%$searchTerm%")
+                    ->orWhere('tickets.remarks', 'LIKE', "%$searchTerm%")
+                    ->orWhere('ticket_statuses.status', 'LIKE', "%$searchTerm%")
+                    ->orWhere('tickets.pic_id', 'LIKE', "%$searchTerm%");
+            });
+        }
 
         // Check if perPage is -1 (indicating "All")
         if ($perPage == -1) {
@@ -275,28 +212,6 @@ class AdminController extends Controller
 
         return response()->json($response);
     }
-
-    public function backup(Request $request)
-    {
-
-        $perPage = $request->input('perPage', 10);
-        if ($perPage == -1) {
-            $tickets = Ticket::with('supportCategories', 'ticketImages')->get();
-            $totalPages = 1; // Set total pages to 1 when displaying all items
-        } else {
-            $tickets = Ticket::with('supportCategories', 'ticketImages')->paginate($perPage);
-            $totalPages = (int) ceil($tickets->total() / $perPage);
-        }
-
-        // $totalPages = $tickets instanceof \Illuminate\Pagination\LengthAwarePaginator ? (int) ceil($tickets->total() / $perPage) : 1;
-
-        // dd($totalPages);
-        $categories = SupportCategory::all();
-
-        return view('admin.backup', compact('tickets', 'totalPages','categories', 'perPage'));
-        // return response()->json(['data' => ['tickets' => $tickets, 'totalPages' => $totalPages, 'categories' => $categories]]);
-    }
-
 
     public function viewTicketImage($id)
     {
@@ -799,7 +714,7 @@ class AdminController extends Controller
                             ->with('documentationImages')
                             ->find($id);
 
-        $subtitles = Subtitle::all();
+        $subtitles = Subtitle::with('title')->get();
 
         return view('admin.editContent', compact('content', 'subtitles'));
     }
@@ -892,63 +807,145 @@ class AdminController extends Controller
         return view('admin.supportCategorySumm', compact('supportCategories'));
     }
 
-    public function updateCategory(Request $request)
+    public function createCategory()
     {
-        $data = $request->input('data');
-
-        // Get the list of IDs in the request
-        $requestCategoryIds = collect($data)->pluck('id')->toArray();
-
-        $categoriesToDelete = SupportCategory::whereNotIn('id', $requestCategoryIds)->get();
-
-        foreach ($categoriesToDelete as $categoryToDelete) {
-            $categoryToDelete->supportSubCategories()->delete();
-
-            $categoryToDelete->delete();
-        }
-
-        foreach ($data as $row) {
-            // Validate each row of data
-            // $validator = Validator::make($row, [
-            //     'category_name' => 'required|max:255',
-            // ], [
-            //     'category_name.max' => 'Category name should not exceed 255 characters.',
-            // ]);
-
-            // // Check if validation fails
-            // if ($validator->fails()) {
-            //     return response()->json(['error' => $validator->errors()], 400);
-            // }
-
-            $id = $row['id'];
-            $category_name = $row['categoryname'];
-
-            // Check if the record exists
-            $existingCategory = SupportCategory::find($id);
-
-            if ($existingCategory) {
-                // Update the existing record
-                $existingCategory->update([
-                    'category_name' => $category_name,
-                ]);
-            } else {
-
-                // Create a new record
-                $newCategory = SupportCategory::create([
-                    'category_name' => $category_name,
-                ]);
-            }
-        }
-
-        return response()->json(['message' => 'Category updated successfully']);
+        return view('admin.createCategory');
     }
+
+    public function addCategory(Request $request)
+    {
+        $rules = [
+            'category_name' => 'required|max:255',
+        ];
+
+        $messages = [
+            'category_name.required' => 'Category is required.',
+            'category_name.max' => 'Category should not exceed 255 characters.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $category = SupportCategory::create([
+            'category_name' => $request->input('category_name')
+        ]);
+
+        return redirect()->route('supportCategorySumm')->with('success', 'New category created successfully.');
+    }
+
+    public function editCategory($id)
+    {
+        $category = SupportCategory::find($id);
+
+        return view('admin.editCategory', compact('category'));
+    }
+
+    public function updateCategory(Request $request, $id)
+    {
+        $rules = [
+            'category_name' => 'required|max:255',
+        ];
+
+        $messages = [
+            'category_name.required' => 'Category is required.',
+            'category_name.max' => 'Category should not exceed 255 characters.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $updateCategory = SupportCategory::find($id);
+
+        $updateCategory->update([
+            'category_name' => $request->input('category_name')
+        ]);
+
+        return redirect()->route('supportCategorySumm')->with('success', 'Category updated successfully.');
+    }
+
+    public function deleteCategory($id)
+    {
+        $category = SupportCategory::find($id);
+
+        foreach ($category->supportSubCategories as $subcategory) {
+            $subcategory->delete();
+        }
+
+        $category->delete();
+
+        return redirect()->back()->with('success', 'Category and associated subcategory deleted successfully.');
+    }
+
+    // public function updateCategory(Request $request)
+    // {
+    //     $data = $request->input('data');
+
+    //     // Get the list of IDs in the request
+    //     $requestCategoryIds = collect($data)->pluck('id')->toArray();
+
+    //     $categoriesToDelete = SupportCategory::whereNotIn('id', $requestCategoryIds)->get();
+
+    //     foreach ($categoriesToDelete as $categoryToDelete) {
+    //         $categoryToDelete->supportSubCategories()->delete();
+
+    //         $categoryToDelete->delete();
+    //     }
+
+    //     foreach ($data as $row) {
+    //         // Validate each row of data
+    //         // $validator = Validator::make($row, [
+    //         //     'category_name' => 'required|max:255',
+    //         // ], [
+    //         //     'category_name.max' => 'Category name should not exceed 255 characters.',
+    //         // ]);
+
+    //         // // Check if validation fails
+    //         // if ($validator->fails()) {
+    //         //     return response()->json(['error' => $validator->errors()], 400);
+    //         // }
+
+    //         $id = $row['id'];
+    //         $category_name = $row['categoryname'];
+
+    //         // Check if the record exists
+    //         $existingCategory = SupportCategory::find($id);
+
+    //         if ($existingCategory) {
+    //             // Update the existing record
+    //             $existingCategory->update([
+    //                 'category_name' => $category_name,
+    //             ]);
+    //         } else {
+
+    //             // Create a new record
+    //             $newCategory = SupportCategory::create([
+    //                 'category_name' => $category_name,
+    //             ]);
+    //         }
+    //     }
+
+    //     return response()->json(['message' => 'Category updated successfully']);
+    // }
 
     public function supportSubSumm(SupportCategory $supportCategory)
     {
         $supportCategory->load([
             'supportSubCategories',
-            'supportSubCategories.subtitles',
-            'supportSubCategories.subtitles.title'
+            'supportSubCategories.contents',
+            'supportSubCategories.contents.subtitle',
+            'supportSubCategories.contents.subtitle.title'
         ]);
 
         return view('admin.supportSubSumm', compact('supportCategory'));
@@ -956,7 +953,11 @@ class AdminController extends Controller
 
     public function createSub(SupportCategory $supportCategory)
     {
-        $contents = Content::with('title')->get();
+        // $contents = Content::with('subtitle')->get();
+
+        $contents = Content::join('subtitles', 'contents.subtitle_id', 'subtitles.id')
+                            ->join('titles', 'subtitles.title_id', 'titles.id')
+                            ->get();
 
         return view('admin.createSub', compact('supportCategory', 'contents'));
     }
@@ -994,13 +995,15 @@ class AdminController extends Controller
         ]);
 
         // return redirect()->route('createSub', ['supportCategory' => $supportCategory]);
-        return redirect()->route('supportSubSumm', ['supportCategory' => $supportCategory->id]);
+        return redirect()->route('supportSubSumm', ['supportCategory' => $supportCategory->id])->with('success', 'New subcategory created successfully.');
     }
 
     public function editSub($id)
     {
         $supportSubCategories = SupportSubCategory::find($id);
-        $contents = Content::all();
+        $contents = Content::join('subtitles', 'contents.subtitle_id', 'subtitles.id')
+                            ->join('titles', 'subtitles.title_id', 'titles.id')
+                            ->get();
 
         return view('admin.editSub', compact('supportSubCategories', 'contents'));
     }
@@ -1396,14 +1399,5 @@ class AdminController extends Controller
 
         return view('admin.categorySumm', compact('supportCategory'));
     }
-
-    public function testing()
-    {
-        $tickets = Ticket::first();
-
-        return view('admin.helpdesk', compact('tickets'));
-    }
-
-
 
 }

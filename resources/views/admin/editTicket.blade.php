@@ -119,7 +119,7 @@
 
                                     <div class="form-group">
                                         <label for="message">Remarks</label>
-                                        <input type="text" class="form-control" name="remarks" placeholder="Remarks" value="{{ $ticket->remarks }}">
+                                        <input type="text" class="form-control" name="remarks" placeholder="Remarks" autocomplete="off" value="{{ $ticket->remarks }}">
                                         @error('remarks')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -142,7 +142,7 @@
 
                                     <div class="form-group">
                                         <label for="message">PIC</label>
-                                        <input type="text" class="form-control" name="pic_id" placeholder="PIC" value="{{ $ticket->pic_id }}">
+                                        <input type="text" class="form-control" name="pic_id" placeholder="PIC" autocomplete="off" value="{{ $ticket->pic_id }}">
                                         @error('pic_id')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror

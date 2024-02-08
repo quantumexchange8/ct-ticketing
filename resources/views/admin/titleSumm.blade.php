@@ -48,10 +48,10 @@
                                                     <i class="dripicons-pencil"></i>
                                                 </a>
 
-                                                <form action="{{ route('deleteTitle', ['id' => $title->id]) }}" method="POST">
+                                                <form action="{{ route('deleteTitle', ['id' => $title->id]) }}" method="POST" id="deleteForm{{ $title->id }}" data-title-id="{{ $title->id }}">
                                                     @method('DELETE')
                                                     @csrf
-                                                    <button type="submit" class="btn btn-sm btn-soft-danger btn-circle">
+                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $title->id }}')">
                                                         <i class="dripicons-trash"></i>
                                                     </button>
                                                 </form>
@@ -67,7 +67,7 @@
                             {{-- <button id="but_add" class="btn btn-danger">Add New Title</button>
                             <button class="btn  btn-primary" id="submit_data" data-endpoint="update-title" >Submit</button> --}}
 
-                            <a href="{{route('createTitle')}}">
+                            <a href="{{ route('createTitle') }}">
                                 <button class="btn btn-danger mt-2">Add New Title</button>
                             </a>
                         </span><!--end table-->
@@ -84,7 +84,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('test');
         @if(session('success'))
             Swal.fire({
                 title: 'Done',
@@ -97,5 +96,25 @@
     });
 </script>
 
+<script>
+    function confirmDelete(formId) {
+        var titleId = document.getElementById(formId).getAttribute('data-title-id');
+        console.log('Title ID:', titleId);
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This action will delete the title and its associated subtitles and contents.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    }
+</script>
 @endsection
 

@@ -45,18 +45,18 @@
                                                 <td class="text-center">
                                                     <div style="display: flex; justify-content: center; gap: 10px;">
 
-                                                        {{-- <a href="{{ route('viewMoreContent', ['id' => $subtitle->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
+                                                        <a href="{{ route('viewMoreContent', ['id' => $subtitle->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
                                                             <i class="dripicons-preview"></i>
-                                                        </a> --}}
+                                                        </a>
 
                                                         <a href="{{ route('editSubtitle', ['id' => $subtitle->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
                                                             <i class="dripicons-pencil"></i>
                                                         </a>
 
-                                                        <form action="{{ route('deleteSubtitle', ['id' => $subtitle->id]) }}" method="POST">
+                                                        <form action="{{ route('deleteSubtitle', ['id' => $subtitle->id]) }}" method="POST" id="deleteForm{{ $subtitle->id }}" data-subtitle-id="{{ $subtitle->id }}">
                                                             @method('DELETE')
                                                             @csrf
-                                                            <button type="submit" class="btn btn-sm btn-soft-danger btn-circle">
+                                                            <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $subtitle->id }}')">
                                                                 <i class="dripicons-trash"></i>
                                                             </button>
                                                         </form>
@@ -69,13 +69,10 @@
                                 </table><!--end /table-->
                             </div><!--end /tableresponsive-->
                             <span class="float-right">
-                                {{-- @if (count($title->contents) === 0) --}}
-                                    <a href="{{route('createSubtitle', ['title' => $title])}}">
-                                        <button class="btn btn-danger mt-2">Add New Subtitle</button>
-                                    </a>
-                                {{-- @else
-                                    <button id="but_add" class="btn btn-danger">Add New Content</button>
-                                @endif --}}
+
+                                <a href="{{route('createSubtitle', ['title' => $title])}}">
+                                    <button class="btn btn-danger mt-2">Add New Subtitle</button>
+                                </a>
 
                                 {{-- <button class="btn  btn-primary" id="submit_data" data-endpoint="update-content">Submit</button> --}}
                             </span>
@@ -92,7 +89,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('test');
         @if(session('success'))
             Swal.fire({
                 title: 'Done',
@@ -104,5 +100,27 @@
         @endif
     });
 </script>
+
+<script>
+    function confirmDelete(formId) {
+        var subtitleId = document.getElementById(formId).getAttribute('data-subtitle-id');
+        console.log('Subtitle ID:', subtitleId);
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This action will delete the subtitle and its associated contents.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    }
+</script>
+
 @endsection
 

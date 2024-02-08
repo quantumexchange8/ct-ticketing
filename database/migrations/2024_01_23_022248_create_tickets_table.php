@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
+            $table->string('ticket_no')->nullable();
             $table->string('sender_name')->nullable();
             $table->string('sender_email')->nullable();
             $table->string('subject')->nullable();
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->string('priority')->nullable();
             $table->string('status_id')->nullable();
             $table->string('pic_id')->nullable();
+            $table->string('remarks')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

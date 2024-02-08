@@ -52,10 +52,10 @@
                                                             <i class="dripicons-pencil"></i>
                                                         </a>
 
-                                                        <form action="{{ route('deleteContent', ['id' => $content->id]) }}" method="POST">
+                                                        <form action="{{ route('deleteContent', ['id' => $content->id]) }}" method="POST" id="deleteForm{{ $content->id }}" data-content-id="{{ $content->id }}">
                                                             @method('DELETE')
                                                             @csrf
-                                                            <button type="submit" class="btn btn-sm btn-soft-danger btn-circle">
+                                                            <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $content->id }}')">
                                                                 <i class="dripicons-trash"></i>
                                                             </button>
                                                         </form>
@@ -68,15 +68,9 @@
                                 </table><!--end /table-->
                             </div><!--end /tableresponsive-->
                             <span class="float-right">
-                                {{-- @if (count($title->contents) === 0) --}}
-                                    <a href="{{route('createContent')}}">
-                                        <button class="btn btn-danger mt-2">Add New Content</button>
-                                    </a>
-                                {{-- @else
-                                    <button id="but_add" class="btn btn-danger">Add New Content</button>
-                                @endif --}}
-
-                                {{-- <button class="btn  btn-primary" id="submit_data" data-endpoint="update-content">Submit</button> --}}
+                                <a href="{{route('createContent')}}">
+                                    <button class="btn btn-danger mt-2">Add New Content</button>
+                                </a>
                             </span>
                         </div><!--end card-body-->
                     </div><!--end card-->
@@ -91,7 +85,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('test');
         @if(session('success'))
             Swal.fire({
                 title: 'Done',
@@ -103,5 +96,27 @@
         @endif
     });
 </script>
+
+<script>
+    function confirmDelete(formId) {
+        var contentId = document.getElementById(formId).getAttribute('data-content-id');
+        // console.log('Content ID:', contentId);
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This action will delete the content.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    }
+</script>
+
 @endsection
 

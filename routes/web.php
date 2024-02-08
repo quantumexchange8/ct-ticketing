@@ -48,8 +48,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', [AdminController::class, 'adminDashboard'])->name('adminDashboard');
     Route::get('/helpdesk', [AdminController::class, 'helpdesk'])->name('helpdesk');
     Route::get('/get-ticket', [AdminController::class, 'getTicket'])->name('getTicket');
-    Route::get('/filter-ticket', [SearchController::class, 'filterTicket'])->name('filterTicket');
-    Route::get('/search-ticket', [SearchController::class, 'searchTicket'])->name('searchTicket');
 
     Route::get('/ticket-summary/{status}', [AdminController::class, 'ticketSumm'])->name('ticketSumm');
     Route::get('/view-ticket-image/{id}', [AdminController::class, 'viewTicketImage'])->name('viewTicketImage');
@@ -88,7 +86,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::delete('/delete-content/{id}', [AdminController::class, 'deleteContent'])->name('deleteContent');
 
     Route::get('/support-category-summary', [AdminController::class, 'supportCategorySumm'])->name('supportCategorySumm');
-    Route::post('/update-category', [AdminController::class, 'updateCategory'])->name('updateCategory');
+    Route::get('/create-category', [AdminController::class, 'createCategory'])->name('createCategory');
+    Route::post('/add-category', [AdminController::class, 'addCategory'])->name('addCategory');
+    Route::get('/edit-category/{id}', [AdminController::class, 'editCategory'])->name('editCategory');
+    Route::post('/update-category/{id}', [AdminController::class, 'updateCategory'])->name('updateCategory');
+    Route::delete('/delete-category/{id}', [AdminController::class, 'deleteCategory'])->name('deleteCategory');
 
     Route::get('/support-sub-summary/{supportCategory}', [AdminController::class, 'supportSubSumm'])->name('supportSubSumm');
     Route::get('/create-sub/{supportCategory}', [AdminController::class, 'createSub'])->name('createSub');
