@@ -17,7 +17,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="username">Name</label>
+                                        <label for="username">Full Name</label>
                                         <input type="text" class="form-control" id="username" name="sender_name" required="" autocomplete="off" value="{{ old('sender_name') }}">
                                         @error('sender_name')
                                             <span class="text-danger">{{ $message }}</span>

@@ -119,7 +119,7 @@
 
                                     <div class="form-group">
                                         <label for="message">Remarks</label>
-                                        <input type="text" class="form-control" name="remarks" placeholder="Remarks" autocomplete="off" value="{{ $ticket->remarks }}">
+                                        <textarea type="text" class="form-control" name="remarks" placeholder="Remarks" rows="5" >{{ $ticket->remarks }}</textarea>
                                         @error('remarks')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror

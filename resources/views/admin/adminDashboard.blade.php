@@ -61,8 +61,6 @@
                                         <div class="text-center">
                                             <h6 class="text-primary bg-soft-danger p-3 mb-0 font-11 rounded">
                                                 High: {{ $ticketCounts[$ticketStatus->id]['High'] }}
-                                                {{-- <i data-feather="calendar" class="align-self-center icon-xs mr-1"></i>
-                                                {{ "01 Jan $currentYear to 31 Dec $currentYear" }} --}}
                                             </h6>
                                             <h6 class="text-primary bg-soft-warning p-3 mb-0 font-11 rounded">
                                                 Medium: {{ $ticketCounts[$ticketStatus->id]['Medium'] }}
@@ -102,7 +100,7 @@
                                         <div class="dropdown-menu dropdown-menu-right" id="yearDropdownStatus">
                                             @php
                                                 $currentYear = now()->year;
-                                                $startYear = max(2021, $currentYear - 3);
+                                                $startYear = max(2022, $currentYear - 2);
                                             @endphp
                                             @for ($year = $currentYear; $year >= $startYear; $year--)
                                                 <a class="dropdown-item" href="#" data-year="{{ $year }}">{{ $year }}</a>
@@ -140,7 +138,7 @@
                                         <div class="dropdown-menu dropdown-menu-right" id="yearDropdownCategory">
                                             @php
                                                 $currentYear = now()->year;
-                                                $startYear = max(2021, $currentYear - 3);
+                                                $startYear = max(2022, $currentYear - 2);
                                             @endphp
                                             @for ($year = $currentYear; $year >= $startYear; $year--)
                                                 <a class="dropdown-item" href="#" data-year="{{ $year }}">{{ $year }}</a>
@@ -182,7 +180,7 @@
 
 <script>
     var ticketStatusData = {!! json_encode($ticketsByStatus) !!};
-    var ticketCategoryData = {!! json_encode($ticketsByCategory) !!}
+    var ticketCategoryData = {!! json_encode($ticketsByCategory) !!};
 </script>
 
 <script>

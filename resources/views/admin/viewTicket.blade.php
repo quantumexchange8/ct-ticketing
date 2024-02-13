@@ -114,7 +114,7 @@
 
                                 <div class="form-group">
                                     <label for="message">Remarks</label>
-                                    <input type="text" class="form-control" name="remarks" placeholder="Remarks" value="{{ $ticket->remarks }}" readonly>
+                                    <textarea type="text" class="form-control" name="remarks" placeholder="Remarks" rows="5" readonly>{{ $ticket->remarks }}</textarea>
                                     @error('remarks')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror

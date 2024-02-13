@@ -32,7 +32,6 @@ Route::get('/open-ticket', [MemberController::class, 'openTicket'])->name('openT
 Route::post('/submit-ticket', [MemberController::class, 'submitTicket'])->name('submitTicket');
 
 Route::get('/search-support-tools', [SearchController::class, 'searchSupportTools'])->name('searchSupportTools');
-
 Route::get('/search-documentation', [SearchController::class, 'searchDocumentation'])->name('searchDocumentation');
 
 
@@ -105,12 +104,6 @@ Route::group(['middleware' => 'auth'], function () {
     // Preview documentation
     Route::get('/view-content/{title}', [AdminController::class, 'viewContent'])->name('viewContent');
 
-
-
-    Route::get('/testing', [AdminController::class, 'testing'])->name('testing');
-
-
-    Route::get('/backup', [AdminController::class, 'backup'])->name('backup');
 });
 
 

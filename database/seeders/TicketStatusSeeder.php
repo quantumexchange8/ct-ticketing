@@ -14,7 +14,7 @@ class TicketStatusSeeder extends Seeder
     public function run(): void
     {
         TicketStatus::create([
-            'status' => 'New Ticket',
+            'status' => 'New',
         ]);
 
         TicketStatus::create([

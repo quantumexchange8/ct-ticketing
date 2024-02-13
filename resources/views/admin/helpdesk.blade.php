@@ -116,7 +116,7 @@
                                         <th>Email</th>
                                         <th>Category</th>
                                         <th>Priority</th>
-                                        {{-- <th>Status</th> --}}
+                                        <th>Status</th>
                                         <th>PIC</th>
                                         <th>Remarks</th>
                                         <th>Actions</th>
@@ -304,32 +304,65 @@
 
                         var priorityStyle = '';
                         if (ticket.priority === 'Medium') {
-                            priorityStyle = 'color: orange; font-weight: bold;';
+                            priorityStyle = 'color: orange;';
                         } else if (ticket.priority === 'Low') {
-                            priorityStyle = 'color: #84f542; font-weight: bold;';
+                            priorityStyle = 'color: #84f542;';
                         } else {
-                            priorityStyle = 'color: red; font-weight: bold;';
+                            priorityStyle = 'color: red;';
                         }
+
+                        // var priorityStyle = '';
+                        // if (ticket.priority === 'Medium') {
+                        //     priorityStyle = 'text-primary bg-soft-warning p-3 mb-0 font-12';
+                        // } else if (ticket.priority === 'Low') {
+                        //     priorityStyle = 'text-primary bg-soft-primary p-3 mb-0 font-12';
+                        // } else {
+                        //     priorityStyle = 'text-primary bg-soft-danger p-3 mb-0 font-12';
+                        // }
+
 
                         var statusStyle = '';
                         if (ticket.status === 'Pending') {
                             statusStyle = 'color: orange; font-weight: bold;';
                         } else if (ticket.status === 'Solved') {
                             statusStyle = 'color: #84f542; font-weight: bold;';
-                        } else if (ticket.status === 'New Ticket') {
+                        } else if (ticket.status === 'New') {
                             statusStyle = 'color: #4684fc; font-weight: bold;';
                         } else {
                             statusStyle = 'color: red; font-weight: bold;';
                         }
 
+                        var statusClass = '';
+                        if (ticket.status === 'Pending') {
+                            statusClass = 'badge badge-md badge-boxed  badge-soft-warning';
+                        } else if (ticket.status === 'Solved') {
+                            statusClass = 'badge badge-md badge-boxed  badge-soft-success';
+                        } else if (ticket.status === 'New') {
+                            statusClass = 'badge badge-md badge-boxed  badge-soft-primary';
+                        } else {
+                            statusClass = 'badge badge-md badge-boxed  badge-soft-danger';
+                        }
+
+                        var dateStyle = '';
+                        var threeDaysAgo = new Date();
+                        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3); // Calculate the date 7 days ago
+
+                        if (ticket.status == 'Pending' && createdAt < threeDaysAgo) {
+                            dateStyle = 'color: #EDAE49; font-weight: bold;';
+                        }
+
+                        var tooltipMessage = 'Ticket is pending for more than 3 days';
+
                         var row = '<tr id="' + ticketId + '">' +
-                                    '<td>' + formattedDate + '</td>' +
+                                    '<td style="' + dateStyle + '" title="' + (dateStyle ? tooltipMessage : '') + '">' + formattedDate + '</td>' +
+                                    // '<td>' + formattedDate + '</td>' +
                                     '<td>' + ticket.ticket_no + '</td>' +
                                     '<td>' + ticket.sender_name + '</td>' +
                                     '<td>' + ticket.sender_email + '</td>' +
                                     '<td>' + categoryName + '</td>' +
                                     '<td style="' + priorityStyle + '">' + ticket.priority + '</td>' +
                                     // '<td style="' + statusStyle + '">' + ticket.status + '</td>' +
+                                    '<td>' + '<span class="' + statusClass + '">' + ticket.status + '</span>' + '</td>' +
                                     '<td>' + picId + '</td>' +
                                     '<td>' + remarks + '</td>' +
                                     '<td class="text-center" style="display: flex; justify-content: center; gap: 10px;">' + actions + '</td>' +

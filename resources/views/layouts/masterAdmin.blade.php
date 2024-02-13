@@ -30,9 +30,6 @@
         <link href="{{ asset('assets/css/metisMenu.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('assets/plugins/daterangepicker/daterangepicker.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
-
-        {{-- @livewireStyles
-        @powerGridStyles --}}
     </head>
 
     <body class="dark-sidenav">
@@ -299,9 +296,9 @@
 
                                     <i data-feather="power" class="align-self-center icon-xs icon-dual mr-1">
                                     </i> Logout
-                                    {{-- <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                         @csrf
-                                    </form> --}}
+                                    </form>
                                 </a>
                             </div>
                         </li>
@@ -381,9 +378,9 @@
 
         <!-- App js -->
         <script src="{{ asset('assets/js/app.js') }}"></script>
-{{--
-        @livewireScripts
-        @powerGridScripts --}}
+
+
+
     </body>
 
 </html>

@@ -76,20 +76,24 @@ class MemberController extends Controller
     public function submitTicket(Request $request)
     {
         $rules = [
-            'sender_name' => 'required',
-            'sender_email' => 'required',
-            'subject' => 'required',
-            'message' => 'required',
+            'sender_name' => 'required|max:255',
+            'sender_email' => 'required|max:255',
+            'subject' => 'required|max:255',
+            'message' => 'required|max:5000',
             'category_id' => 'required',
             'priority'=> 'required',
             't_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ];
 
         $messages = [
-            'sender_name.required' => 'Name is required.',
+            'sender_name.required' => 'Full Name is required.',
+            'sender_name.max' => 'Full Name should not exceed 255 characters.',
             'sender_email.required' => 'Email is required.',
+            'sender_email.max' => 'Email should not exceed 255 characters.',
             'subject.required' => 'Subject is required.',
+            'subject.max' => 'Subject should not exceed 255 characters.',
             'message.required' => 'Message is required.',
+            'message.max' => 'Message should not exceed 5000 characters.',
             'category_id.required' => 'Please select category.',
             'priority.required' => 'Please select priority.',
             't_image.image' => 'Must be an image format.',

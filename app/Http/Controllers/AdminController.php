@@ -745,7 +745,7 @@ class AdminController extends Controller
 
         $updateContent = Content::find($id);
 
-        $subtitle_id = $request->input('title_id');
+        $subtitle_id = $request->input('subtitle_id');
 
         $updateContent->update([
             'c_sequence' => $request->input('c_sequence'),
