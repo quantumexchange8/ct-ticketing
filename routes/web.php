@@ -35,7 +35,6 @@ Route::get('/search-support-tools', [SearchController::class, 'searchSupportTool
 Route::get('/search-documentation', [SearchController::class, 'searchDocumentation'])->name('searchDocumentation');
 
 
-
 // Admin
 
 Route::get('/login', [LoginController::class, 'login'])->name('login');

@@ -380,6 +380,8 @@
         <script src="{{ asset('assets/js/app.js') }}"></script>
 
 
+        {{-- Excel --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
 
     </body>
 

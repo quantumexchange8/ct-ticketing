@@ -16,6 +16,9 @@
                         </div><!--end col-->
 
                         <div class="col-2" style="display: flex; justify-content: flex-end; align-items: flex-end;">
+                            <button type="button" class="btn" id="exportButton">
+                                <i data-feather="download"></i>
+                            </button>
                             <button type="button" class="btn" id="filterButton">
                                 <i data-feather="filter"></i>
                             </button>
@@ -46,17 +49,6 @@
                         </select>
                     </div>
                 </div>
-
-                {{-- <div class="col-sm-2">
-                    <div class="form-group">
-                        <label for="useremail">Operator</label>
-                        <select class="form-control" name="operator" id="operator">
-                            <option value="">Operator</option>
-                            <option value="AND" {{ old('operator') == 'AND' ? 'selected' : '' }}>AND</option>
-                            <option value="OR" {{ old('operator') == 'OR' ? 'selected' : '' }}>OR</option>
-                        </select>
-                    </div>
-                </div> --}}
 
                 <div class="col-sm-2">
                     <div class="form-group">
@@ -99,7 +91,7 @@
                             <div class="col-sm-12 col-md-6">
                                 <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 5px;">
                                     <label>Search: </label>
-                                    <div class="col-sm-5">
+                                    <div class="col-sm-5" style="padding-right: 0;">
                                         <input class="form-control form-control-sm" type="search" id="searchInput" name="search" autocomplete="off">
                                     </div>
                                 </div>
@@ -107,7 +99,7 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <table id="ticketTable" class="table table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
                                         <th>Date</th>
@@ -174,10 +166,9 @@
                 // If filter options are hidden, clear filter values
                 $('#category').val('');
                 $('#priority').val('');
-                $('#operator').val('');
                 $('#datepick').val('');
                 // Trigger change event to ensure the loadTickets function is called with the updated filter values
-                $('#category, #priority, #operator, #datepick').trigger('change');
+                $('#category, #priority, #datepick').trigger('change');
             }
         });
 
@@ -186,7 +177,6 @@
             // Reset the input values
             $('#category').val('');
             $('#priority').val('');
-            $('#operator').val('');
             $('#datepick').val('');
 
              // Reload tickets with default values
@@ -195,17 +185,16 @@
         });
 
         // Event listener for changes in select options
-        $('#category, #priority, #operator, #datepick').on('change input', function(e) {
+        $('#category, #priority, #datepick').on('change input', function(e) {
             e.preventDefault();
             currentPage = 1; // Reset to first page when changing select options
             clearInputValue(); // Clear input value when select options are used
             var categoryId = $('#category').val();
-            var operator = $('#operator').val();
             var priority = $('#priority').val();
             var datepick = $('#datepick').val();
 
             console.log(datepick);
-            loadTickets(currentPage, perPage, categoryId, operator, priority, datepick);
+            loadTickets(currentPage, perPage, categoryId, priority, datepick);
         });
 
         // Event listener for input field
@@ -215,10 +204,9 @@
             clearSelectOptions(); // Clear select options when input field is used
             var searchTerm = $(this).val().trim();
             var categoryId = $('#category').val();
-            var operator = $('#operator').val();
             var priority = $('#priority').val();
             var datepick = $('#datepick').val();
-            loadTickets(currentPage, perPage, categoryId, operator, priority, datepick, searchTerm,);
+            loadTickets(currentPage, perPage, categoryId, priority, datepick, searchTerm,);
         });
 
         // Function to clear select options
@@ -226,7 +214,6 @@
             console.log('Clearing select options');
             $('#category').val('');
             $('#priority').val('');
-            $('#operator').val('');
             $('#datepick').val('');
         }
 
@@ -240,7 +227,7 @@
         var currentEntries;
         var totalEntries;
 
-        function loadTickets(page, perPage, categoryId, operator, priority, datepick, searchTerm) {
+        function loadTickets(page, perPage, categoryId, priority, datepick, searchTerm) {
 
             $.ajax({
                 url: '/get-ticket',
@@ -249,7 +236,6 @@
                     page: page,
                     per_page: perPage,
                     category_id: categoryId,
-                    operator: operator,
                     priority: priority,
                     filter_date: datepick,
                     searchTerm: searchTerm
@@ -345,7 +331,7 @@
 
                         var dateStyle = '';
                         var threeDaysAgo = new Date();
-                        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3); // Calculate the date 7 days ago
+                        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3); // Calculate the date 3 days ago
 
                         if (ticket.status == 'Pending' && createdAt < threeDaysAgo) {
                             dateStyle = 'color: #EDAE49; font-weight: bold;';
@@ -506,6 +492,82 @@
 
         //     $('#entriesDisplay').text(displayMessage);
         // }
+
+        $('#exportButton').click(function() {
+            exportToExcel();
+        });
+
+        function exportToExcel() {
+            // Get total number of entries
+            $.ajax({
+                url: '/get-ticket',
+                method: 'GET',
+                data: {
+                    page: 1,
+                    per_page: -1 // Fetch all entries
+                },
+                success: function(response) {
+                    var totalPages = response.total_pages;
+                    var allData = [];
+
+                    // Fetch data from each page
+                    for (var page = 1; page <= totalPages; page++) {
+                        $.ajax({
+                            url: '/get-ticket',
+                            method: 'GET',
+                            data: {
+                                page: page,
+                                per_page: -1 // Fetch all entries
+                            },
+                            async: false, // Ensure synchronous requests
+                            success: function(response) {
+                                allData = allData.concat(response.tickets);
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error fetching tickets:', error);
+                            }
+                        });
+                    }
+
+                    // Process allData and export to Excel
+                    exportDataToExcel(allData);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching tickets:', error);
+                }
+            });
+        }
+
+        function exportDataToExcel(data) {
+            // Convert data to Excel format
+            var headers = ['Date', 'Ticket No', 'Sender Name', 'Sender Email', 'Category', 'Priority', 'Status', 'PIC ID', 'Remarks'];
+            var excelData = [headers];
+
+            data.forEach(function(ticket) {
+                var row = [
+                    ticket.t_created_at,
+                    ticket.ticket_no,
+                    ticket.sender_name,
+                    ticket.sender_email,
+                    ticket.category_name || '',
+                    ticket.priority,
+                    ticket.status,
+                    ticket.pic_id || '',
+                    ticket.remarks || ''
+                ];
+                excelData.push(row);
+            });
+
+            // Create workbook and worksheet
+            var wb = XLSX.utils.book_new();
+            var ws = XLSX.utils.aoa_to_sheet(excelData);
+
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Tickets');
+
+            // Save workbook as Excel file
+            XLSX.writeFile(wb, 'tickets-report.xlsx');
+        }
 
         // Initial load
         loadTickets(currentPage, perPage);

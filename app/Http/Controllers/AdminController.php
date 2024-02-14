@@ -1173,7 +1173,9 @@ class AdminController extends Controller
             $query->orderBy('created_at', 'desc');
         }, 'tickets.supportCategories'])->find($status->id);
 
-        return view('admin.ticketSumm', compact('status'));
+        $tickets = $status->tickets;
+
+        return view('admin.ticketSumm', compact('status', 'tickets'));
     }
 
     public function viewTicket($id)
@@ -1397,7 +1399,9 @@ class AdminController extends Controller
             $query->orderBy('created_at', 'desc');
         }, 'tickets.ticketStatus'])->find($supportCategory->id);
 
-        return view('admin.categorySumm', compact('supportCategory'));
+        $tickets = $supportCategory->tickets;
+
+        return view('admin.categorySumm', compact('supportCategory', 'tickets'));
     }
 
 }
