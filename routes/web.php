@@ -34,6 +34,8 @@ Route::post('/submit-ticket', [MemberController::class, 'submitTicket'])->name('
 Route::get('/search-support-tools', [SearchController::class, 'searchSupportTools'])->name('searchSupportTools');
 Route::get('/search-documentation', [SearchController::class, 'searchDocumentation'])->name('searchDocumentation');
 
+Route::get('/content', [MemberController::class, 'content'])->name('content');
+
 
 // Admin
 

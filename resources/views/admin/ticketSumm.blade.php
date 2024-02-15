@@ -12,7 +12,7 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title mt-2">Ticket</h4>
+                            <h4 class="page-title mt-2">Ticket - {{ $status->status }}</h4>
                         </div><!--end col-->
                         <div class="col-2" style="display: flex; justify-content: flex-end; align-items: flex-end;">
                             <button type="button" class="btn" id="exportButton">
@@ -27,9 +27,9 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
+                    {{-- <div class="card-header">
                         <h4 class="card-title">{{ $status->status }}</h4>
-                    </div><!--end card-header-->
+                    </div><!--end card-header--> --}}
                     <div class="card-body">
                         <div class="table-responsive">
                             <table id="datatable2" class="table table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">

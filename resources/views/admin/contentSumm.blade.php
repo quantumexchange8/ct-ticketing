@@ -10,7 +10,7 @@
                     <div class="page-title-box">
                         <div class="row">
                             <div class="col">
-                                <h4 class="page-title">Content</h4>
+                                <h4 class="page-title">Content - {{ $subtitle->subtitle_name }}</h4>
                             </div><!--end col-->
                         </div><!--end row-->
                     </div><!--end page-title-box-->
@@ -20,9 +20,9 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
+                        {{-- <div class="card-header">
                             <h4 class="card-title">{{ $subtitle->subtitle_name }}</h4>
-                        </div><!--end card-header-->
+                        </div><!--end card-header--> --}}
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered">

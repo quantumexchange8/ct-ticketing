@@ -341,8 +341,6 @@
         <script src="{{ asset('assets/js/moment.js') }}"></script>
         <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
 
-
-
         <script src="{{ asset('assets/plugins/tiny-editable/mindmup-editabletable.js') }}"></script>
         <script src="{{ asset('assets/plugins/tiny-editable/numeric-input-example.js') }}"></script>
         <script src="{{ asset('assets/plugins/bootable/bootstable.js') }}"></script>

@@ -10,7 +10,7 @@
                     <div class="page-title-box">
                         <div class="row">
                             <div class="col">
-                                <h4 class="page-title">Subtitle</h4>
+                                <h4 class="page-title">Subtitle - {{ $title->title_name }}</h4>
                                 {{-- <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="javascript:void(0);">{{ $title->title_name }}</a></li>
                                     <li class="breadcrumb-item active"></li>
@@ -24,9 +24,9 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
+                        {{-- <div class="card-header">
                             <h4 class="card-title">{{ $title->title_name }}</h4>
-                        </div><!--end card-header-->
+                        </div><!--end card-header--> --}}
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered">

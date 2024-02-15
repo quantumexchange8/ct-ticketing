@@ -197,5 +197,9 @@ class MemberController extends Controller
     }
 
 
-
+    public function content()
+    {
+        $titles = Title::with('subtitles.contents')->get();
+        return view('user.content', compact('titles'));
+    }
 }

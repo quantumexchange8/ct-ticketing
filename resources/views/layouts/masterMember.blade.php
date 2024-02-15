@@ -70,7 +70,9 @@
                         <a href="{{ route('openTicket') }}"> <i data-feather="send" class="align-self-center menu-icon"></i><span>Submit a Ticket</span></a>
                     </li>
 
-
+                    {{-- <li>
+                        <a href="{{ route('content') }}"> <i data-feather="download" class="align-self-center menu-icon"></i><span>Content</span></a>
+                    </li> --}}
                 </ul>
 
             </div>

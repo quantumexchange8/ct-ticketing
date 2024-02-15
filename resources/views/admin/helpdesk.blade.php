@@ -339,6 +339,21 @@
 
                         var tooltipMessage = 'Ticket is pending for more than 3 days';
 
+                        // var dateStyle = '';
+                        // var createdAt = new Date(ticket.createdAt); // Assuming ticket.createdAt is the creation date of the ticket
+                        // var fourDaysAgo = new Date();
+                        // fourDaysAgo.setDate(fourDaysAgo.getDate() - 4); // Calculate the date 4 days ago
+
+                        // if (ticket.status === 'Pending') {
+                        //     if (createdAt > fourDaysAgo) {
+                        //         dateStyle = 'color: red; font-weight: bold;';
+                        //         var tooltipMessage = 'Ticket is pending for more than 3 days';
+                        //     } else {
+                        //         dateStyle = 'color: orange; font-weight: bold;';
+                        //         var tooltipMessage = 'Ticket is pending for less than 4 days';
+                        //     }
+                        // }
+
                         var row = '<tr id="' + ticketId + '">' +
                                     '<td style="' + dateStyle + '" title="' + (dateStyle ? tooltipMessage : '') + '">' + formattedDate + '</td>' +
                                     // '<td>' + formattedDate + '</td>' +
