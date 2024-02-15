@@ -14,6 +14,9 @@
         <!-- App favicon -->
         <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
 
+        <!-- Kanban -->
+        <link href="{{ asset('assets/plugins/dragula/dragula.min.css') }}" rel="stylesheet" type="text/css" />
+
         <!-- Dropify -->
         <link href="{{ asset('assets/plugins/dropify/css/dropify.min.css') }}" rel="stylesheet">
 
@@ -74,6 +77,10 @@
                                 <li class="nav-item"><a class="nav-link" href="{{ route('ticketSumm', $status) }}"><i class="ti-control-record"></i>{{ $status->status }}</a></li>
                             @endforeach
                         </ul>
+                    </li>
+
+                    <li>
+                        <a href="{{ route('ticket') }}"> <i data-feather="aperture" class="align-self-center menu-icon"></i><span>Ticket Kanban</span></a>
                     </li>
 
                     <li>
@@ -373,6 +380,10 @@
 
         <script src="{{ asset('assets/plugins/repeater/jquery.repeater.min.js') }}"></script>
         <script src="{{ asset('assets/pages/jquery.form-repeater.js') }}"></script>
+
+        <!-- Kanban -->
+        <script src="{{ asset('assets/plugins/dragula/dragula.min.js') }}"></script>
+        <script src="{{ asset('assets/pages/jquery.dragula.init.js') }}"></script>
 
         <!-- App js -->
         <script src="{{ asset('assets/js/app.js') }}"></script>

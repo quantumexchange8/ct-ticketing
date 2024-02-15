@@ -15,6 +15,17 @@
                             <h4 class="page-title mt-2">Ticket - {{ $status->status }}</h4>
                         </div><!--end col-->
                         <div class="col-2" style="display: flex; justify-content: flex-end; align-items: flex-end;">
+                            <div class="btn-group mb-2 mb-md-0">
+                                <button type="button" class="btn btn-soft-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Edit Status<i class="mdi mdi-chevron-down"></i></button>
+                                <div class="dropdown-menu">
+                                    @foreach ($allStatus as $all)
+                                        @if ($all->status != $status->status)
+                                            <a class="dropdown-item" href="#">{{ $all->status}}</a>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+
                             <button type="button" class="btn" id="exportButton">
                                 <i data-feather="download"></i>
                             </button>
@@ -35,6 +46,13 @@
                             <table id="datatable2" class="table table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
+                                        <th>
+                                            <!-- Custom Checkbox -->
+                                            <label class="custom-checkbox">
+                                                <input type="checkbox">
+                                                <span class="checkmark"></span>
+                                            </label>
+                                        </th>
                                         <th>Date</th>
                                         <th>Ticket No.</th>
                                         <th>Name</th>
@@ -51,6 +69,14 @@
                                 <tbody>
                                     @foreach($status->tickets as $ticket)
                                     <tr>
+                                        <td>
+                                            <!-- Custom Checkbox -->
+                                            <label class="custom-checkbox">
+                                                <input type="checkbox">
+                                                <span class="checkmark"></span>
+                                            </label>
+                                            <!-- End Custom Checkbox -->
+                                        </td>
                                         <td>{{ Carbon\Carbon::parse($ticket->created_at)->format('d M Y') }}</td>
                                         <td>{{ $ticket->ticket_no }}</td>
                                         <td>{{ $ticket->sender_name }}</td>
@@ -185,8 +211,23 @@
         // Save workbook as Excel file
         XLSX.writeFile(wb, filename);
     }
+</script>
 
+<script>
+    // Get the checkbox in the table header
+    const headerCheckbox = document.querySelector('thead input[type="checkbox"]');
 
+    // Get all checkboxes in the table body
+    const bodyCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+
+    // Add event listener to the header checkbox
+    headerCheckbox.addEventListener('change', function() {
+        // Loop through all checkboxes in the table body
+        bodyCheckboxes.forEach(function(checkbox) {
+            // Set the checked state of each checkbox to match the header checkbox
+            checkbox.checked = headerCheckbox.checked;
+        });
+    });
 </script>
 @endsection
 

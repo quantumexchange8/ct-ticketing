@@ -213,6 +213,12 @@ class AdminController extends Controller
         return response()->json($response);
     }
 
+    public function ticket()
+    {
+        $statuses = TicketStatus::with('tickets.supportCategories')->get();
+        return view('admin.ticket', compact('statuses'));
+    }
+
     public function viewTicketImage($id)
     {
         $ticketImages = TicketImage::where('ticket_id', $id)->get();
@@ -1173,9 +1179,11 @@ class AdminController extends Controller
             $query->orderBy('created_at', 'desc');
         }, 'tickets.supportCategories'])->find($status->id);
 
+        $allStatus = TicketStatus::all();
+
         $tickets = $status->tickets;
 
-        return view('admin.ticketSumm', compact('status', 'tickets'));
+        return view('admin.ticketSumm', compact('status', 'tickets', 'allStatus'));
     }
 
     public function viewTicket($id)
