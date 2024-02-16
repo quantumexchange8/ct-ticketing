@@ -122,7 +122,6 @@ class AdminController extends Controller
 
     public function getTicket(Request $request)
     {
-        $operator = $request->input('operator');
         $category_id = $request->input('category_id');
         $priority = $request->input('priority');
         $date = $request->input('filter_date');
@@ -217,6 +216,64 @@ class AdminController extends Controller
     {
         $statuses = TicketStatus::with('tickets.supportCategories')->get();
         return view('admin.ticket', compact('statuses'));
+    }
+
+    public function getTicketByStatus(Request $request)
+    {
+
+        $searchTerm = $request->input('searchTerm');
+
+        // Fetch all statuses
+        $statuses = DB::table('ticket_statuses')->get();
+
+        // Fetch all tickets and group them by status
+        $query = DB::table('tickets')
+                    ->join('support_categories', 'tickets.category_id', 'support_categories.id')
+                    ->select('tickets.*', 'support_categories.category_name')
+                    ->orderByDesc('tickets.created_at')
+                    ->whereNull('tickets.deleted_at');
+
+        // Apply search term filter
+        if ($searchTerm) {
+            $query->where(function ($query) use ($searchTerm) {
+                $query->where('tickets.ticket_no', 'like', "%$searchTerm%")
+                    ->orWhere('tickets.sender_name', 'like', "%$searchTerm%")
+                    ->orWhere('tickets.sender_email', 'like', "%$searchTerm%")
+                    ->orWhere('support_categories.category_name', 'like', "%$searchTerm%");
+            });
+        }
+
+        $ticketsByStatus = $query->get()->groupBy('status_id');
+
+        // Prepare the response with the correct structure
+        $response = [];
+        foreach ($statuses as $status) {
+            // $ticketCount = $ticketsByStatus[$status->id]->count() ?? 0;
+            $ticketCount = $ticketsByStatus->get($status->id, collect())->count() ?? 0;
+
+            $response[] = [
+                'status' => $status,
+                'ticket_count' => $ticketCount,
+                'tickets' => $ticketsByStatus[$status->id] ?? []
+            ];
+        }
+
+        return response()->json(['statuses' => $response]);
+    }
+
+    public function updateTicketKanban(Request $request)
+    {
+        // Get the ticket ID and new status ID from the request
+        $ticketId = $request->input('ticketId');
+        $newStatusId = $request->input('newStatus');
+
+        // Update the ticket's status_id in the database
+        $ticket = Ticket::findOrFail($ticketId);
+        $ticket->status_id = $newStatusId;
+        $ticket->save();
+
+        // Return a response indicating success
+        return response()->json(['message' => 'Ticket status updated successfully'], 200);
     }
 
     public function viewTicketImage($id)
@@ -1260,7 +1317,7 @@ class AdminController extends Controller
             'message' => $request->input('message'),
             'category_id' => $request->input('category_id'),
             'priority' => $request->input('priority'),
-            'status_id' => $request->input('status_id')
+            'status_id' => 1
         ]);
 
         $ticketId = $ticket->id;

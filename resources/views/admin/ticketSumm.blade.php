@@ -15,7 +15,7 @@
                             <h4 class="page-title mt-2">Ticket - {{ $status->status }}</h4>
                         </div><!--end col-->
                         <div class="col-2" style="display: flex; justify-content: flex-end; align-items: flex-end;">
-                            <div class="btn-group mb-2 mb-md-0">
+                            {{-- <div class="btn-group mb-2 mb-md-0">
                                 <button type="button" class="btn btn-soft-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Edit Status<i class="mdi mdi-chevron-down"></i></button>
                                 <div class="dropdown-menu">
                                     @foreach ($allStatus as $all)
@@ -24,7 +24,7 @@
                                         @endif
                                     @endforeach
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <button type="button" class="btn" id="exportButton">
                                 <i data-feather="download"></i>
@@ -46,13 +46,13 @@
                             <table id="datatable2" class="table table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
-                                        <th>
+                                        {{-- <th>
                                             <!-- Custom Checkbox -->
                                             <label class="custom-checkbox">
                                                 <input type="checkbox">
                                                 <span class="checkmark"></span>
                                             </label>
-                                        </th>
+                                        </th> --}}
                                         <th>Date</th>
                                         <th>Ticket No.</th>
                                         <th>Name</th>
@@ -69,14 +69,14 @@
                                 <tbody>
                                     @foreach($status->tickets as $ticket)
                                     <tr>
-                                        <td>
+                                        {{-- <td>
                                             <!-- Custom Checkbox -->
                                             <label class="custom-checkbox">
                                                 <input type="checkbox">
                                                 <span class="checkmark"></span>
                                             </label>
                                             <!-- End Custom Checkbox -->
-                                        </td>
+                                        </td> --}}
                                         <td>{{ Carbon\Carbon::parse($ticket->created_at)->format('d M Y') }}</td>
                                         <td>{{ $ticket->ticket_no }}</td>
                                         <td>{{ $ticket->sender_name }}</td>

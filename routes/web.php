@@ -54,6 +54,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/view-ticket/{id}', [AdminController::class, 'viewTicket'])->name('viewTicket');
 
     Route::get('/ticket', [AdminController::class, 'ticket'])->name('ticket');
+    Route::get('/get-ticket-by-status', [AdminController::class, 'getTicketByStatus'])->name('getTicketByStatus');
+    Route::post('/update-ticket-kanban', [AdminController::class, 'updateTicketKanban'])->name('updateTicketKanban');
 
     Route::get('/create-ticket', [AdminController::class, 'createTicket'])->name('createTicket');
     Route::post('/add-ticket', [AdminController::class, 'addTicket'])->name('addTicket');

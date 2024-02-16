@@ -113,7 +113,7 @@
                                 </div>
 
                                 <div class="col-lg-6">
-                                    <div class="form-group">
+                                    {{-- <div class="form-group">
                                         <label for="message">Status</label>
                                         <select class="form-control" name="status_id">
                                             <option value="">Select Status</option>
@@ -126,7 +126,7 @@
                                         @error('message')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
-                                    </div>
+                                    </div> --}}
 
                                     <div class="form-group">
                                         <label for="message">PIC</label>
@@ -149,7 +149,6 @@
                                                 <div class="col-sm-11">
                                                     {{-- <input type="file" id="input-file-now" name="t_image" class="dropify" /> --}}
                                                     <input type="file" id="input-file-now" name="car[][t_image]">
-
                                                 </div><!--end col-->
 
                                                 <div class="col-sm-1">

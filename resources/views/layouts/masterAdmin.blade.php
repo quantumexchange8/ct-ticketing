@@ -23,6 +23,7 @@
         <!-- DataTables -->
         <link href="{{ asset('assets//plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('assets/plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+
         <!-- Responsive datatable examples -->
         <link href="{{ asset('assets/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 
@@ -71,16 +72,16 @@
                     </li>
 
                     <li>
-                        <a href="javascript: void(0);"><i data-feather="message-circle" class="align-self-center menu-icon"></i><span>Ticket</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
+                        <a href="{{ route('ticket') }}"> <i data-feather="sliders" class="align-self-center menu-icon"></i><span>Ticket - Board</span></a>
+                    </li>
+
+                    <li>
+                        <a href="javascript: void(0);"><i data-feather="list" class="align-self-center menu-icon"></i><span>Ticket - List</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
                         <ul class="nav-second-level" aria-expanded="false">
                             @foreach ($ticketStatuses as $status)
                                 <li class="nav-item"><a class="nav-link" href="{{ route('ticketSumm', $status) }}"><i class="ti-control-record"></i>{{ $status->status }}</a></li>
                             @endforeach
                         </ul>
-                    </li>
-
-                    <li>
-                        <a href="{{ route('ticket') }}"> <i data-feather="aperture" class="align-self-center menu-icon"></i><span>Ticket Kanban</span></a>
                     </li>
 
                     <li>
