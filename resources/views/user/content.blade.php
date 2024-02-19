@@ -4,7 +4,7 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <!-- Page Content-->
-<div class="page-content">
+<div id="contentToPrint" class="page-content">
     <div class="row">
         <div class="col-sm-12">
             <div class="page-title-box">
@@ -48,6 +48,24 @@
 </div>
 <!-- end page content -->
 
+<script>
+    document.getElementById("exportButton").addEventListener("click", function() {
+        PrintElem("contentToPrint");
+    });
+
+    function PrintElem(elem) {
+        var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+        mywindow.document.write('<html><head><title>' + document.title  + '</title>');
+        mywindow.document.write('</head><body>');
+        mywindow.document.write(document.getElementById(elem).innerHTML);
+        mywindow.document.write('</body></html>');
+        mywindow.document.close(); // necessary for IE >= 10
+        mywindow.focus(); // necessary for IE >= 10
+        mywindow.print();
+        mywindow.close();
+        return true;
+    }
+</script>
 
 @endsection
 

@@ -555,7 +555,7 @@
 
         function exportDataToExcel(data) {
             // Convert data to Excel format
-            var headers = ['Date', 'Ticket No', 'Sender Name', 'Sender Email', 'Category', 'Priority', 'Status', 'PIC ID', 'Remarks'];
+            var headers = ['Date', 'Ticket No', 'Sender Name', 'Sender Email', 'Subject', 'Message','Category', 'Priority', 'Status', 'PIC ID', 'Remarks'];
             var excelData = [headers];
 
             data.forEach(function(ticket) {
@@ -563,10 +563,12 @@
                     ticket.t_created_at,
                     ticket.ticket_no,
                     ticket.sender_name,
-                    ticket.sender_email,
+                    ticket.sender_email || '',
+                    ticket.subject || '',
+                    ticket.message || '',
                     ticket.category_name || '',
-                    ticket.priority,
-                    ticket.status,
+                    ticket.priority || '',
+                    ticket.status || '',
                     ticket.pic_id || '',
                     ticket.remarks || ''
                 ];

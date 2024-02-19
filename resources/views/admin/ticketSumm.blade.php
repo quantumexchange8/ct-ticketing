@@ -163,7 +163,9 @@
     }
 
     $('#exportButton').click(function() {
-        var status = $('.card-title').text().trim();
+        var status = $('.page-title').text().trim();
+
+        console.log(status);
         exportToExcel(status);
     });
 
@@ -176,6 +178,8 @@
             "Ticket No.",
             "Name",
             "Email",
+            "Subject",
+            "Message",
             "Category",
             "Priority",
             "PIC",
@@ -190,6 +194,8 @@
                 "{{ $ticket->ticket_no }}",
                 "{{ $ticket->sender_name }}",
                 "{{ $ticket->sender_email }}",
+                "{{ $ticket->subject }}",
+                "{{ $ticket->message }}",
                 "{!! $ticket->supportCategories->category_name !!}",
                 "{{ $ticket->priority }}",
                 "{{ $ticket->pic_id }}",
@@ -206,14 +212,14 @@
         XLSX.utils.book_append_sheet(wb, ws, 'Tickets');
 
         // Construct filename with status
-        var filename = 'tickets-' + status.toLowerCase().replace(/\s+/g, '-') + '.xlsx';
+        var filename = '' + status.toLowerCase().replace(/\s+/g, '-') + '.xlsx';
 
         // Save workbook as Excel file
         XLSX.writeFile(wb, filename);
     }
 </script>
 
-<script>
+{{-- <script>
     // Get the checkbox in the table header
     const headerCheckbox = document.querySelector('thead input[type="checkbox"]');
 
@@ -228,6 +234,6 @@
             checkbox.checked = headerCheckbox.checked;
         });
     });
-</script>
+</script> --}}
 @endsection
 

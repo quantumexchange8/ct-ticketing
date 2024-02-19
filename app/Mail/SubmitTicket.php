@@ -42,7 +42,6 @@ class SubmitTicket extends Mailable
             }
         }
 
-
         $email = $this
             ->to($recipients)
             ->subject(request('subject'))

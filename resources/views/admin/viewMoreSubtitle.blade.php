@@ -88,7 +88,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('test');
         @if(session('success'))
             Swal.fire({
                 title: 'Done',

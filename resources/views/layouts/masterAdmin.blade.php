@@ -152,6 +152,10 @@
                         <a href="{{ route('ticketStatus') }}"> <i data-feather="layers" class="align-self-center menu-icon"></i><span>Status</span></a>
                     </li>
 
+                    <li>
+                        <a href="{{ route('adminSumm') }}"> <i data-feather="user" class="align-self-center menu-icon"></i><span>Admin</span></a>
+                    </li>
+
                     <hr class="hr-dashed hr-menu">
                     <li class="menu-label my-2">Preview Documentation</li>
 
@@ -349,10 +353,10 @@
         <script src="{{ asset('assets/js/moment.js') }}"></script>
         <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
 
-        <script src="{{ asset('assets/plugins/tiny-editable/mindmup-editabletable.js') }}"></script>
+        {{-- <script src="{{ asset('assets/plugins/tiny-editable/mindmup-editabletable.js') }}"></script>
         <script src="{{ asset('assets/plugins/tiny-editable/numeric-input-example.js') }}"></script>
         <script src="{{ asset('assets/plugins/bootable/bootstable.js') }}"></script>
-        <script src="{{ asset('assets/pages/jquery.tabledit.init.js') }}"></script>
+        <script src="{{ asset('assets/pages/jquery.tabledit.init.js') }}"></script> --}}
 
         <script src="{{ asset('assets/plugins/dropify/js/dropify.min.js') }}"></script>
         <script src="{{ asset('assets/pages/jquery.form-upload.init.js') }}"></script>

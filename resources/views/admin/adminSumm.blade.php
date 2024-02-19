@@ -10,7 +10,7 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title">Ticket Status</h4>
+                            <h4 class="page-title">Admin</h4>
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -25,26 +25,34 @@
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>Status</th>
+                                        <th>Name</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($ticketStatuses as $ticketStatus)
+                                    @foreach ($users as $user)
                                     <tr>
-                                        <td>{{ $ticketStatus->status }}</td>
-                                        <td class="text-center" style="display: flex; justify-content: center; gap: 10px;">
-                                            <a href="{{ route('editTicketStatus', ['id' => $ticketStatus->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                <i class="dripicons-pencil"></i>
-                                            </a>
+                                        <td>{{ $user->name }}</td>
+                                        <td>{{ $user->username }}</td>
+                                        <td>{{ $user->email }}</td>
+                                        <td class="text-center">
+                                            <div style="display: flex; justify-content: center; gap: 10px;">
 
-                                            <form action="{{ route('deleteTicketStatus', ['id' => $ticketStatus->id]) }}" method="POST" id="deleteForm{{ $ticketStatus->id }}" data-status-id="{{ $ticketStatus->id }}">
-                                                @method('DELETE')
-                                                @csrf
-                                                <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticketStatus->id }}')">
-                                                    <i class="dripicons-trash"></i>
-                                                </button>
-                                            </form>
+                                                <a href="{{ route('editAdmin', ['id' => $user->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
+                                                    <i class="dripicons-pencil"></i>
+                                                </a>
+
+                                                <form action="{{ route('deleteAdmin', ['id' => $user->id]) }}" method="POST" id="deleteForm{{ $user->id }}" data-admin-id="{{ $user->id }}">
+                                                    @method('DELETE')
+                                                    @csrf
+                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $user->id }}')">
+                                                        <i class="dripicons-trash"></i>
+                                                    </button>
+                                                </form>
+
+                                            </div>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -52,11 +60,11 @@
                             </table>
                         </div>
                         <span class="float-right">
-                            {{-- <button id="but_add" class="btn btn-danger">Add New Status</button>
-                            <button class="btn  btn-primary" id="submit_data" data-endpoint="update-ticket-status" >Submit</button> --}}
+                            {{-- <button id="but_add" class="btn btn-danger">Add New Title</button>
+                            <button class="btn  btn-primary" id="submit_data" data-endpoint="update-title" >Submit</button> --}}
 
-                            <a href="{{ route('createTicketStatus') }}">
-                                <button class="btn btn-danger mt-2">Add New Ticket Status</button>
+                            <a href="{{ route('createAdmin') }}">
+                                <button class="btn btn-danger mt-2">Add New Admin</button>
                             </a>
                         </span><!--end table-->
                     </div><!--end card-body-->
@@ -68,8 +76,6 @@
 
 </div>
 <!-- end page content -->
-
-
 <!-- Sweet-Alert  -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
@@ -82,17 +88,26 @@
                 timer: 1000, // 3000 milliseconds (3 seconds)
                 showConfirmButton: false, // Hide the "OK" button
             });
+        @elseif(session('error'))
+            Swal.fire({
+                title: 'Error',
+                text: '{{ session('error') }}',
+                icon: 'error',
+                timer: 1000, // 3000 milliseconds (3 seconds)
+                showConfirmButton: false, // Hide the "OK" button
+            });
         @endif
     });
 </script>
 
 <script>
     function confirmDelete(formId) {
-        var ticketStatusId = document.getElementById(formId).getAttribute('data-status-id');
+        var adminId = document.getElementById(formId).getAttribute('data-admin-id');
+        console.log('Title ID:', adminId);
 
         Swal.fire({
             title: 'Are you sure?',
-            text: 'This action will delete the status.',
+            text: 'This action will delete the admin details.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',

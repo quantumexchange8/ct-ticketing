@@ -30,8 +30,10 @@ class MemberController extends Controller
         ->orderBy('t_sequence')
         ->first();
 
+        $titles = Title::with('subtitles.contents')->get();
+
         // Pass the title to the documentation view
-        return view('user.documentation', compact('title'));
+        return view('user.documentation', compact('title', 'titles'));
     }
     public function documentation(Title $title)
     {
@@ -41,7 +43,9 @@ class MemberController extends Controller
             }
         ]);
 
-        return view('user.documentation', compact('title'));
+        $titles = Title::with('subtitles.contents')->get();
+
+        return view('user.documentation', compact('title', 'titles'));
     }
 
     public function support()
@@ -191,7 +195,7 @@ class MemberController extends Controller
             }
         }
 
-        // Mail::send(new SubmitTicket($ticket));
+        Mail::send(new SubmitTicket($ticket));
 
         return redirect()->route('dashboard')->with('success', 'Ticket submitted successfully');
     }

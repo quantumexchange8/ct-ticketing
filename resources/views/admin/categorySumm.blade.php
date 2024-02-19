@@ -104,7 +104,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('test');
         @if(session('success'))
             Swal.fire({
                 title: 'Done',
@@ -138,7 +137,7 @@
     }
 
     $('#exportButton').click(function() {
-        var status = $('.card-title').text().trim();
+        var status = $('.page-title').text().trim();
         exportToExcel(status);
     });
 
@@ -151,6 +150,8 @@
             "Ticket No.",
             "Name",
             "Email",
+            "Subject",
+            "Message",
             "Status",
             "Priority",
             "PIC",
@@ -165,6 +166,8 @@
                 "{{ $ticket->ticket_no }}",
                 "{{ $ticket->sender_name }}",
                 "{{ $ticket->sender_email }}",
+                "{{ $ticket->subject }}",
+                "{{ $ticket->message }}",
                 "{!! $ticket->supportCategories->category_name !!}",
                 "{{ $ticket->priority }}",
                 "{{ $ticket->pic_id }}",
@@ -181,7 +184,7 @@
         XLSX.utils.book_append_sheet(wb, ws, 'Tickets');
 
         // Construct filename with status
-        var filename = 'tickets-' + status.toLowerCase().replace(/\s+/g, '-') + '.xlsx';
+        var filename = '' + status.toLowerCase().replace(/\s+/g, '-') + '.xlsx';
 
         // Save workbook as Excel file
         XLSX.writeFile(wb, filename);

@@ -51,7 +51,7 @@
                                                 <div class="form-group">
                                                     <label for="username">Username</label>
                                                     <div class="input-group mb-3">
-                                                        <input type="text" class="form-control" name="username" id="username" placeholder="Enter username">
+                                                        <input type="text" class="form-control" name="username" id="username" placeholder="Enter username" autocomplete="off">
                                                     </div>
                                                 </div><!--end form-group-->
 

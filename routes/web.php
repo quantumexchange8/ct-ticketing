@@ -104,7 +104,18 @@ Route::group(['middleware' => 'auth'], function () {
     Route::delete('/delete-sub/{id}', [AdminController::class, 'deleteSub'])->name('deleteSub');
 
     Route::get('/ticket-status', [AdminController::class, 'ticketStatus'])->name('ticketStatus');
-    Route::post('/update-ticket-status', [AdminController::class, 'updateTicketStatus'])->name('updateTicketStatus');
+    Route::get('/create-ticket-status', [AdminController::class, 'createTicketStatus'])->name('createTicketStatus');
+    Route::post('/add-ticket-status', [AdminController::class, 'addTicketStatus'])->name('addTicketStatus');
+    Route::get('/edit-ticket-status/{id}', [AdminController::class, 'editTicketStatus'])->name('editTicketStatus');
+    Route::post('/update-ticket-status/{id}', [AdminController::class, 'updateTicketStatus'])->name('updateTicketStatus');
+    Route::delete('/delete-ticket-status/{id}', [AdminController::class, 'deleteTicketStatus'])->name('deleteTicketStatus');
+
+    Route::get('/admin-summary', [AdminController::class, 'adminSumm'])->name('adminSumm');
+    Route::get('/create-admin', [AdminController::class, 'createAdmin'])->name('createAdmin');
+    Route::post('/add-admin', [AdminController::class, 'addAdmin'])->name('addAdmin');
+    Route::get('/edit-admin/{id}', [AdminController::class, 'editAdmin'])->name('editAdmin');
+    Route::post('/update-admin/{id}', [AdminController::class, 'updateAdmin'])->name('updateAdmin');
+    Route::delete('/delete-admin/{id}', [AdminController::class, 'deleteAdmin'])->name('deleteAdmin');
 
     // Preview documentation
     Route::get('/view-content/{title}', [AdminController::class, 'viewContent'])->name('viewContent');

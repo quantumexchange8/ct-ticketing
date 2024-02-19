@@ -160,10 +160,6 @@
                             <a href="{{ route('createTicket') }}">
                                 <button type="button" class="btn btn-soft-primary waves-effect waves-light">Add Ticket</button>
                             </a>
-
-                            <a href="javascript:window.print()">
-                                <button type="button" class="btn btn-soft-primary waves-effect waves-light">Add Ticket</button>
-                            </a>
                         </div>
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -425,15 +421,15 @@
                         },
                         success: function(response) {
 
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                showConfirmButton: false,
-                                timer: 1000,
-                                customClass: {
-                                    popup: 'custom-popup-class'
-                                }
-                            });
+                            // Swal.fire({
+                            //     icon: 'success',
+                            //     title: 'Success',
+                            //     showConfirmButton: false,
+                            //     timer: 1000,
+                            //     customClass: {
+                            //         popup: 'custom-popup-class'
+                            //     }
+                            // });
 
                             fetchAndDisplayTickets();
                         },
@@ -448,7 +444,6 @@
                 });
             });
         }
-
 
         // Function to get priority icon class based on priority
         function getPriorityIconClass(priority) {

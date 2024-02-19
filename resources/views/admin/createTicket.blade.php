@@ -33,9 +33,9 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="name">Name</label>
-                                        <input type="text" class="form-control" name="sender_name" placeholder=" Enter Name" autocomplete="off" value="{{ old('name') }}">
-                                        @error('name')
+                                        <label for="sender_name">Name</label>
+                                        <input type="text" class="form-control" name="sender_name" placeholder=" Enter Name" autocomplete="off" value="{{ old('sender_name') }}">
+                                        @error('sender_name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>

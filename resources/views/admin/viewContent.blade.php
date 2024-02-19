@@ -40,24 +40,31 @@
                             <div class="col">
                                 <h4 class="header-title">{{ $title->title_name }}</h4>
                             </div>
-                            <div class="col-auto align-self-center">
-                                <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-toggle="dropdown" href="#" role="button"
-                                    aria-haspopup="false" aria-expanded="false">
-                                    <i data-feather="search" class="topbar-icon"></i>
-                                </a>
 
-                                <div class="dropdown-menu dropdown-menu-right dropdown-lg p-0">
-                                    <!-- Top Search Bar -->
-                                    <div class="app-search-topbar">
-                                        {{-- <form action="{{ route('searchSupportTools') }}" method="get"> --}}
+                            <div style="display: flex; justify-content: flex-end;">
+                                <div>
+                                    <button type="button" class="btn" id="exportButton">
+                                        <i data-feather="download"></i>
+                                    </button>
+                                </div>
+
+                                <div>
+                                    <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-toggle="dropdown" href="#" role="button"
+                                        aria-haspopup="false" aria-expanded="false">
+                                        <i data-feather="search" class="topbar-icon"></i>
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-lg p-0">
+                                        <!-- Top Search Bar -->
+                                        <div class="app-search-topbar">
                                             <div>
                                                 <input type="search" name="search" id="searchInput" class="from-control top-search mb-0" autocomplete="off" placeholder="Type text...">
                                                 <button id="search-button" type="button"><i class="ti-search"></i></button>
                                             </div>
-                                        {{-- </form> --}}
+                                        </div>
                                     </div>
-                                </div>
-                            </div><!--end col-->
+                                </div><!--end col-->
+                            </div>
                         </div>
 
                         <hr class="hr-dashed">
@@ -65,7 +72,7 @@
                         @foreach ($title->subtitles as $subtitle)
                             <h5 class="subtitle-name">{{ $subtitle->subtitle_name }}</h5>
                             @foreach ($subtitle->contents as $content)
-                                <div class="content-name" id="{{$content->id}}">
+                                <div class="content-name" id="{{$content->id}}" style="text-align: justify;">
                                     <p>{!! $content->content_name !!}</p>
                                 </div>
 
@@ -76,7 +83,6 @@
                                     {{-- <b>No image</b> --}}
                                     @endforelse
                                 </div>
-
                                 <br>
                             @endforeach
                         @endforeach
@@ -89,6 +95,72 @@
 </div>
 <!-- end page content -->
 
+
+{{-- Content to print --}}
+<div id="contentToPrint" class="page-content" style="display: none;">
+    @foreach ($titles as $title)
+        <section class="bg-home" style="page-break-before: always;">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="header-title">{{ $title->title_name }}</h4>
+                            <hr class="hr-dashed">
+                            @foreach ($title->subtitles as $subtitle)
+                                <h5 class="subtitle-name">{{ $subtitle->subtitle_name }}</h5>
+                                @foreach ($subtitle->contents as $content)
+                                    <div class="content-name" id="{{ $content->id }}" style="text-align: justify;">
+                                        <p>{!! $content->content_name !!}</p>
+                                    </div>
+                                    <div class="text-center">
+                                        @forelse($content->documentationImages as $image)
+                                        <img src="{{ asset('storage/documentations/' . $image->d_image) }}" alt="Image" class="image-fluid" width="250" height="250" style="display: block; margin: 0 auto;">
+                                        @empty
+                                        {{-- <b>No image</b> --}}
+                                        @endforelse
+                                    </div>
+                                    <br>
+                                @endforeach
+                            @endforeach
+                        </div><!--end card-body-->
+                    </div><!--end card-->
+                </div><!--end col-->
+            </div><!--end row-->
+        </section>
+    @endforeach
+</div>
+
+{{-- Print --}}
+<script>
+    document.getElementById("exportButton").addEventListener("click", function() {
+        PrintElem("contentToPrint");
+    });
+
+    function PrintElem(elem) {
+        var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+        mywindow.document.write('<html><head><title>' + document.title + '</title>');
+        mywindow.document.write('</head><body>');
+        mywindow.document.write(document.getElementById(elem).innerHTML);
+        mywindow.document.write('</body></html>');
+          // Wait for images to load before printing
+        var images = mywindow.document.getElementsByTagName('img');
+        var loaded = 0;
+        for (var i = 0; i < images.length; i++) {
+            images[i].onload = function() {
+                loaded++;
+                if (loaded === images.length) {
+                    mywindow.document.close(); // necessary for IE >= 10
+                    mywindow.focus(); // necessary for IE >= 10
+                    mywindow.print();
+                    mywindow.close();
+                }
+            };
+        }
+        return true;
+    }
+</script>
+
+{{-- Search --}}
 <script>
     $(document).ready(function () {
 
@@ -111,31 +183,8 @@
                     var unmatchedContentIds = response.unmatchedContentIds;
                     var allContentIds = response.allContentIds;
 
-                    console.log('Matched IDs:', matchedContentIds);
-                    console.log('Unmatched IDs:', unmatchedContentIds);
-
-                    // var matchedSubtitleIds = Object.keys(matchedContentIds);
-                    // var allSubtitleIds = Object.keys(allContentIds);
-
-                    // if (matchedSubtitleIds.length > 0) {
-                    //     matchedSubtitleIds.forEach(function (subtitleId) {
-                    //         var subtitleName = $('#' + subtitleId);
-
-                    //         if (subtitleName.length > 0) {
-                    //             subtitleName.css('background-color', '#cFFCAB1');
-                    //         }
-                    //     });
-                    // }
-
-                    // if (searchTerm.trim() === '') {
-                    //     allSubtitleIds.forEach(function (subtitleId) {
-                    //         var subtitleName = $('#' + subtitleId);
-
-                    //         if (subtitleName.length > 0) {
-                    //             subtitleName.css('background-color', 'white');
-                    //         }
-                    //     });
-                    // }
+                    // console.log('Matched IDs:', matchedContentIds);
+                    // console.log('Unmatched IDs:', unmatchedContentIds);
 
                     if (matchedContentIds.length > 0) {
                         matchedContentIds.forEach(function (contentId) {

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Title;
 use App\Models\Content;
 use App\Models\DocumentationImage;
@@ -16,6 +17,7 @@ use App\Models\SupportSubCategory;
 use App\Models\TicketStatus;
 use App\Models\Ticket;
 use App\Models\TicketImage;
+use App\Models\User;
 
 class AdminController extends Controller
 {
@@ -106,8 +108,6 @@ class AdminController extends Controller
                     ->orderBy('month')
                     ->orderBy('support_categories.category_name')
                     ->get();
-
-                    // dd($ticketsByCategory);
 
         return view('admin.adminDashboard', compact('ticketStatuses', 'ticketCounts', 'currentYear', 'ticketsByStatus', 'ticketsByCategory'));
     }
@@ -220,7 +220,6 @@ class AdminController extends Controller
 
     public function getTicketByStatus(Request $request)
     {
-
         $searchTerm = $request->input('searchTerm');
 
         // Fetch all statuses
@@ -292,7 +291,9 @@ class AdminController extends Controller
             }
         ]);
 
-        return view('admin.viewContent', compact('title'));
+        $titles = Title::with('subtitles.contents')->get();
+
+        return view('admin.viewContent', compact('title', 'titles'));
     }
 
     public function titleSumm()
@@ -1174,61 +1175,7 @@ class AdminController extends Controller
     //     return response()->json(['message' => 'Category updated successfully']);
     // }
 
-    public function ticketStatus()
-    {
-        $ticketStatuses = TicketStatus::all();
 
-        return view('admin.ticketStatus', compact('ticketStatuses'));
-    }
-
-    public function updateTicketStatus(Request $request)
-    {
-        $data = $request->input('data');
-
-        // Get the list of IDs in the request
-        $requestStatusIds = collect($data)->pluck('id')->toArray();
-
-        $statusesToDelete = TicketStatus::whereNotIn('id', $requestStatusIds)->get();
-
-        foreach ($statusesToDelete as $statusToDelete) {
-            $statusToDelete->delete();
-        }
-
-        foreach ($data as $row) {
-            // Validate each row of data
-            // $validator = Validator::make($row, [
-            //     'category_name' => 'required|max:255',
-            // ], [
-            //     'category_name.max' => 'Category name should not exceed 255 characters.',
-            // ]);
-
-            // // Check if validation fails
-            // if ($validator->fails()) {
-            //     return response()->json(['error' => $validator->errors()], 400);
-            // }
-
-            $ticket_status_id = $row['id'];
-            $status = $row['status'];
-
-            // Check if the record exists
-            $existingTicketStatus = TicketStatus::find($ticket_status_id);
-
-            if ($existingTicketStatus) {
-                // Update the existing record
-                $existingTicketStatus->update([
-                    'status' => $status,
-                ]);
-            } else {
-
-                // Create a new record
-                $newTicketStatus = TicketStatus::create([
-                    'status' => $status,
-                ]);
-            }
-        }
-
-        return response()->json(['message' => 'Ticket status updated successfully']);
-    }
 
     public function ticketSumm(TicketStatus $status)
     {
@@ -1467,6 +1414,264 @@ class AdminController extends Controller
         $tickets = $supportCategory->tickets;
 
         return view('admin.categorySumm', compact('supportCategory', 'tickets'));
+    }
+
+    public function ticketStatus()
+    {
+        $ticketStatuses = TicketStatus::all();
+
+        return view('admin.ticketStatus', compact('ticketStatuses'));
+    }
+
+    public function createTicketStatus()
+    {
+        return view('admin.createTicketStatus');
+    }
+
+    public function addTicketStatus(Request $request)
+    {
+        $rules = [
+            'status' => 'required|max:255',
+        ];
+
+        $messages = [
+            'status.required' => 'Status is required.',
+            'status.max' => 'Status should not exceed 255 characters.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+
+        $ticketStatus = TicketStatus::create([
+            'status' => $request->input('status'),
+        ]);
+
+        return redirect()->route('ticketStatus')->with('success', 'New status created successfully');
+    }
+
+    public function editTicketStatus($id)
+    {
+        $ticketStatus = TicketStatus::find($id);
+
+        return view('admin.editTicketStatus', compact('ticketStatus'));
+    }
+
+    public function updateTicketStatus(Request $request, $id)
+    {
+        $rules = [
+            'status' => 'required|max:255',
+        ];
+
+        $messages = [
+            'status.required' => 'Status is required.',
+            'status.max' => 'Status should not exceed 255 characters.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+
+        $updateTicketStatus = TicketStatus::find($id);
+
+        $updateTicketStatus->update([
+            'status' => $request->input('status'),
+        ]);
+
+        return redirect()->route('ticketStatus')->with('success', 'Ticket Status updated successfully.');
+    }
+
+    public function deleteTicketStatus($id)
+    {
+        $ticketStatus = TicketStatus::find($id);
+
+        $ticketStatus->delete();
+
+        return redirect()->back()->with('success', 'Ticket Status deleted successfully.');
+    }
+
+    // public function updateTicketStatus(Request $request)
+    // {
+    //     $data = $request->input('data');
+
+    //     // Get the list of IDs in the request
+    //     $requestStatusIds = collect($data)->pluck('id')->toArray();
+
+    //     $statusesToDelete = TicketStatus::whereNotIn('id', $requestStatusIds)->get();
+
+    //     foreach ($statusesToDelete as $statusToDelete) {
+    //         $statusToDelete->delete();
+    //     }
+
+    //     foreach ($data as $row) {
+    //         // Validate each row of data
+    //         // $validator = Validator::make($row, [
+    //         //     'category_name' => 'required|max:255',
+    //         // ], [
+    //         //     'category_name.max' => 'Category name should not exceed 255 characters.',
+    //         // ]);
+
+    //         // // Check if validation fails
+    //         // if ($validator->fails()) {
+    //         //     return response()->json(['error' => $validator->errors()], 400);
+    //         // }
+
+    //         $ticket_status_id = $row['id'];
+    //         $status = $row['status'];
+
+    //         // Check if the record exists
+    //         $existingTicketStatus = TicketStatus::find($ticket_status_id);
+
+    //         if ($existingTicketStatus) {
+    //             // Update the existing record
+    //             $existingTicketStatus->update([
+    //                 'status' => $status,
+    //             ]);
+    //         } else {
+
+    //             // Create a new record
+    //             $newTicketStatus = TicketStatus::create([
+    //                 'status' => $status,
+    //             ]);
+    //         }
+    //     }
+
+    //     return response()->json(['message' => 'Ticket status updated successfully']);
+    // }
+
+    public function adminSumm()
+    {
+        $users = User::where('role', 'admin')
+                    ->get();
+
+        return view('admin.adminSumm', compact('users'));
+    }
+
+    public function createAdmin()
+    {
+        return view('admin.createAdmin');
+    }
+
+    public function addAdmin(Request $request)
+    {
+        $rules = [
+            'name' => 'required|max:255',
+            'username' => 'required|max:255',
+            'email' => 'required|max:255',
+            'password' => 'required',
+        ];
+
+        $messages = [
+            'name.required' => 'Name is required.',
+            'username.required' => 'Username is required.',
+            'email.required' => 'Email is required.',
+            'name.max' => 'Name should not exceed 255 characters.',
+            'username.max' => 'Username should not exceed 255 characters.',
+            'email.max' => 'Email should not exceed 255 characters.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+
+        $hashedPassword = Hash::make($request->input('password'));
+
+        $admin = User::create([
+            'name' => $request->input('name'),
+            'username' => $request->input('username'),
+            'email' => $request->input('email'),
+            'role' => $request->input('role'),
+            'password' => $hashedPassword
+        ]);
+
+        return redirect()->route('adminSumm')->with('success', 'New admin created successfully');
+    }
+
+    public function editAdmin($id)
+    {
+        $user = User::find($id);
+
+        return view('admin.editAdmin', compact('user'));
+    }
+
+    public function updateAdmin(Request $request, $id)
+    {
+        $rules = [
+            'name' => 'required|max:255',
+            'username' => 'required|max:255',
+            'email' => 'required|max:255',
+            'oldpassword' => 'sometimes|required_with:newpassword',
+            'newpassword' => 'nullable|required_with:oldpassword|different:oldpassword',
+        ];
+
+        $messages = [
+            'name.required' => 'Name is required.',
+            'username.required' => 'Username is required.',
+            'email.required' => 'Email is required.',
+            'name.max' => 'Name should not exceed 255 characters.',
+            'username.max' => 'Username should not exceed 255 characters.',
+            'email.max' => 'Email should not exceed 255 characters.',
+            'oldpassword.required_with' => 'The Old Password field is required when New Password is present.',
+            'newpassword.required_with' => 'The New Password field is required when Old Password is present.',
+            'newpassword.different' => 'The New Password must be different from the Old Password.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+
+        $updateAdmin = User::find($id);
+
+
+        $updateAdmin->name = $request->input('name');
+        $updateAdmin->username = $request->input('username');
+        $updateAdmin->email = $request->input('email');
+        $updateAdmin->role = $request->input('role');
+        $updateAdmin->save();
+
+        if ($request->filled('oldpassword') && $request->filled('newpassword')) {
+            if (Hash::check($request->input('oldpassword'), $updateAdmin->password)) {
+
+                $updateAdmin->password = Hash::make($request->input('newpassword'));
+                $updateAdmin->save();
+
+                return redirect()->route('adminSumm')->with('success', 'Admin updated successfully');
+
+            } else {
+                return redirect()->back()->with('error', 'Wrong old password!');
+            }
+        } else {
+            return redirect()->route('adminSumm')->with('success', 'Admin updated successfully');
+        }
+    }
+
+    public function deleteAdmin($id)
+    {
+        $user = User::find($id);
+
+        $user->delete();
+
+        return redirect()->back()->with('success', 'Admin deleted successfully.');
     }
 
 }
