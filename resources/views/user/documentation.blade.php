@@ -143,8 +143,17 @@
         mywindow.document.write('</head><body>');
         mywindow.document.write(document.getElementById(elem).innerHTML);
         mywindow.document.write('</body></html>');
-          // Wait for images to load before printing
+
+        // Wait for images to load before printing
         var images = mywindow.document.getElementsByTagName('img');
+        if (images.length === 0) { // If no images, proceed to print
+            mywindow.document.close(); // necessary for IE >= 10
+            mywindow.focus(); // necessary for IE >= 10
+            mywindow.print();
+            mywindow.close();
+            return;
+        }
+
         var loaded = 0;
         for (var i = 0; i < images.length; i++) {
             images[i].onload = function() {

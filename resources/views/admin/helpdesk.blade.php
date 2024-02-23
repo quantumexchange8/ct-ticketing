@@ -262,6 +262,8 @@
                     // Clear existing table rows
                     $('#ticketTableBody').empty();
 
+                    var ticket;
+
                     tickets.forEach(function(ticket) {
 
                         var createdAt = new Date(ticket.t_created_at);
@@ -272,39 +274,87 @@
                         });
 
                         var categoryName = (ticket.category_name) ? ticket.category_name : '';
-                        var picId = (ticket.pic_id) ? ticket.pic_id : '';
+                        var picName = (ticket.name) ? ticket.name : '';
                         var remarks = (ticket.remarks) ? ticket.remarks : '';
                         var ticketId = (ticket.ticket_id) ? ticket.ticket_id : '';
+                        var picId = (typeof ticket.pic_id !== 'undefined') ? ticket.pic_id : '';
+                        var catId = (ticket.category_id) ? ticket.category_id : '';
 
                         var viewRoute = "/view-ticket/" + ticketId; // Construct the view route
                         var editRoute = "/edit-ticket/" + ticketId; // Construct the edit route
                         var deleteRoute = "/delete-ticket/" + ticketId;
 
-                        var actions = `<a href="${viewRoute}" class="btn btn-sm btn-soft-purple btn-circle"><i class="dripicons-preview"></i></a>
-                                    <a href="${editRoute}" class="btn btn-sm btn-soft-success btn-circle"><i class="dripicons-pencil"></i></a>
-                                    <form action="${deleteRoute}" method="POST">
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                        <button type="submit" class="btn btn-sm btn-soft-danger btn-circle"><i class="dripicons-trash"></i></button>
-                                    </form>`;
+                        // var actions = `<a href="${viewRoute}" class="btn btn-sm btn-soft-purple btn-circle"><i class="dripicons-preview"></i></a>
+                        //                 <a href="${editRoute}" class="btn btn-sm btn-soft-success btn-circle"><i class="dripicons-pencil"></i></a>
+                        //             <form action="${deleteRoute}" method="POST">
+                        //                 <input type="hidden" name="_method" value="DELETE">
+                        //                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        //                 <button type="submit" class="btn btn-sm btn-soft-danger btn-circle"><i class="dripicons-trash"></i></button>
+                        //             </form>`;
+
+                        var actions = `<a href="${viewRoute}" class="btn btn-sm btn-soft-purple btn-circle"><i class="dripicons-preview"></i></a>`;
+
+                        var canUpdate = {{ auth()->check() && auth()->user()->role_id == 1 ? 'true' : 'false' }};
+                        var canDelete = {{ auth()->check() && auth()->user()->role_id == 1 ? 'true' : 'false' }};
+
+                        // Add edit button if user has permission
+                        // if (canUpdate) {
+                        //     actions += `<a href="${editRoute}" class="btn btn-sm btn-soft-success btn-circle"><i class="dripicons-pencil"></i></a>`;
+                        // } else if (picId == {!! json_encode(auth()->id()) !!} && {!! json_encode(auth()->user()->manage_ticket_in_category == 1) !!}) {
+                        //     actions += `<a href="${editRoute}" class="btn btn-sm btn-soft-success btn-circle"><i class="dripicons-pencil"></i></a>`;
+                        // }
+
+                        // Add delete button if user has permission
+                        // if (canDelete) {
+                        //     actions += `<form action="${deleteRoute}" method="POST">
+                        //                     <input type="hidden" name="_method" value="DELETE">
+                        //                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        //                     <button type="submit" class="btn btn-sm btn-soft-danger btn-circle"><i class="dripicons-trash"></i></button>
+                        //                 </form>`;
+                        // } else if (picId == {!! json_encode(auth()->id()) !!}) {
+                        //     actions += `<form action="${deleteRoute}" method="POST">
+                        //                     <input type="hidden" name="_method" value="DELETE">
+                        //                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        //                     <button type="submit" class="btn btn-sm btn-soft-danger btn-circle"><i class="dripicons-trash"></i></button>
+                        //                 </form>`;
+                        // }
+
+                        if ({{ auth()->check() && auth()->user()->role_id !== 1 ? 'true' : 'false' }} && {!! json_encode(auth()->user()->manage_ticket_in_category == 1) !!} && catId == {!! json_encode(auth()->user()->category_id) !!}) {
+                            actions += `<a href="${editRoute}" class="btn btn-sm btn-soft-success btn-circle"><i class="dripicons-pencil"></i></a>`;
+                        } else if ({{ auth()->check() && auth()->user()->role_id !== 1 ? 'true' : 'false' }} && {!! json_encode(auth()->user()->manage_ticket_in_category == 0) !!} && {!! json_encode(auth()->user()->manage_own_ticket == 1) !!}&& picId == {!! json_encode(auth()->id()) !!}) {
+                            actions += `<a href="${editRoute}" class="btn btn-sm btn-soft-success btn-circle"><i class="dripicons-pencil"></i></a>`;
+                        } else if (canUpdate) {
+                            actions += `<a href="${editRoute}" class="btn btn-sm btn-soft-success btn-circle"><i class="dripicons-pencil"></i></a>`;
+                        }
+
+                        if ({{ auth()->check() && auth()->user()->role_id !== 1 ? 'true' : 'false' }} && {!! json_encode(auth()->user()->manage_ticket_in_category == 1) !!} && catId == {!! json_encode(auth()->user()->category_id) !!}) {
+                            actions += `<form action="${deleteRoute}" method="POST">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-sm btn-soft-danger btn-circle"><i class="dripicons-trash"></i></button>
+                                        </form>`;
+                        } else if ({{ auth()->check() && auth()->user()->role_id !== 1 ? 'true' : 'false' }} && {!! json_encode(auth()->user()->manage_ticket_in_category == 0) !!} && {!! json_encode(auth()->user()->manage_own_ticket == 1) !!} && picId == {!! json_encode(auth()->id()) !!}) {
+                            actions += `<form action="${deleteRoute}" method="POST">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-sm btn-soft-danger btn-circle"><i class="dripicons-trash"></i></button>
+                                        </form>`;
+                        } else if (canDelete) {
+                            actions += `<form action="${deleteRoute}" method="POST">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-sm btn-soft-danger btn-circle"><i class="dripicons-trash"></i></button>
+                                        </form>`;
+                        }
 
                         var priorityStyle = '';
                         if (ticket.priority === 'Medium') {
-                            priorityStyle = 'color: orange;';
+                            priorityStyle = 'color: orange; font-weight: bold;';
                         } else if (ticket.priority === 'Low') {
-                            priorityStyle = 'color: #84f542;';
+                            priorityStyle = 'color: #84f542; font-weight: bold;';
                         } else {
-                            priorityStyle = 'color: red;';
+                            priorityStyle = 'color: red; font-weight: bold;';
                         }
-
-                        // var priorityStyle = '';
-                        // if (ticket.priority === 'Medium') {
-                        //     priorityStyle = 'text-primary bg-soft-warning p-3 mb-0 font-12';
-                        // } else if (ticket.priority === 'Low') {
-                        //     priorityStyle = 'text-primary bg-soft-primary p-3 mb-0 font-12';
-                        // } else {
-                        //     priorityStyle = 'text-primary bg-soft-danger p-3 mb-0 font-12';
-                        // }
 
 
                         var statusStyle = '';
@@ -331,28 +381,19 @@
 
                         var dateStyle = '';
                         var threeDaysAgo = new Date();
-                        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3); // Calculate the date 3 days ago
+                        var sevenDaysAgo = new Date();
+                        var tooltipMessage = '';
 
-                        if (ticket.status == 'Pending' && createdAt < threeDaysAgo) {
+                        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+                        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+                        if (ticket.status == 'Pending' && createdAt < sevenDaysAgo) {
+                            dateStyle = 'color: red; font-weight: bold;';
+                            tooltipMessage = 'Ticket is pending for more than 7 days';
+                        } else if (ticket.status == 'Pending' && createdAt < threeDaysAgo) {
                             dateStyle = 'color: #EDAE49; font-weight: bold;';
+                            tooltipMessage = 'Ticket is pending for more than 3 days';
                         }
-
-                        var tooltipMessage = 'Ticket is pending for more than 3 days';
-
-                        // var dateStyle = '';
-                        // var createdAt = new Date(ticket.createdAt); // Assuming ticket.createdAt is the creation date of the ticket
-                        // var fourDaysAgo = new Date();
-                        // fourDaysAgo.setDate(fourDaysAgo.getDate() - 4); // Calculate the date 4 days ago
-
-                        // if (ticket.status === 'Pending') {
-                        //     if (createdAt > fourDaysAgo) {
-                        //         dateStyle = 'color: red; font-weight: bold;';
-                        //         var tooltipMessage = 'Ticket is pending for more than 3 days';
-                        //     } else {
-                        //         dateStyle = 'color: orange; font-weight: bold;';
-                        //         var tooltipMessage = 'Ticket is pending for less than 4 days';
-                        //     }
-                        // }
 
                         var row = '<tr id="' + ticketId + '">' +
                                     '<td style="' + dateStyle + '" title="' + (dateStyle ? tooltipMessage : '') + '">' + formattedDate + '</td>' +
@@ -364,7 +405,7 @@
                                     '<td style="' + priorityStyle + '">' + ticket.priority + '</td>' +
                                     // '<td style="' + statusStyle + '">' + ticket.status + '</td>' +
                                     '<td>' + '<span class="' + statusClass + '">' + ticket.status + '</span>' + '</td>' +
-                                    '<td>' + picId + '</td>' +
+                                    '<td>' + picName + '</td>' +
                                     '<td>' + remarks + '</td>' +
                                     '<td class="text-center" style="display: flex; justify-content: center; gap: 10px;">' + actions + '</td>' +
                                 '</tr>';
@@ -480,33 +521,6 @@
             $('#entriesDisplay').text(displayMessage);
         }
 
-        // function updateEntriesDisplay(currentEntries, totalEntries, currentPage, perPage) {
-
-        //     // var startIndex = (currentPage - 1) * perPage + 1;
-        //     // var endIndex = Math.min(startIndex + perPage - 1, totalEntries);
-        //     var startIndex = 0;
-        //     var endIndex = 0;
-        //     var displayMessage;
-
-        //     // Check if startIndex or endIndex is NaN, then fallback to 1
-        //     // if (isNaN(startIndex) || isNaN(endIndex)) {
-        //     //     startIndex = 0;
-        //     //     endIndex = 0;
-        //     // }
-
-        //     // Construct the display message
-        //     if (totalEntries === currentEntries) {
-        //         startIndex = (currentPage - 1) * perPage + 1;
-        //         endIndex = Math.min(startIndex + perPage - 1, totalEntries);
-        //         displayMessage = `Showing ${startIndex} to ${endIndex} of ${currentEntries} entries`;
-        //     } else {
-        //         startIndex = (currentPage - 1) * perPage + 1;
-        //         endIndex = Math.min(startIndex + currentEntries - 1, totalEntries);
-        //         displayMessage = `Showing ${startIndex} to ${endIndex} of ${currentEntries} entries (filtered by ${totalEntries} entries)`;
-        //     }
-
-        //     $('#entriesDisplay').text(displayMessage);
-        // }
 
         $('#exportButton').click(function() {
             exportToExcel();

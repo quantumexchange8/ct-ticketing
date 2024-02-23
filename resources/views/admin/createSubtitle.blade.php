@@ -28,7 +28,6 @@
                                     <div class="form-group">
                                         <label for="title-name">Subtitle</label>
                                         <input type="text" class="form-control" name="subtitle_name" placeholder="Enter Subtitle" autocomplete="off" value="{{ old('subtitle_name') }}">
-
                                         @error('subtitle_name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -39,7 +38,6 @@
                             <div class="col-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
-
                         </form>
                     </div><!--end card-body-->
                 </div><!--end card-->

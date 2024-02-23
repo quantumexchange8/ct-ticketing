@@ -13,6 +13,7 @@ class SupportCategorySeeder extends Seeder
      */
     public function run(): void
     {
+        
         SupportCategory::create([
             'category_name' => 'Account Management',
         ]);

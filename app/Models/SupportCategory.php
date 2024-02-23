@@ -21,4 +21,9 @@ class SupportCategory extends Model
     {
         return $this->hasMany(Ticket::class, 'category_id', 'id');
     }
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'category_id', 'id');
+    }
 }

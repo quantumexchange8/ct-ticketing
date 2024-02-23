@@ -40,22 +40,27 @@
                                         <td class="text-center">
                                             <div style="display: flex; justify-content: center; gap: 10px;">
 
-                                                <a href="{{ route('viewMoreSubtitle', ['id' => $title->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
-                                                    <i class="dripicons-preview"></i>
-                                                </a>
+                                                @if (Auth::user()->manage_subtitle == 1)
+                                                    <a href="{{ route('viewMoreSubtitle', ['id' => $title->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
+                                                        <i class="dripicons-preview"></i>
+                                                    </a>
+                                                @endif
 
-                                                <a href="{{ route('editTitle', ['id' => $title->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                    <i class="dripicons-pencil"></i>
-                                                </a>
+                                                @if (Auth::user()->manage_title == 1)
+                                                    <a href="{{ route('editTitle', ['id' => $title->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
+                                                        <i class="dripicons-pencil"></i>
+                                                    </a>
+                                                @endif
 
-                                                <form action="{{ route('deleteTitle', ['id' => $title->id]) }}" method="POST" id="deleteForm{{ $title->id }}" data-title-id="{{ $title->id }}">
-                                                    @method('DELETE')
-                                                    @csrf
-                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $title->id }}')">
-                                                        <i class="dripicons-trash"></i>
-                                                    </button>
-                                                </form>
-
+                                                @if (Auth::user()->manage_title == 1)
+                                                    <form action="{{ route('deleteTitle', ['id' => $title->id]) }}" method="POST" id="deleteForm{{ $title->id }}" data-title-id="{{ $title->id }}">
+                                                        @method('DELETE')
+                                                        @csrf
+                                                        <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $title->id }}')">
+                                                            <i class="dripicons-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>

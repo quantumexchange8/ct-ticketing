@@ -3,95 +3,11 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-
-{{-- <!-- Page Content-->
-<div class="page-content">
-    <div class="container-fluid">
-
-        <!-- Page-Title -->
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="page-title-box">
-                    <div class="row">
-                        <div class="col-10">
-                            <h4 class="page-title">Ticket</h4>
-                        </div><!--end col-->
-                    </div><!--end row-->
-                </div><!--end page-title-box-->
-            </div><!--end col-->
-        </div><!--end row-->
-        <!-- end page title end breadcrumb -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="kanban-board">
-                            @foreach ($statuses as $index => $status)
-                            <div class="kanban-col" id="{{$status->id}}">
-                                <div class="kanban-main-card">
-                                    <div class="kanban-box-title">
-                                        <h4 class="card-title mt-0 mb-3">{{ $status->status }} - {{$status->id}}</h4>
-                                    </div>
-
-                                    @foreach ($status->tickets as $ticket)
-
-                                        <div>
-                                            <div class="card" draggable="true">
-                                                <div class="card-body">
-                                                    <div class="dropdown d-inline-block float-right">
-                                                        <a class="dropdown-toggle mr-n2 mt-n2" id="drop2" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                                                            <i class="las la-ellipsis-v font-18 text-muted"></i>
-                                                        </a>
-                                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="drop2">
-                                                            <a class="dropdown-item" href="{{ route('viewTicket', ['id' => $ticket->id]) }}">View</a>
-                                                            <a class="dropdown-item" href="{{ route('editTicket', ['id' => $ticket->id]) }}">Edit</a>
-                                                            <a class="dropdown-item" href="{{ route('deleteTicket', ['id' => $ticket->id]) }}">Delete</a>
-                                                        </div>
-                                                    </div><!--end dropdown-->
-
-                                                    @if ($ticket->priority === 'High')
-                                                        <i class="mdi mdi-circle-outline d-block mt-n2 font-18 text-danger"></i>
-                                                    @elseif ($ticket->priority === 'Medium')
-                                                        <i class="mdi mdi-circle-outline d-block mt-n2 font-18 text-warning"></i>
-                                                    @elseif ($ticket->priority === 'Low')
-                                                        <i class="mdi mdi-circle-outline d-block mt-n2 font-18 text-success"></i>
-                                                    @else
-                                                        <i class="mdi mdi-circle-outline d-block mt-n2 font-18 text-primary"></i>
-                                                    @endif
-
-                                                    <h5 class="my-1 font-14">{{ Carbon\Carbon::parse($ticket->created_at)->format('d M Y') }}</h5>
-                                                    <p class="text mt-3 m-0">{{ $ticket->ticket_no }} - {{$status->id}}</p>
-                                                    <p class="text m-0">{{ $ticket->sender_name }}</p>
-                                                    <p class="text mb-2">{{ $ticket->sender_email }}</p>
-                                                </div><!--end card-body-->
-                                            </div><!--end card-->
-                                        </div><!--end project-list-left-->
-                                    @endforeach
-
-                                    <a href="{{ route('createTicket') }}">
-                                        <button type="button" class="btn btn-block btn-soft-primary btn-sm">Add Ticket</button>
-                                    </a>
-
-                                </div><!--end /div-->
-                            </div><!--end kanban-col-->
-                            @endforeach
-                        </div><!--end kanban-board-->
-                    </div><!--end card-body-->
-                </div><!--end card-->
-            </div><!--end col-->
-        </div><!--end row-->
-
-    </div><!-- container -->
-
-</div>
-<!-- end page content --> --}}
-
-
 <style>
     .lanes {
         display: flex;
         align-items: flex-start;
-        justify-content: start;
+        justify-content: space-evenly;
         gap: 16px;
 
         /* padding: 24px 32px; */
@@ -103,14 +19,16 @@
     .swim-lane {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 5px;
 
         background: #f1f5fa;
         /* box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25); */
 
         padding: 12px;
+        margin-top: 15px;
+        margin-bottom: 15px;
         border-radius: 4px;
-        width: 225px;
+        min-width: 225px;
         min-height: 120px;
 
         flex-shrink: 0;
@@ -133,6 +51,12 @@
         display: flex;
         align-items: center;
         margin-right:30px;
+    }
+
+    @media screen and (min-width: 1600px) {
+        .swim-lane {
+            width: 350px;
+        }
     }
 </style>
 
@@ -290,6 +214,8 @@
                     });
 
                     var ticketId = ticket.id;
+                    var picId = ticket.pic_id;
+                    var picName = (ticket.name) ? ticket.name : '';
 
                     var viewRoute = "/view-ticket/" + ticketId;
                     var editRoute = "/edit-ticket/" + ticketId;
@@ -301,8 +227,8 @@
                         .attr('id', 'deleteForm' + ticketId)
                         .attr('data-ticket-id', ticketId)
                         .on('submit', function(event) {
-                            event.preventDefault(); // Prevent default form submission
-                            // You can add additional confirmation logic here if needed
+                            event.preventDefault();
+
                             $(this).submit(); // Submit the form
                         });
 
@@ -317,13 +243,12 @@
                         .addClass('dropdown-item')
                         .text('Delete')
                         .on('click', function(event) {
-                            event.preventDefault(); // Prevent default link behavior
+                            event.preventDefault();
 
                             // Get the ticket ID
                             var ticketId = $(this).closest('.task').attr('id');
 
                             var deleteRoute = "/delete-ticket/" + ticketId;
-                            // console.log("Delete Route:", deleteRoute);
 
                             // Call the deleteTicket function with the ticket ID
                             deleteTicket(ticketId, deleteRoute);
@@ -331,8 +256,27 @@
 
                     deleteButton.appendTo(deleteForm);
 
+                    var cardStyle = '';
+                    var tooltipMessage = '';
+                    var threeDaysAgo = new Date();
+                    var sevenDaysAgo = new Date();
+
+                    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+                    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+                    if (picId == null) {
+                        cardStyle = 'background: #edf3ff';
+                        tooltipMessage = 'Please assign PIC to the ticket.';
+                    } else if (picId !== null && ticket.status == 'Pending' && createdAt < sevenDaysAgo) {
+                        cardStyle = 'background: #fcc0cf';
+                        tooltipMessage = 'Ticket is pending for more than 7 days';
+                    } else if (picId !== null && ticket.status == 'Pending' && createdAt < threeDaysAgo) {
+                        cardStyle = 'background: #fff9ee';
+                        tooltipMessage = 'Ticket is pending for more than 3 days';
+                    }
+
                     var task = $('<div class="task" id="' + ticketId + '" style="cursor: move;" draggable="true">');
-                    var card = $('<div class="card ' + priorityIconClass + '">');
+                    var card = $('<div class="card ' + priorityIconClass + '" style="' + cardStyle + '" title="' + (cardStyle ? tooltipMessage : '') + '">');
                     var cardBody = $('<div class="card-body">');
                     var dropdown = $('<div class="dropdown d-inline-block float-right">').append('<a class="dropdown-toggle mr-n2 mt-n2" id="drop2" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false"><i class="las la-ellipsis-v font-18 text-muted"></i></a>');
                     var dropdownMenu = $('<div class="dropdown-menu dropdown-menu-right" aria-labelledby="drop2">').append(
@@ -351,7 +295,8 @@
                             $('<div style="margin-left: 10px; font-weight: bold;">').addClass('my-1 font-14').text(formattedDate)
                         ),
                         '<p class="text mt-3 m-0" style="font-weight: bold;">' + ticket.category_name + '</p>',
-                        '<p class="text m-0 mt-3">' + ticket.ticket_no + '</p>',
+                        '<p class="text m-0" style="font-weight: bold;">' + picName + '</p>',
+                        '<p class="text mt-2 m-0 ">' + ticket.ticket_no + '</p>',
                         '<p class="text m-0">' + ticket.sender_name + '</p>',
                         '<p class="text mb-2">' + ticket.sender_email + '</p>'
                     );
@@ -460,9 +405,7 @@
         }
 
         function deleteTicket(ticketId, deleteRoute) {
-            // var deleteRoute = "/delete-ticket/" + ticketId;
 
-            console.log('delete',deleteRoute);
             // Display confirmation modal
             Swal.fire({
                 title: 'Are you sure?',

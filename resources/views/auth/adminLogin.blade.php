@@ -92,6 +92,22 @@
         <script src="{{ assert('assets/js/feather.min.js') }}"></script>
         <script src="{{ assert('assets/js/simplebar.min.js') }}"></script>
 
+        <!-- Sweet-Alert  -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                @if(session('error'))
+                    Swal.fire({
+                        title: 'Error',
+                        text: '{{ session('error') }}',
+                        icon: 'error',
+                        timer: 1000, // 3000 milliseconds (3 seconds)
+                        showConfirmButton: false, // Hide the "OK" button
+                    });
+                @endif
+            });
+        </script>
+
 
     </body>
 

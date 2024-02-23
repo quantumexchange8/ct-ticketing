@@ -26,13 +26,7 @@
                     <div class="card-body">
                         <form action="{{ route('updateTicket', $ticket->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            {{-- @if($errors->any())
-                                    <ul>
-                                        @foreach($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                @endif --}}
+            
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
@@ -142,7 +136,14 @@
 
                                     <div class="form-group">
                                         <label for="message">PIC</label>
-                                        <input type="text" class="form-control" name="pic_id" placeholder="PIC" autocomplete="off" value="{{ $ticket->pic_id }}">
+                                        <select class="form-control" name="pic_id">
+                                            <option value="">Select PIC</option>
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->id }}" {{ optional($ticket->users)->id == $user->id ? 'selected' : '' }}>
+                                                    {{ $user->category_name }} - {!! $user->name !!}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                         @error('pic_id')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror

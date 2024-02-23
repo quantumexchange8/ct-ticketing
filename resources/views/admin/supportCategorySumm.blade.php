@@ -37,23 +37,27 @@
                                             <td>{!! $supportCategory->category_name !!}</td>
                                             <td class="text-center">
                                                 <div style="display: flex; justify-content: center; gap: 10px;">
+                                                    @if (Auth::user()->manage_support_subcategory == 1)
+                                                        <a href="{{ route('supportSubSumm', ['supportCategory' => $supportCategory->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
+                                                            <i class="dripicons-preview"></i>
+                                                        </a>
+                                                    @endif
 
-                                                    <a href="{{ route('supportSubSumm', ['supportCategory' => $supportCategory->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
-                                                        <i class="dripicons-preview"></i>
-                                                    </a>
+                                                    @if (Auth::user()->manage_support_category == 1)
+                                                        <a href="{{ route('editCategory', ['id' => $supportCategory->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
+                                                            <i class="dripicons-pencil"></i>
+                                                        </a>
+                                                    @endif
 
-                                                    <a href="{{ route('editCategory', ['id' => $supportCategory->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                        <i class="dripicons-pencil"></i>
-                                                    </a>
-
-                                                    <form action="{{ route('deleteCategory', ['id' => $supportCategory->id]) }}" method="POST" id="deleteForm{{ $supportCategory->id }}" data-category-id="{{ $supportCategory->id }}">
-                                                        @method('DELETE')
-                                                        @csrf
-                                                        <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $supportCategory->id }}')">
-                                                            <i class="dripicons-trash"></i>
-                                                        </button>
-                                                    </form>
-
+                                                    @if (Auth::user()->manage_support_category == 1)
+                                                        <form action="{{ route('deleteCategory', ['id' => $supportCategory->id]) }}" method="POST" id="deleteForm{{ $supportCategory->id }}" data-category-id="{{ $supportCategory->id }}">
+                                                            @method('DELETE')
+                                                            @csrf
+                                                            <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $supportCategory->id }}')">
+                                                                <i class="dripicons-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>

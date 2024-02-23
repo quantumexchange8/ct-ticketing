@@ -25,6 +25,7 @@
                             @csrf
 
                             <div class="row">
+
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <div class="radio radio-purple radio-circle">
@@ -33,6 +34,9 @@
                                                 Existing Subtitle
                                             </label>
                                         </div>
+                                        @error('subtitle_type')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                     </div>
                                 </div>
                                 <div class="col-lg-6">

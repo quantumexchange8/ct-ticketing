@@ -45,7 +45,7 @@ class LoginController extends Controller
             // $user = Auth::user();
             return redirect()->route('adminDashboard');
         } else {
-            return redirect()->back();
+            return redirect()->back()->with('error', 'Incorrect username or password.');
         }
 
     }

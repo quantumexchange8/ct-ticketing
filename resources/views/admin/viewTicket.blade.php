@@ -137,7 +137,14 @@
 
                                 <div class="form-group">
                                     <label for="message">PIC</label>
-                                    <input type="text" class="form-control" name="pic_id" placeholder="PIC" value="{{ $ticket->pic_id }}" readonly>
+                                    <select class="form-control" name="pic_id" disabled>
+                                        <option value="">Select PIC</option>
+                                        @foreach($users as $user)
+                                            <option value="{{ $user->id }}" {{ optional($ticket->users)->id == $user->id ? 'selected' : '' }}>
+                                                {{ $user->category_name }} - {!! $user->name !!}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                     @error('pic_id')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -161,11 +168,13 @@
                             @endforeach
                         </div>
 
+                        @can('update', $ticket)
                         <div class="col-12 text-right">
                             <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn  btn-primary">
                                 Edit Ticket
                             </a>
                         </div>
+                        @endcan
                     </div><!--end card-body-->
                 </div><!--end card-->
             </div><!--end col-->

@@ -84,77 +84,83 @@
                         </ul>
                     </li>
 
-                    <li>
-                        <a href="javascript: void(0);"><i data-feather="grid" class="align-self-center menu-icon"></i><span>Category</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
-                        <ul class="nav-second-level" aria-expanded="false">
-                            @foreach ($supportCategories as $supportCategory)
-                                <li class="nav-item"><a class="nav-link" href="{{ route('categorySumm', $supportCategory)}}"><i class="ti-control-record"></i>{!! $supportCategory->category_name !!}</a></li>
-                            @endforeach
-                        </ul>
-                    </li>
+                    @if (Auth::user()->role_id == 1)
+                        <li>
+                            <a href="javascript: void(0);"><i data-feather="grid" class="align-self-center menu-icon"></i><span>Category</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
+                            <ul class="nav-second-level" aria-expanded="false">
+                                @foreach ($supportCategories as $supportCategory)
+                                    <li class="nav-item"><a class="nav-link" href="{{ route('categorySumm', $supportCategory)}}"><i class="ti-control-record"></i>{!! $supportCategory->category_name !!}</a></li>
+                                @endforeach
+                            </ul>
+                        </li>
+                    @endif
 
-                    <li>
-                        <a href="{{ route('helpdesk') }}"><i data-feather="command" class="align-self-center menu-icon"></i><span>Report - Helpdesk</span></a>
-                    </li>
+                    {{-- @if (Auth::user()->role_id == 1) --}}
+                        <li>
+                            <a href="{{ route('helpdesk') }}"><i data-feather="command" class="align-self-center menu-icon"></i><span>Report - Helpdesk</span></a>
+                        </li>
+                    {{-- @endif --}}
 
                     <hr class="hr-dashed hr-menu">
                     <li class="menu-label my-2">Administration</li>
 
+                    @if (Auth::user()->manage_title == 1)
+                        <li>
+                            <a href="{{ route('titleSumm') }}"> <i data-feather="slack" class="align-self-center menu-icon"></i><span>Title</span></a>
+                        </li>
+                    @endif
 
-                    <li>
-                        <a href="{{ route('titleSumm') }}"> <i data-feather="slack" class="align-self-center menu-icon"></i><span>Title</span></a>
-                    </li>
+                    @if (Auth::user()->manage_subtitle == 1)
+                        <li>
+                            <a href="javascript: void(0);"><i data-feather="wind" class="align-self-center menu-icon"></i><span>Subtitle</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
+                            <ul class="nav-second-level" aria-expanded="false">
+                                @foreach ($titles as $title)
+                                    <li class="nav-item"><a class="nav-link" href="{{ route('subtitleSumm', $title) }}"><i class="ti-control-record"></i>{{ $title->title_name }}</a></li>
+                                @endforeach
+                            </ul>
+                        </li>
+                    @endif
 
-                    <li>
-                        <a href="javascript: void(0);"><i data-feather="wind" class="align-self-center menu-icon"></i><span>Subtitle</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
-                        <ul class="nav-second-level" aria-expanded="false">
-                            @foreach ($titles as $title)
-                                <li class="nav-item"><a class="nav-link" href="{{ route('subtitleSumm', $title) }}"><i class="ti-control-record"></i>{{ $title->title_name }}</a></li>
-                            @endforeach
-                        </ul>
-                    </li>
+                    @if (Auth::user()->manage_content == 1)
+                        <li>
+                            <a href="javascript: void(0);"><i data-feather="file-text" class="align-self-center menu-icon"></i><span>Content</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
+                            <ul class="nav-second-level" aria-expanded="false">
+                                @foreach ($titles as $title)
+                                <li class="nav-item">
+                                    <a class="nav-link" href="javascript: void(0);"><i class="ti-control-record"></i><span>{{ $title->title_name }}</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
+                                    <ul class="nav-second-level" aria-expanded="false">
+                                        @foreach ($title->subtitles as $subtitle)
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('contentSumm', $subtitle) }}">
+                                                <i class="ti-control-record"></i>{{ $subtitle->subtitle_name }}
+                                            </a>
+                                        </li>
+                                        @endforeach
+                                    </ul>
+                                </li>
+                                @endforeach
+                            </ul>
+                        </li>
+                    @endif
 
-                    <li>
-                        <a href="javascript: void(0);"><i data-feather="file-text" class="align-self-center menu-icon"></i><span>Content</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
-                        <ul class="nav-second-level" aria-expanded="false">
-                            @foreach ($titles as $title)
-                            <li class="nav-item">
-                                <a class="nav-link" href="javascript: void(0);"><i class="ti-control-record"></i><span>{{ $title->title_name }}</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
-                                <ul class="nav-second-level" aria-expanded="false">
-                                    @foreach ($title->subtitles as $subtitle)
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('contentSumm', $subtitle) }}">
-                                            <i class="ti-control-record"></i>{{ $subtitle->subtitle_name }}
-                                        </a>
-                                    </li>
-                                    @endforeach
-                                </ul>
-                            </li>
-                            @endforeach
-                        </ul>
-                    </li>
+                    @if (Auth::user()->manage_support_category == 1)
+                        <li>
+                            <a href="{{ route('supportCategorySumm') }}"><i data-feather="tool" class="align-self-center menu-icon"></i><span>Support Tool</span></a>
+                        </li>
+                    @endif
 
-                    {{-- <li>
-                        <a href="javascript: void(0);"><i data-feather="tool" class="align-self-center menu-icon"></i><span>Support Tool</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
-                        <ul class="nav-second-level" aria-expanded="false">
-                            <li class="nav-item"><a class="nav-link" href="{{ route('supportCategorySumm') }}"><i class="ti-control-record"></i>*Categories</a></li>
-                            @foreach ($supportCategories as $supportCategory)
-                                <li class="nav-item"><a class="nav-link" href="{{ route('supportSubSumm', $supportCategory) }}"><i class="ti-control-record"></i>{!! $supportCategory->category_name !!}</a></li>
-                            @endforeach
-                        </ul>
-                    </li> --}}
+                    @if (Auth::user()->manage_status == 1)
+                        <li>
+                            <a href="{{ route('ticketStatus') }}"> <i data-feather="layers" class="align-self-center menu-icon"></i><span>Status</span></a>
+                        </li>
+                    @endif
 
-                    <li>
-                        <a href="{{ route('supportCategorySumm') }}"><i data-feather="tool" class="align-self-center menu-icon"></i><span>Support Tool</span></a>
-                    </li>
 
-                    <li>
-                        <a href="{{ route('ticketStatus') }}"> <i data-feather="layers" class="align-self-center menu-icon"></i><span>Status</span></a>
-                    </li>
-
-                    <li>
-                        <a href="{{ route('adminSumm') }}"> <i data-feather="user" class="align-self-center menu-icon"></i><span>Admin</span></a>
-                    </li>
+                    @if (Auth::user()->role_id == 1)
+                        <li>
+                            <a href="{{ route('adminSumm') }}"> <i data-feather="user" class="align-self-center menu-icon"></i><span>Admin</span></a>
+                        </li>
+                    @endif
 
                     <hr class="hr-dashed hr-menu">
                     <li class="menu-label my-2">Preview Documentation</li>
@@ -177,7 +183,6 @@
                             </ul> --}}
                         </li>
                     @endforeach
-
 
                 </ul>
 
@@ -210,6 +215,19 @@
                         </li> --}}
 
                         {{-- <li class="dropdown notification-list">
+
+                            @php
+                                $tickets = App\Models\Ticket::join('ticket_statuses', 'ticket_statuses.id', 'tickets.status_id')
+                                                            ->where('ticket_statuses.status', '=', 'Pending')
+                                                            ->select('tickets.id as ticket_id', 'tickets.created_at')
+                                                            ->get();
+
+                                    $pendingTicketsMoreThanOneDay = $tickets->filter(function ($ticket) {
+                                        return now()->diffInDays($ticket->created_at) > 1;
+                                    })->pluck('ticket_id');
+
+                            @endphp
+
                             <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-toggle="dropdown" href="#" role="button"
                                 aria-haspopup="false" aria-expanded="false">
                                 <i data-feather="bell" class="align-self-center topbar-icon"></i>

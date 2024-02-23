@@ -28,6 +28,8 @@
                                         <th>Name</th>
                                         <th>Username</th>
                                         <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Category</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -37,14 +39,16 @@
                                         <td>{{ $user->name }}</td>
                                         <td>{{ $user->username }}</td>
                                         <td>{{ $user->email }}</td>
+                                        <td>{{ $user->roles->role_name }}</td>
+                                        <td>{{ $user->supportCategories->category_name ?? 'All' }}</td>
                                         <td class="text-center">
                                             <div style="display: flex; justify-content: center; gap: 10px;">
 
-                                                <a href="{{ route('editAdmin', ['id' => $user->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
+                                                <a href="{{ route('editAdmin', ['id' => $user->user_id]) }}" class="btn btn-sm btn-soft-success btn-circle">
                                                     <i class="dripicons-pencil"></i>
                                                 </a>
 
-                                                <form action="{{ route('deleteAdmin', ['id' => $user->id]) }}" method="POST" id="deleteForm{{ $user->id }}" data-admin-id="{{ $user->id }}">
+                                                <form action="{{ route('deleteAdmin', ['id' => $user->user_id]) }}" method="POST" id="deleteForm{{ $user->id }}" data-admin-id="{{ $user->id }}">
                                                     @method('DELETE')
                                                     @csrf
                                                     <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $user->id }}')">

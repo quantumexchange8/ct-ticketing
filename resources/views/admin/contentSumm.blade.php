@@ -48,19 +48,22 @@
                                                 </td>
                                                 <td class="text-center">
                                                     <div style="display: flex; justify-content: center; gap: 10px;">
-                                                        <a href="{{ route('editContent', ['id' => $content->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                            <i class="dripicons-pencil"></i>
-                                                        </a>
+                                                        @if (Auth::user()->manage_content == 1)
+                                                            <a href="{{ route('editContent', ['id' => $content->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
+                                                                <i class="dripicons-pencil"></i>
+                                                            </a>
+                                                        @endif
 
-                                                        <form action="{{ route('deleteContent', ['id' => $content->id]) }}" method="POST" id="deleteForm{{ $content->id }}" data-content-id="{{ $content->id }}">
-                                                            @method('DELETE')
-                                                            @csrf
-                                                            <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $content->id }}')">
-                                                                <i class="dripicons-trash"></i>
-                                                            </button>
-                                                        </form>
+                                                        @if (Auth::user()->manage_content == 1)
+                                                            <form action="{{ route('deleteContent', ['id' => $content->id]) }}" method="POST">
+                                                                @method('DELETE')
+                                                                @csrf
+                                                                <button type="submit" class="btn btn-sm btn-soft-danger btn-circle">
+                                                                    <i class="dripicons-trash"></i>
+                                                                </button>
+                                                            </form>
+                                                        @endif
                                                     </div>
-
                                                 </td>
                                             </tr>
                                         @endforeach

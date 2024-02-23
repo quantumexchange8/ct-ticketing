@@ -195,7 +195,7 @@ class MemberController extends Controller
             }
         }
 
-        Mail::send(new SubmitTicket($ticket));
+        // Mail::send(new SubmitTicket($ticket));
 
         return redirect()->route('dashboard')->with('success', 'Ticket submitted successfully');
     }

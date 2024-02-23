@@ -23,13 +23,7 @@
                     <div class="card-body">
                         <form action="{{ route('addTicket') }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            @if($errors->any())
-                                <ul>
-                                    @foreach($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            @endif
+
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
@@ -91,20 +85,20 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="message">Priority</label>
+                                        <label for="priority">Priority</label>
                                         <select class="form-control" name="priority">
                                             <option value="">Select Priority</option>
                                             <option value="Low" {{ old('priority') == 'Low' ? 'selected' : '' }}>Low</option>
                                             <option value="Medium" {{ old('priority') == 'Medium' ? 'selected' : '' }}>Medium</option>
                                             <option value="High" {{ old('priority') == 'High' ? 'selected' : '' }}>High</option>
                                         </select>
-                                        @error('message')
+                                        @error('priority')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="message">Remarks</label>
+                                        <label for="remarks">Remarks</label>
                                         <input type="text" class="form-control" name="remarks" placeholder="Enter Remarks" autocomplete="off" value="{{ old('remarks') }}">
                                         @error('remarks')
                                             <span class="text-danger">{{ $message }}</span>
@@ -130,7 +124,14 @@
 
                                     <div class="form-group">
                                         <label for="message">PIC</label>
-                                        <input type="text" class="form-control" name="pic_id" placeholder="Enter PIC" autocomplete="off" value="{{ old('pic_id') }}">
+                                        <select class="form-control" name="pic_id">
+                                            <option value="">Select PIC</option>
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->id }}" {{ old('pic_id') == $user->id ? 'selected' : '' }}>
+                                                    {{ $user->category_name }} - {!! $user->name !!}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                         @error('pic_id')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror

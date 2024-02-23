@@ -50,19 +50,21 @@
                                         </td>
                                         <td class="text-center">
                                             <div style="display: flex; justify-content: center; gap: 10px;">
+                                                @if (Auth::user()->manage_content == 1)
+                                                    <a href="{{ route('editContent', ['id' => $content->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
+                                                        <i class="dripicons-pencil"></i>
+                                                    </a>
+                                                @endif
 
-                                                <a href="{{ route('editContent', ['id' => $content->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                    <i class="dripicons-pencil"></i>
-                                                </a>
-
-                                                <form action="{{ route('deleteContent', ['id' => $content->id]) }}" method="POST">
-                                                    @method('DELETE')
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-sm btn-soft-danger btn-circle">
-                                                        <i class="dripicons-trash"></i>
-                                                    </button>
-                                                </form>
-
+                                                @if (Auth::user()->manage_content == 1)
+                                                    <form action="{{ route('deleteContent', ['id' => $content->id]) }}" method="POST">
+                                                        @method('DELETE')
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm btn-soft-danger btn-circle">
+                                                            <i class="dripicons-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -91,7 +93,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    
+
         @if(session('success'))
             Swal.fire({
                 title: 'Done',

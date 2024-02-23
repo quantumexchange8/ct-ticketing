@@ -15,16 +15,6 @@
                             <h4 class="page-title mt-2">Ticket - {{ $status->status }}</h4>
                         </div><!--end col-->
                         <div class="col-2" style="display: flex; justify-content: flex-end; align-items: flex-end;">
-                            {{-- <div class="btn-group mb-2 mb-md-0">
-                                <button type="button" class="btn btn-soft-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Edit Status<i class="mdi mdi-chevron-down"></i></button>
-                                <div class="dropdown-menu">
-                                    @foreach ($allStatus as $all)
-                                        @if ($all->status != $status->status)
-                                            <a class="dropdown-item" href="#">{{ $all->status}}</a>
-                                        @endif
-                                    @endforeach
-                                </div>
-                            </div> --}}
 
                             <button type="button" class="btn" id="exportButton">
                                 <i data-feather="download"></i>
@@ -68,7 +58,9 @@
                                 </thead>
                                 <tbody>
                                     @foreach($status->tickets as $ticket)
+
                                     <tr>
+
                                         {{-- <td>
                                             <!-- Custom Checkbox -->
                                             <label class="custom-checkbox">
@@ -87,24 +79,29 @@
                                         <td style ="{{ $ticket->priority === 'Medium' ? 'color: orange; font-weight: bold;' : ($ticket->priority === 'Low' ? 'color: #84f542; font-weight: bold;' : 'color: red; font-weight: bold;') }}">
                                             {{ $ticket->priority }}
                                         </td>
-                                        <td>{{ $ticket->pic_id }}</td>
+                                        <td>{{ $ticket->users->name ?? null}}</td>
                                         <td>{{ $ticket->remarks }}</td>
+
                                         <td class="text-center" style="display: flex; justify-content: center; gap: 10px;">
                                             <a href="{{ route('viewTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
                                                 <i class="dripicons-preview"></i>
                                             </a>
 
-                                            <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                <i class="dripicons-pencil"></i>
-                                            </a>
+                                            {{-- @can('update', $ticket) --}}
+                                                <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
+                                                    <i class="dripicons-pencil"></i>
+                                                </a>
+                                            {{-- @endcan --}}
 
-                                            <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
-                                                @method('DELETE')
-                                                @csrf
-                                                <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
-                                                    <i class="dripicons-trash"></i>
-                                                </button>
-                                            </form>
+                                            {{-- @can('delete', $ticket) --}}
+                                                <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
+                                                    @method('DELETE')
+                                                    @csrf
+                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
+                                                        <i class="dripicons-trash"></i>
+                                                    </button>
+                                                </form>
+                                            {{-- @endcan --}}
                                         </td>
                                     </tr>
                                     @endforeach

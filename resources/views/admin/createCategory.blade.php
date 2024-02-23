@@ -33,7 +33,6 @@
                                         @enderror
                                     </div>
                                 </div>
-
                             </div>
 
                             <div class="col-12 text-right">
