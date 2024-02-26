@@ -18,7 +18,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="username">Full Name</label>
-                                        <input type="text" class="form-control" id="username" name="sender_name" required="" autocomplete="off" value="{{ old('sender_name') }}">
+                                        <input type="text" class="form-control" id="username" name="sender_name" autocomplete="off" value="{{ old('sender_name') }}" required>
                                         @error('sender_name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -27,7 +27,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="useremail">Email Address</label>
-                                        <input type="email" class="form-control" id="useremail" name="sender_email" required="" autocomplete="off" value="{{ old('sender_email') }}">
+                                        <input type="email" class="form-control" id="useremail" name="sender_email" autocomplete="off" value="{{ old('sender_email') }}" required>
                                         @error('sender_email')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -39,7 +39,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="subject">Subject</label>
-                                        <input type="text" class="form-control" id="subject" name="subject" required="" autocomplete="off" value="{{ old('subject') }}">
+                                        <input type="text" class="form-control" id="subject" name="subject" autocomplete="off" value="{{ old('subject') }}" required>
                                         @error('subject')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -48,7 +48,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="username">Category</label>
-                                        <select class="form-control" name="category_id">
+                                        <select class="form-control" name="category_id" required>
                                             <option value="">Select Category</option>
                                             @foreach($supportCategories as $supportCategory)
                                                 <option value="{{ $supportCategory->id }}" {{ old('category_id') == $supportCategory->id ? 'selected' : '' }}>{!! $supportCategory->category_name !!}</option>
@@ -62,7 +62,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="useremail">Priority</label>
-                                        <select class="form-control" name="priority">
+                                        <select class="form-control" name="priority" required>
                                             <option value="">Select Priority</option>
                                             <option value="Low" {{ old('priority') == 'Low' ? 'selected' : '' }}>Low</option>
                                             <option value="Medium" {{ old('priority') == 'Medium' ? 'selected' : '' }}>Medium</option>
@@ -78,20 +78,13 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="message">Message</label>
-                                        <textarea class="form-control" rows="5" id="message" name="message" autocomplete="off" value="{{ old('message') }}"></textarea>
+                                        <textarea class="form-control" rows="5" id="message" name="message" autocomplete="off" value="{{ old('message') }}"  required></textarea>
                                         @error('title_id')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
-                            {{-- <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="card-body">
-                                        <input type="file" id="input-file-now" name="" class="dropify" />
-                                    </div><!--end card-body-->
-                                </div>
-                            </div> --}}
 
                             <fieldset>
                                 <div class="repeater-default">

@@ -26,7 +26,7 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="title-name">Category</label>
+                                        <label for="category_name">Category</label>
                                         <input type="text" class="form-control" name="category_name" placeholder="Enter Category Name" autocomplete="off" value="{{ $category->category_name }}">
                                         @error('category_name')
                                             <span class="text-danger">{{ $message }}</span>

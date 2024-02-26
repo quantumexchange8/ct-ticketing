@@ -101,6 +101,12 @@
                         </li>
                     {{-- @endif --}}
 
+                    @if (Auth::user()->role_id == 1 || (Auth::user()->role_id !== 1 && Auth::user()->manage_ticket_in_category == 1))
+                        <li>
+                            <a href="{{ route('performance') }}"><i data-feather="award" class="align-self-center menu-icon"></i><span>Performance</span></a>
+                        </li>
+                    @endif
+
                     <hr class="hr-dashed hr-menu">
                     <li class="menu-label my-2">Administration</li>
 
@@ -319,8 +325,8 @@
                                 {{-- <img src="assets/images/users/user-5.jpg" alt="profile-user" class="rounded-circle" /> --}}
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                {{-- <a class="dropdown-item" href="#"><i data-feather="user" class="align-self-center icon-xs icon-dual mr-1"></i> Profile</a>
-                                <a class="dropdown-item" href="#"><i data-feather="settings" class="align-self-center icon-xs icon-dual mr-1"></i> Settings</a> --}}
+                                <a class="dropdown-item" href="{{ route('profile') }}"><i data-feather="user" class="align-self-center icon-xs icon-dual mr-1"></i> Profile</a>
+                                {{-- <a class="dropdown-item" href="#"><i data-feather="settings" class="align-self-center icon-xs icon-dual mr-1"></i> Settings</a> --}}
                                 <div class="dropdown-divider mb-0"></div>
                                 <a class="dropdown-item" href="{{ route('logout') }}"  onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
 

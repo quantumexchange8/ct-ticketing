@@ -57,7 +57,7 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="message">Category</label>
+                                        <label for="category_id">Category</label>
                                         <select class="form-control" name="category_id">
                                             <option value="">Select Category</option>
                                             @foreach($supportCategories as $supportCategory)
@@ -123,7 +123,7 @@
                                     </div> --}}
 
                                     <div class="form-group">
-                                        <label for="message">PIC</label>
+                                        <label for="pic_id">PIC</label>
                                         <select class="form-control" name="pic_id">
                                             <option value="">Select PIC</option>
                                             @foreach($users as $user)

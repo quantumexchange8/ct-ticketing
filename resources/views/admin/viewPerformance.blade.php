@@ -12,7 +12,7 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title mt-2">Ticket - {{ $status->status }}</h4>
+                            <h4 class="page-title mt-2">Tickets managed by: {{ $users->name }}</h4>
                         </div><!--end col-->
                         <div class="col-2" style="display: flex; justify-content: flex-end; align-items: flex-end;">
 
@@ -51,32 +51,23 @@
                                         <th>Message</th> --}}
                                         <th>Category</th>
                                         <th>Priority</th>
-                                        <th>PIC</th>
+                                        <th>Status</th>
                                         <th>Remarks</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($status->tickets as $ticket)
+
+                                    @foreach($tickets as $ticket)
                                     @php
                                         $createdAt = Carbon\Carbon::parse($ticket->created_at);
                                         $isPendingMoreThanSevenDays = $ticket->ticketStatus->status === 'Pending' && $createdAt->diffInDays(now()) > 7;
                                         $isPendingMoreThanThreeDays = $ticket->ticketStatus->status === 'Pending' && $createdAt->diffInDays(now()) > 3;
                                     @endphp
                                     <tr>
-
-                                        {{-- <td>
-                                            <!-- Custom Checkbox -->
-                                            <label class="custom-checkbox">
-                                                <input type="checkbox">
-                                                <span class="checkmark"></span>
-                                            </label>
-                                            <!-- End Custom Checkbox -->
-                                        </td> --}}
-
                                         <td style="{{ $isPendingMoreThanSevenDays ? 'color: red; font-weight: bold;' : ($isPendingMoreThanThreeDays ? 'color: #EDAE49; font-weight: bold;' : '') }}"
                                             @if ($isPendingMoreThanSevenDays || $isPendingMoreThanThreeDays)
-                                                title="{{ $isPendingMoreThanSevenDays ? 'Ticket is pending for more than 7 days.' : 'Ticket is pending for more than 3 days.' }}"
+                                                title="{{ $isPendingMoreThanSevenDays ? 'Pending for more than 7 days' : 'Pending for more than 3 days' }}"
                                             @endif>
                                             {{ $createdAt->format('d M Y') }}
                                         </td>
@@ -89,7 +80,17 @@
                                         <td style ="{{ $ticket->priority === 'Medium' ? 'color: orange; font-weight: bold;' : ($ticket->priority === 'Low' ? 'color: #84f542; font-weight: bold;' : 'color: red; font-weight: bold;') }}">
                                             {{ $ticket->priority }}
                                         </td>
-                                        <td>{{ $ticket->users->name ?? null}}</td>
+                                        <td>
+                                            <span class="{{
+                                                $ticket->ticketStatus->status === 'New' ? 'badge badge-md badge-boxed  badge-soft-primary' : (
+                                                    $ticket->ticketStatus->status === 'Pending' ? 'badge badge-md badge-boxed  badge-soft-warning' : (
+                                                        $ticket->ticketStatus->status === 'Solved' ? 'badge badge-md badge-boxed  badge-soft-success' : 'badge badge-md badge-boxed  badge-soft-danger'
+                                                    )
+                                                )
+                                            }}">
+                                                {{ $ticket->ticketStatus->status }}
+                                            </span>
+                                        </td>
                                         <td>{{ $ticket->remarks }}</td>
 
                                         <td class="text-center" style="display: flex; justify-content: center; gap: 10px;">
@@ -189,7 +190,6 @@
             "Message",
             "Category",
             "Priority",
-            "PIC",
             "Remarks"
         ];
         tableData.push(headers);
@@ -205,7 +205,6 @@
                 "{{ $ticket->message }}",
                 "{!! $ticket->supportCategories->category_name !!}",
                 "{{ $ticket->priority }}",
-                "{{ $ticket->pic_id }}",
                 "{{ $ticket->remarks }}"
             ];
             tableData.push(rowData);

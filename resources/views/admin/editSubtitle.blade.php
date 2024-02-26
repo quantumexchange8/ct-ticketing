@@ -24,10 +24,10 @@
                         <form action="{{ route('updateSubtitle', $subtitle->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
-                                
+
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="title-name">Subtitle Sequence</label>
+                                        <label for="s_sequence">Subtitle Sequence</label>
                                         <input type="number" class="form-control" name="s_sequence" placeholder="Enter Subtitle Sequence" autocomplete="off" value="{{ $subtitle->s_sequence }}">
                                         @error('s_sequence')
                                             <span class="text-danger">{{ $message }}</span>
@@ -37,7 +37,7 @@
 
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="title-name">Subtitle</label>
+                                        <label for="subtitle_name">Subtitle</label>
                                         <input type="text" class="form-control" name="subtitle_name" placeholder="Enter Title" autocomplete="off" value="{{ $subtitle->subtitle_name }}">
                                         @error('subtitle_name')
                                             <span class="text-danger">{{ $message }}</span>

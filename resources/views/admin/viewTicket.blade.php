@@ -135,7 +135,7 @@
                                     @enderror
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" >
                                     <label for="message">PIC</label>
                                     <select class="form-control" name="pic_id" disabled>
                                         <option value="">Select PIC</option>

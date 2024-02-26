@@ -71,7 +71,7 @@
                             <div class="row">
                                 <div class="col-lg-6" style="display: none;">
                                     <div class="form-group">
-                                        <label class="font-14 bold mb-2">Role</label>
+                                        <label for="role_id">Role</label>
                                         <select class="form-control" name="role_id">
                                         @foreach($roles as $role)
                                             <option value="{{ $role->id }}" {{ $user->roles->id == $role->id ? 'selected' : '' }}>
@@ -87,7 +87,7 @@
 
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label class="font-14 bold mb-2">Category</label>
+                                        <label for="category_id">Category</label>
                                         <select class="form-control" name="category_id">
                                         {{-- <option value="0" {{ $user->category_id == 0 ? 'selected' : '' }}>All</option> --}}
                                         @foreach($supportCategories as $supportCategory)

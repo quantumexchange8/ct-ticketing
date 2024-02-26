@@ -26,7 +26,7 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="title-name">Name</label>
+                                        <label for="sub_name">Name</label>
                                         <input type="text" class="form-control" name="sub_name" placeholder="Enter Name" autocomplete="off" value="{{ $supportSubCategories->sub_name }}">
                                         @error('sub_name')
                                             <span class="text-danger">{{ $message }}</span>
@@ -36,7 +36,7 @@
 
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="exampleInputPassword1">Description</label>
+                                        <label for="sub_description">Description</label>
                                         <input type="text" class="form-control" name="sub_description" placeholder="Enter Description" autocomplete="off" value="{{ $supportSubCategories->sub_description }}">
                                         @error('sub_description')
                                             <span class="text-danger">{{ $message }}</span>
@@ -48,7 +48,7 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="title-name">Related Topic</label>
+                                        <label for="content_id">Related Topic</label>
                                         <select class="form-control" name="content_id">
                                             <option>Select Related Topic</option>
                                             @foreach ($contents as $content)

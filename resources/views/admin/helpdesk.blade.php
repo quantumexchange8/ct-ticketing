@@ -397,7 +397,6 @@
 
                         var row = '<tr id="' + ticketId + '">' +
                                     '<td style="' + dateStyle + '" title="' + (dateStyle ? tooltipMessage : '') + '">' + formattedDate + '</td>' +
-                                    // '<td>' + formattedDate + '</td>' +
                                     '<td>' + ticket.ticket_no + '</td>' +
                                     '<td>' + ticket.sender_name + '</td>' +
                                     '<td>' + ticket.sender_email + '</td>' +

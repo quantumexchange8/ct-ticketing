@@ -26,7 +26,7 @@
                     <div class="card-body">
                         <form action="{{ route('updateTicket', $ticket->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
-            
+
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
@@ -52,7 +52,7 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="name">Name</label>
+                                        <label for="sender_name">Name</label>
                                         <input type="text" class="form-control" name="sender_name" placeholder="Name" value="{{ $ticket->sender_name }}" readonly>
                                         @error('sender_name')
                                             <span class="text-danger">{{ $message }}</span>
@@ -82,7 +82,7 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="message">Category</label>
+                                        <label for="category_id">Category</label>
                                         <select class="form-control" name="category_id">
                                             <option value="">Select Category</option>
                                             @foreach($supportCategories as $supportCategory)
@@ -97,7 +97,7 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="message">Status</label>
+                                        <label for="status_id">Status</label>
                                         <select class="form-control" name="status_id">
                                             <option value="">Select Status</option>
                                             @foreach($ticketStatuses as $ticketStatus)
@@ -112,7 +112,7 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="message">Remarks</label>
+                                        <label for="remarks">Remarks</label>
                                         <textarea type="text" class="form-control" name="remarks" placeholder="Remarks" rows="5" >{{ $ticket->remarks }}</textarea>
                                         @error('remarks')
                                             <span class="text-danger">{{ $message }}</span>
@@ -122,7 +122,7 @@
 
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="message">Priority</label>
+                                        <label for="priority">Priority</label>
                                         <select class="form-control" name="priority">
                                             <option value="">Select Priority</option>
                                             <option value="Low" {{ $ticket->priority  === 'Low' ? 'selected' : '' }}>Low</option>
@@ -135,7 +135,7 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="message">PIC</label>
+                                        <label for="pic_id">PIC</label>
                                         <select class="form-control" name="pic_id">
                                             <option value="">Select PIC</option>
                                             @foreach($users as $user)
@@ -154,7 +154,7 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label class="font-14 bold mb-2">Images</label>
+                                        <label class="t_image">Images</label>
                                         @foreach ($ticketImages as $ticketImage)
                                         <div>
                                             <a href="{{ asset('storage/tickets/' . $ticketImage->t_image) }}" class="file-modal-link">{{$ticketImage->t_image}}</a>

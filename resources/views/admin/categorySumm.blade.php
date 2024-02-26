@@ -50,8 +50,18 @@
                                 </thead>
                                 <tbody>
                                     @foreach($supportCategory->tickets as $ticket)
+                                    @php
+                                        $createdAt = Carbon\Carbon::parse($ticket->created_at);
+                                        $isPendingMoreThanSevenDays = $ticket->ticketStatus->status === 'Pending' && $createdAt->diffInDays(now()) > 7;
+                                        $isPendingMoreThanThreeDays = $ticket->ticketStatus->status === 'Pending' && $createdAt->diffInDays(now()) > 3;
+                                    @endphp
                                     <tr>
-                                        <td>{{ Carbon\Carbon::parse($ticket->created_at)->format('d M Y') }}</td>
+                                        <td style="{{ $isPendingMoreThanSevenDays ? 'color: red; font-weight: bold;' : ($isPendingMoreThanThreeDays ? 'color: #EDAE49; font-weight: bold;' : '') }}"
+                                            @if ($isPendingMoreThanSevenDays || $isPendingMoreThanThreeDays)
+                                                title="{{ $isPendingMoreThanSevenDays ? 'Pending for more than 7 days' : 'Pending for more than 3 days' }}"
+                                            @endif>
+                                            {{ $createdAt->format('d M Y') }}
+                                        </td>
                                         <td>{{ $ticket->ticket_no }}</td>
                                         <td>{{ $ticket->sender_name }}</td>
                                         <td>{{ $ticket->sender_email }}</td>

@@ -64,9 +64,6 @@
                             </table>
                         </div>
                         <span class="float-right">
-                            {{-- <button id="but_add" class="btn btn-danger">Add New Title</button>
-                            <button class="btn  btn-primary" id="submit_data" data-endpoint="update-title" >Submit</button> --}}
-
                             <a href="{{ route('createAdmin') }}">
                                 <button class="btn btn-danger mt-2">Add New Admin</button>
                             </a>

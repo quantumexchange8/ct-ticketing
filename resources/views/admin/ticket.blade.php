@@ -195,16 +195,16 @@
             kanbanBoard.empty();
 
             // Loop through each status
-            statuses.forEach(function(status) {
-                var swimLane = $('<div class="swim-lane" id="' + status.status.id + '">');
+            statuses.forEach(function(statuses) {
+                var swimLane = $('<div class="swim-lane" id="' + statuses.status.id + '">');
                 var kanbanMainCard = $('<div class="kanban-main-card">');
-                var kanbanBoxTitle = $('<div class="kanban-box-title">').append('<h4 class="card-title mt-0 mb-3">' + status.status.status +  ' (' + status.ticket_count + ')' + '</h4>');
+                var kanbanBoxTitle = $('<div class="kanban-box-title">').append('<h4 class="card-title mt-0 mb-3">' + statuses.status.status +  ' (' + statuses.ticket_count + ')' + '</h4>');
 
                 // Append kanban box title to kanban main card
                 kanbanMainCard.append(kanbanBoxTitle);
 
                 // Loop through tickets for this status
-                status.tickets.forEach(function(ticket) {
+                statuses.tickets.forEach(function(ticket) {
 
                     var createdAt = new Date(ticket.created_at);
                     var formattedDate = createdAt.toLocaleDateString('en-GB', {

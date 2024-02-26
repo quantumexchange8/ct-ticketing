@@ -26,7 +26,7 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="title-name">Title Sequence</label>
+                                        <label for="t_sequence">Title Sequence</label>
                                         <input type="number" class="form-control" name="t_sequence" placeholder="Enter Title Sequence" autocomplete="off" value="{{ $title->t_sequence }}">
                                         @error('t_sequence')
                                             <span class="text-danger">{{ $message }}</span>
@@ -36,7 +36,7 @@
 
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="title-name">Title</label>
+                                        <label for="title_name">Title</label>
                                         <input type="text" class="form-control" name="title_name" placeholder="Enter Title" autocomplete="off" value="{{ $title->title_name }}">
                                         @error('title_name')
                                             <span class="text-danger">{{ $message }}</span>

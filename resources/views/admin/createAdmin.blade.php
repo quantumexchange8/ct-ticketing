@@ -77,7 +77,7 @@
                             <div class="row">
                                 <div class="col-lg-6" style="display: none;">
                                     <div class="form-group">
-                                        <label class="message">Role</label>
+                                        <label for="role_id">Role</label>
                                         <select class="form-control" id="role" name="role_id" value="{{ old('role_id') }}">
                                             {{-- <option value="">Select Role</option> --}}
                                             @foreach($roles as $role)
@@ -94,7 +94,7 @@
 
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label class="message">Category</label>
+                                        <label for="category_id">Category</label>
                                         <select class="form-control" name="category_id" value="{{ old('category_id') }}">
                                             <option value="">Select Category</option>
                                             {{-- <option value="0">All</option> --}}

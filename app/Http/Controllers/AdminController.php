@@ -24,6 +24,85 @@ use App\Models\Role;
 class AdminController extends Controller
 {
 
+    public function profile()
+    {
+        $user = auth()->user();
+        $supportCategories = SupportCategory::all();
+
+        return view('admin.profile', compact('user', 'supportCategories'));
+    }
+
+    public function updateProfile(Request $request, $id)
+    {
+        $rules = [
+            'name' => 'required|max:255',
+            'username' => 'required|max:255',
+            'email' => 'required|max:255',
+            'oldpassword' => 'sometimes|required_with:newpassword',
+            'newpassword' => 'nullable|required_with:oldpassword|different:oldpassword',
+            'retypepassword' => 'nullable|required_with:newpassword|same:newpassword',
+
+        ];
+
+        $messages = [
+            'name.required' => 'The Name field is required.',
+            'username.required' => 'The Username field is required.',
+            'email.required' => 'The Email field is required.',
+            'name.max' => 'The Name should not exceed 255 characters.',
+            'username.max' => 'The Username should not exceed 255 characters.',
+            'email.max' => 'The Email should not exceed 255 characters.',
+            'oldpassword.required_with' => 'The Old Password field is required when New Password is present.',
+            'newpassword.required_with' => 'The New Password field is required when Old Password is present.',
+            'newpassword.different' => 'The New Password must be different from the Old Password.',
+            'retypepassword.required_with' => 'The Retype Password field is required when New Password is present.',
+            'retypepassword.same' => 'The Retype Password and New Password must match.'
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+
+        $updateAdmin = User::find($id);
+
+        $updateAdmin->name = $request->input('name');
+        $updateAdmin->username = $request->input('username');
+        $updateAdmin->email = $request->input('email');
+        $updateAdmin->save();
+
+        if ($request->filled('oldpassword') && $request->filled('newpassword') && $request->filled('retypepassword')) {
+            if (Hash::check($request->input('oldpassword'), $updateAdmin->password)) {
+
+                if ($request->input('newpassword') === $request->input('retypepassword')) {
+                    $updateAdmin->password = Hash::make($request->input('newpassword'));
+                    $updateAdmin->save();
+
+                    return redirect()->route('adminDashboard')->with('success', 'Profile updated successfully');
+                } else {
+                    // return redirect()->back()->with('error', 'New and retyped passwords do not match.');
+                    $validator->errors()->add('newpassword', 'New and retyped passwords do not match.');
+                    return redirect()
+                        ->back()
+                        ->withErrors($validator)
+                        ->withInput();
+                }
+            } else {
+                // return redirect()->back()->with('error', 'Wrong old password!');
+                $validator->errors()->add('oldpassword', 'Wrong old password!');
+                    return redirect()
+                        ->back()
+                        ->withErrors($validator)
+                        ->withInput();
+            }
+        } else {
+            return redirect()->route('adminDashboard')->with('success', 'Profile updated successfully');
+        }
+    }
+
     public function adminDashboard(Request $request)
     {
         $ticketStatuses = TicketStatus::all();
@@ -68,6 +147,28 @@ class AdminController extends Controller
             ];
         }
 
+        $unassignedTickets = Ticket::whereYear('created_at', $currentYear)->whereNull('pic_id')->orderByDesc('tickets.id')->get();
+
+        $unassignedHigh = 0;
+        $unassignedMedium = 0;
+        $unassignedLow = 0;
+        $totalUnassigned = 0;
+
+        foreach ($unassignedTickets as $ticket) {
+            switch ($ticket->priority) {
+                case 'High':
+                    $unassignedHigh++;
+                    break;
+                case 'Medium':
+                    $unassignedMedium++;
+                    break;
+                case 'Low':
+                    $unassignedLow++;
+                    break;
+            }
+
+            $totalUnassigned = $unassignedHigh + $unassignedMedium + $unassignedLow;
+        }
 
         if ($request->has('year_status')) {
             $selectedYearStatus = $request->year_status;
@@ -111,7 +212,7 @@ class AdminController extends Controller
                     ->orderBy('support_categories.category_name')
                     ->get();
 
-        return view('admin.adminDashboard', compact('ticketStatuses', 'ticketCounts', 'currentYear', 'ticketsByStatus', 'ticketsByCategory'));
+        return view('admin.adminDashboard', compact('ticketStatuses', 'ticketCounts', 'currentYear', 'ticketsByStatus', 'ticketsByCategory', 'unassignedTickets','totalUnassigned', 'unassignedHigh', 'unassignedMedium', 'unassignedLow'));
     }
 
     public function helpdesk(Request $request)
@@ -366,23 +467,26 @@ class AdminController extends Controller
             $status = TicketStatus::with(['tickets' => function ($query) {
                 $query->orderBy('created_at', 'desc');
             }, 'tickets.supportCategories', 'tickets.users'])->find($status->id);
+            $tickets = $status->tickets;
 
         } elseif ($authUser->role_id !== 1 && $authUser->manage_ticket_in_category == 1) {
             $status = TicketStatus::with(['tickets' => function ($query) use ($authUserCategoryId){
                 $query->where('category_id', '=', $authUserCategoryId)->orderBy('created_at', 'desc');
             }, 'tickets.supportCategories', 'tickets.users'])->find($status->id);
 
+            $tickets = $status->tickets()->where('tickets.category_id', $authUserCategoryId)->get();
+
         } elseif ($authUser->role_id !== 1 && $authUser->manage_own_ticket == 1) {
             $status = TicketStatus::with(['tickets' => function ($query) use ($authUserId){
                 $query->where('pic_id', '=', $authUserId)->orderBy('created_at', 'desc');
             }, 'tickets.supportCategories', 'tickets.users'])->find($status->id);
+
+            $tickets = $status->tickets()->where('tickets.pic_id', $authUserId)->get();
         }
 
+        // $tickets = $status->tickets;
 
-        $tickets = $status->tickets;
-
-        // $users = User::join('roles', 'users.role_id', 'roles.id')->where('role_name', '!=', 'Super Admin')->get();
-
+        // dd($tickets);
         return view('admin.ticketSumm', compact('status', 'tickets'));
     }
 
@@ -893,6 +997,74 @@ class AdminController extends Controller
         $titles = Title::with('subtitles.contents')->get();
 
         return view('admin.viewContent', compact('title', 'titles'));
+    }
+
+    public function performance()
+    {
+        $authUser = User::where('id', '=', Auth::user()->id)->first();
+
+        $authUserId = $authUser->id;
+        $authUserCategoryId = $authUser->category_id;
+
+        if ($authUser->role_id == 1) {
+
+            $supportCategories = SupportCategory::all();
+
+            foreach ($supportCategories as $supportCategory) {
+                // Retrieve users associated with the current support category
+                $users = $supportCategory->users()->withCount('tickets')->get();
+
+                // Assign the users back to the support category
+                $supportCategory->users = $users;
+            }
+
+        } elseif ($authUser->role_id !== 1 && $authUser->manage_ticket_in_category == 1) {
+            $supportCategories = SupportCategory::where('support_categories.id', $authUserCategoryId)
+                                                ->get();
+
+            foreach ($supportCategories as $supportCategory) {
+                // Retrieve users associated with the current support category
+                $users = $supportCategory->users()->withCount('tickets')->get();
+
+                // Assign the users back to the support category
+                $supportCategory->users = $users;
+            }
+        }
+
+        // $supportCategories = SupportCategory::with([
+        //     'users' => function ($query) {
+        //         $query->withCount('tickets');
+        //     },
+        // ])->get();
+
+        // Fetch all ticket statuses
+        $ticketStatuses = TicketStatus::all();
+
+        // Loop through each support category
+        foreach ($supportCategories as $supportCategory) {
+            // Loop through each user in the support category
+            foreach ($supportCategory->users as $user) {
+                // Initialize a temporary array to hold ticket counts
+                $ticketCounts = [];
+
+                // Fetch ticket counts for each ticket status for the current user
+                foreach ($ticketStatuses as $status) {
+                    $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->count();
+                }
+
+                // Assign the temporary array to a different property of the $user object
+                $user->ticketCounts = $ticketCounts;
+            }
+        }
+        return view('admin.performance', compact('supportCategories', 'ticketStatuses'));
+    }
+
+    public function viewPerformance($id)
+    {
+        $tickets = Ticket::where('pic_id', $id)->get();
+        $users = User::find($id);
+
+        return view('admin.viewPerformance', compact('tickets', 'users'));
     }
 
     public function titleSumm()
@@ -1938,14 +2110,14 @@ class AdminController extends Controller
         ];
 
         $messages = [
-            'name.required' => 'Name is required.',
-            'username.required' => 'Username is required.',
-            'email.required' => 'Email is required.',
-            'name.max' => 'Name should not exceed 255 characters.',
-            'username.max' => 'Username should not exceed 255 characters.',
-            'email.max' => 'Email should not exceed 255 characters.',
-            'password.required' => 'Password is required.',
-            'category_id.required' => 'Category is required.',
+            'name.required' => 'The Name field is required.',
+            'username.required' => 'The Username field is required.',
+            'email.required' => 'The Email field is required.',
+            'name.max' => 'The Name should not exceed 255 characters.',
+            'username.max' => 'The Username should not exceed 255 characters.',
+            'email.max' => 'The Email should not exceed 255 characters.',
+            'password.required' => 'The Password field is required.',
+            'category_id.required' => 'Please select a category.',
             'role_id.required' => 'Role is required.'
         ];
 
@@ -1995,23 +2167,18 @@ class AdminController extends Controller
             'name' => 'required|max:255',
             'username' => 'required|max:255',
             'email' => 'required|max:255',
-            // 'oldpassword' => 'sometimes|required_with:newpassword',
-            // 'newpassword' => 'nullable|required_with:oldpassword|different:oldpassword',
             'category_id' => 'required',
             'role_id' => 'required'
         ];
 
         $messages = [
-            'name.required' => 'Name is required.',
-            'username.required' => 'Username is required.',
-            'email.required' => 'Email is required.',
-            'name.max' => 'Name should not exceed 255 characters.',
-            'username.max' => 'Username should not exceed 255 characters.',
-            'email.max' => 'Email should not exceed 255 characters.',
-            // 'oldpassword.required_with' => 'The Old Password field is required when New Password is present.',
-            // 'newpassword.required_with' => 'The New Password field is required when Old Password is present.',
-            // 'newpassword.different' => 'The New Password must be different from the Old Password.',
-            'category_id.required' => 'Category is required.',
+            'name.required' => 'The Name field is required.',
+            'username.required' => 'The Username field is required.',
+            'email.required' => 'The Email field is required.',
+            'name.max' => 'The Name should not exceed 255 characters.',
+            'username.max' => 'The Username should not exceed 255 characters.',
+            'email.max' => 'The Email should not exceed 255 characters.',
+            'category_id.required' => 'Please select a category.',
             'role_id.required' => 'Role is required.'
         ];
 
@@ -2078,22 +2245,6 @@ class AdminController extends Controller
         }
 
         return redirect()->route('adminSumm')->with('success', 'Admin updated successfully');
-
-        // if ($request->filled('oldpassword') && $request->filled('newpassword')) {
-        //     if (Hash::check($request->input('oldpassword'), $updateAdmin->password)) {
-
-        //         $updateAdmin->password = Hash::make($request->input('newpassword'));
-        //         $updateAdmin->save();
-
-        //         return redirect()->route('adminSumm')->with('success', 'Admin updated successfully');
-
-        //     } else {
-        //         return redirect()->back()->with('error', 'Wrong old password!');
-        //     }
-        // } else {
-        //     return redirect()->route('adminSumm')->with('success', 'Admin updated successfully');
-        // }
-
     }
 
     public function deleteAdmin($id)

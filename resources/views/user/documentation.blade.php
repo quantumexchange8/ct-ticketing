@@ -170,6 +170,7 @@
     }
 </script>
 
+
 {{-- Search --}}
 <script>
     $(document).ready(function () {

@@ -65,6 +65,12 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/category-summary/{supportCategory}', [AdminController::class, 'categorySumm'])->name('categorySumm');
 
+    Route::get('/performance', [AdminController::class, 'performance'])->name('performance');
+    Route::get('/view-performance/{id}', [AdminController::class, 'viewPerformance'])->name('viewPerformance');
+
+    Route::get('/profile', [AdminController::class, 'profile'])->name('profile');
+    Route::post('/update-profile/{id}', [AdminController::class, 'updateProfile'])->name('updateProfile');
+
     // Administration
     Route::get('/title-summary', [AdminController::class, 'titleSumm'])->name('titleSumm');
     Route::get('/view-more-subtitle/{id}', [AdminController::class, 'viewMoreSubtitle'])->name('viewMoreSubtitle');

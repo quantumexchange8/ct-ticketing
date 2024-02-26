@@ -33,7 +33,7 @@
                                         <a href="index.html" class="logo logo-admin">
                                             <img src="{{ asset('assets/images/logo-sm.png') }}" height="50" alt="logo" class="auth-logo">
                                         </a>
-                                        <h4 class="mt-3 mb-1 font-weight-semibold text-white font-18">Welcome to Helpdesk-Support</h4>
+                                        <h4 class="mt-3 mb-1 font-weight-semibold text-white font-18">Welcome to CT-Ticketing</h4>
                                         {{-- <p class="text-muted  mb-0">Sign in to continue to Dastyle.</p> --}}
                                     </div>
                                 </div>

@@ -27,7 +27,7 @@
 
                                 <div class="col-lg-4">
                                     <div class="form-group">
-                                        <label for="exampleInputPassword1">Content Sequence</label>
+                                        <label for="c_sequence">Content Sequence</label>
                                         <input type="number" class="form-control" name="c_sequence" placeholder="Enter Sequence" value="{{ $content->c_sequence }}">
                                         @error('c_sequence')
                                             <span class="text-danger">{{ $message }}</span>
@@ -37,7 +37,7 @@
 
                                 <div class="col-lg-4">
                                     <div class="form-group">
-                                        <label for="exampleInputPassword1">Subtitle</label>
+                                        <label for="subtitle_id">Subtitle</label>
                                         <select class="form-control" name="subtitle_id">
                                             @foreach ($subtitles as $subtitle)
                                                 <option value="{{ $subtitle->id }}" {{ (int)$content->subtitle_id === $subtitle->id ? 'selected' : '' }}>
@@ -55,7 +55,7 @@
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="form-group">
-                                        <label for="exampleFormControlTextarea1">Content</label>
+                                        <label for="content_name">Content</label>
                                         <textarea id="elm1" name="content_name">{{ $content->content_name }}</textarea>
                                         @error('content_name')
                                             <span class="text-danger">{{ $message }}</span>
