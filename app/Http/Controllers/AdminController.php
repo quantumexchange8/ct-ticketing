@@ -269,8 +269,7 @@ class AdminController extends Controller
         //     ->whereNull('tickets.deleted_at');
         // }
 
-        $query = DB::table('tickets')
-        ->join('support_categories', 'support_categories.id', 'tickets.category_id')
+        $query = Ticket::join('support_categories', 'support_categories.id', 'tickets.category_id')
         ->join('ticket_statuses', 'tickets.status_id', 'ticket_statuses.id')
         ->leftJoin('users', 'tickets.pic_id', 'users.id')
         ->select('tickets.*', 'support_categories.*', 'ticket_statuses.*', 'users.*','users.id as pic_id','tickets.id as ticket_id', 'tickets.created_at as t_created_at', 'tickets.category_id')
@@ -363,44 +362,24 @@ class AdminController extends Controller
     {
         $authUser = User::where('id', '=', Auth::user()->id)->first();
 
-        $authUserId = $authUser->id;
-        $authUserCategoryId = $authUser->category_id;
-
-        $searchTerm = $request->input('searchTerm');
-
-        // Fetch all statuses
-        $statuses = DB::table('ticket_statuses')->get();
+        $query = Ticket::join('support_categories', 'tickets.category_id', 'support_categories.id')
+        ->join('ticket_statuses', 'ticket_statuses.id', 'tickets.status_id')
+        ->leftJoin('users', 'tickets.pic_id', 'users.id')
+        ->select('tickets.*', 'support_categories.category_name', 'users.name', 'ticket_statuses.status')
+        ->orderByDesc('tickets.created_at')
+        ->whereNull('tickets.deleted_at');
 
         if ($authUser->role_id == 1) {
-            $query = DB::table('tickets')
-            ->join('support_categories', 'tickets.category_id', 'support_categories.id')
-            ->join('ticket_statuses', 'ticket_statuses.id', 'tickets.status_id')
-            ->leftJoin('users', 'tickets.pic_id', 'users.id')
-            ->select('tickets.*', 'support_categories.category_name', 'users.name', 'ticket_statuses.status')
-            ->orderByDesc('tickets.created_at')
-            ->whereNull('tickets.deleted_at');
-
-        } elseif ($authUser->role_id !== 1 && $authUser->manage_ticket_in_category == 1) {
-            $query = DB::table('tickets')
-            ->join('support_categories', 'tickets.category_id', 'support_categories.id')
-            ->join('ticket_statuses', 'ticket_statuses.id', 'tickets.status_id')
-            ->leftJoin('users', 'tickets.pic_id', 'users.id')
-            ->select('tickets.*', 'support_categories.category_name', 'users.name', 'ticket_statuses.status')
-            ->orderByDesc('tickets.created_at')
-            ->where('tickets.category_id',  $authUserCategoryId)
-            ->whereNull('tickets.deleted_at');
-
-        } elseif ($authUser->role_id !== 1 && $authUser->manage_own_ticket == 1) {
-            $query = DB::table('tickets')
-            ->join('support_categories', 'tickets.category_id', 'support_categories.id')
-            ->join('ticket_statuses', 'ticket_statuses.id', 'tickets.status_id')
-            ->leftJoin('users', 'tickets.pic_id', 'users.id')
-            ->select('tickets.*', 'support_categories.category_name', 'users.name', 'ticket_statuses.status')
-            ->orderByDesc('tickets.created_at')
-            ->where('tickets.pic_id', $authUserId)
-            ->whereNull('tickets.deleted_at');
+            $query->get();
+        } else if ($authUser->role_id !== 1) {
+            if ($authUser->manage_ticket_in_category == 1) {
+                $query->where('tickets.category_id',  $authUser->category_id);
+            } elseif ($authUser->manage_own_ticket == 1) {
+                $query->where('tickets.pic_id', $authUser->id);
+            }
         }
 
+        $searchTerm = $request->input('searchTerm');
 
         // Apply search term filter
         if ($searchTerm) {
@@ -413,6 +392,8 @@ class AdminController extends Controller
         }
 
         $ticketsByStatus = $query->get()->groupBy('status_id');
+
+        $statuses = TicketStatus::all();
 
         // Prepare the response with the correct structure
         $response = [];
@@ -467,6 +448,7 @@ class AdminController extends Controller
             $status = TicketStatus::with(['tickets' => function ($query) {
                 $query->orderBy('created_at', 'desc');
             }, 'tickets.supportCategories', 'tickets.users'])->find($status->id);
+
             $tickets = $status->tickets;
 
         } elseif ($authUser->role_id !== 1 && $authUser->manage_ticket_in_category == 1) {
@@ -484,9 +466,6 @@ class AdminController extends Controller
             $tickets = $status->tickets()->where('tickets.pic_id', $authUserId)->get();
         }
 
-        // $tickets = $status->tickets;
-
-        // dd($tickets);
         return view('admin.ticketSumm', compact('status', 'tickets'));
     }
 
@@ -755,236 +734,13 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Ticket deleted successfully.');
     }
 
-
-
-
-
-    // public function createTicket()
+    // public function viewTicketImage($id)
     // {
-    //     $this->authorize('create', Ticket::class);
+    //     $ticketImages = TicketImage::where('ticket_id', $id)->get();
+    //     $tickets = Ticket::find($id);
 
-    //     $supportCategories = SupportCategory::all();
-    //     $ticketStatuses = TicketStatus::all();
-    //     $users = User::join('roles', 'users.role_id', 'roles.id')->where('role_name', '!=', 'Super Admin')->get();
-
-    //     return view('admin.createTicket', compact('supportCategories', 'ticketStatuses', 'users'));
+    //     return view('admin.viewTicketImage', compact('ticketImages', 'tickets'));
     // }
-
-    // public function addTicket(Request $request)
-    // {
-    //     $this->authorize('create', Ticket::class);
-
-    //     $rules = [
-    //         'sender_name' => 'required',
-    //         'sender_email' => 'required',
-    //         'subject' => 'required',
-    //         'message' => 'required',
-    //         'category_id' => 'required',
-    //         'priority'=> 'required',
-    //         't_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-    //     ];
-
-    //     $messages = [
-    //         'sender_name.required' => 'Name is required.',
-    //         'sender_email.required' => 'Email is required.',
-    //         'subject.required' => 'Subject is required.',
-    //         'message.required' => 'Message is required.',
-    //         'category_id.required' => 'Please select category.',
-    //         'priority.required' => 'Please select priority.',
-    //         't_image.image' => 'Must be an image format.',
-    //         't_image.max' => 'Image should not exceed 2 GB.'
-    //     ];
-
-    //     $validator = Validator::make($request->all(), $rules, $messages);
-
-    //     if ($validator->fails()) {
-    //         return redirect()
-    //                 ->back()
-    //                 ->withErrors($validator)
-    //                 ->withInput();
-    //     }
-
-    //     $category = SupportCategory::find($request->input('category_id'));
-    //     $categoryName = $category->category_name;
-
-    //     $abbreviationCategory = strtoupper(substr($categoryName, 0, 4));
-
-    //     $priority = $request->input('priority');
-
-    //     // Extract the first alphabet and convert to uppercase
-    //     $abbreviationPriority = strtoupper(substr($priority, 0, 1));
-
-    //     // Get the current running number for the given category and priority
-    //     $number = Ticket::withTrashed()
-    //             ->where('category_id', $request->input('category_id'))
-    //             ->orderBy('id', 'desc')
-    //             ->first();
-
-    //     $ticket = Ticket::create([
-    //         'sender_name' => $request->input('sender_name'),
-    //         'sender_email' => $request->input('sender_email'),
-    //         'subject' => $request->input('subject'),
-    //         'message' => $request->input('message'),
-    //         'category_id' => $request->input('category_id'),
-    //         'priority' => $request->input('priority'),
-    //         'status_id' => 1
-    //     ]);
-
-    //     $ticketId = $ticket->id;
-
-    //     $currentRunningNumber = null;
-
-    //     if ($number) {
-    //         // If $number is not null, get the ticket_no property
-    //         $currentRunningNumber = $number->ticket_no;
-    //     }
-
-    //     $pattern = '/-(\d+)$/';
-
-    //     if (empty($currentRunningNumber)) {
-    //         $nextRunningNumber = '0000001';
-    //     } else {
-    //         if (preg_match($pattern, $currentRunningNumber, $matches)) {
-    //             // $matches[1] contains the extracted running number
-    //             $extractedRunningNumber = (int)$matches[1];
-
-    //             // Increment the running number for the next ticket
-    //             $nextRunningNumber = sprintf('%07d', intval($extractedRunningNumber) + 1);
-    //         }
-    //     }
-
-    //     // Format the ticket number
-    //     $ticketNo = "T-$abbreviationCategory-$abbreviationPriority-$nextRunningNumber";
-
-    //     // Update the ticket with the formatted ticket number
-    //     $ticket->update([
-    //         'ticket_no' => $ticketNo
-    //     ]);
-
-    //     $carInputs = $request->file('car', []);
-
-    //     foreach ($carInputs as $carInput) {
-
-    //         // Check if 't_image' is set and is an uploaded file
-    //         if (isset($carInput['t_image'])) {
-
-    //             $ticketImage = $carInput['t_image'];
-
-    //             // Get the file extension and generate a unique filename
-    //             $extension = $ticketImage->getClientOriginalExtension();
-
-    //             $fileName = $ticketNo . '_image_' . time() . '.' . $extension;
-
-    //             // Move the uploaded file to the desired location
-    //             $ticketImage->move('storage/tickets/', $fileName);
-
-    //             // Create a new TicketImage record in the database
-    //             $newImage = TicketImage::create([
-    //                 'ticket_id' => $ticketId,
-    //                 't_image' => $fileName
-    //             ]);
-    //         }
-    //     }
-
-    //     // Mail::send(new SubmitTicket($ticket));
-
-    //     return redirect()->route('adminDashboard')->with('success', 'Ticket submitted successfully');
-    // }
-
-    // public function editTicket($id)
-    // {
-    //     $ticket = Ticket::find($id);
-
-    //     $this->authorize('update', $ticket);
-
-    //     $supportCategories = SupportCategory::all();
-    //     $ticketStatuses = TicketStatus::all();
-    //     $ticketImages = TicketImage::where('ticket_id', $id)
-    //                                 ->get();
-    //     $users = User::join('roles', 'users.role_id', 'roles.id')->where('role_name', '!=', 'Super Admin')->get();
-
-    //     return view('admin.editTicket', compact('ticket', 'supportCategories', 'ticketStatuses', 'ticketImages', 'users'));
-    // }
-
-    // public function updateTicket(Request $request, $id)
-    // {
-
-    //     $rules = [
-    //         'ticket_no' => 'required',
-    //         'sender_name' => 'required|max:255',
-    //         'sender_email' => 'required|max:255',
-    //         'subject' => 'required|max:255',
-    //         'message' => 'required|max:5000',
-    //         'category_id' => 'required',
-    //         'priority' => 'required',
-    //         'status_id' => 'required',
-    //     ];
-
-    //     $messages = [
-    //         'ticket_no.required' => 'Ticket No. is required.',
-    //         'sender_name.required' => 'Sender Name is required.',
-    //         'sender_name.max' => 'Sender Name should not exceed 255 characters.',
-    //         'sender_email.required' => 'Sender Email is required.',
-    //         'sender_email.max' => 'Sender Email should not exceed 255 characters.',
-    //         'subject.required' => 'Subject is required.',
-    //         'subject.max' => 'Subject should not exceed 255 characters.',
-    //         'message.required' => 'Message is required.',
-    //         'message.max' => 'Message should not exceed 5000 characters.',
-    //         'category_id.required' => 'Category is required.',
-    //         'priority.required' => 'Priority is required.',
-    //         'status_id.required' => 'Status is required.',
-    //     ];
-
-    //     $validator = Validator::make($request->all(), $rules, $messages);
-
-    //     if ($validator->fails()) {
-    //         return redirect()
-    //             ->back()
-    //             ->withErrors($validator)
-    //             ->withInput();
-    //     }
-
-    //     $updateTicket = Ticket::find($id);
-
-    //     $this->authorize('update', $updateTicket);
-
-    //     $status_id = $request->input('status_id');
-
-    //     $updateTicket->update([
-    //         'ticket_no' => $request->input('ticket_no'),
-    //         'sender_name' => $request->input('sender_name'),
-    //         'sender_email' => $request->input('sender_email'),
-    //         'subject' => $request->input('subject'),
-    //         'message' => $request->input('message'),
-    //         'category_id' => $request->input('category_id'),
-    //         'priority' => $request->input('priority'),
-    //         'status_id' => $request->input('status_id'),
-    //         'pic_id' => $request->input('pic_id'),
-    //         'remarks' => $request->input('remarks')
-    //     ]);
-
-    //     return redirect()->route('ticketSumm', ['status' => $status_id])->with('success', 'Ticket updated successfully.');
-    // }
-
-    // public function deleteTicket($id)
-    // {
-    //     $ticket = Ticket::find($id);
-
-    //     $this->authorize('delete', $ticket);
-
-    //     $ticket->delete();
-
-    //     return redirect()->back()->with('success', 'Ticket deleted successfully.');
-    // }
-
-
-    public function viewTicketImage($id)
-    {
-        $ticketImages = TicketImage::where('ticket_id', $id)->get();
-        $tickets = Ticket::find($id);
-
-        return view('admin.viewTicketImage', compact('ticketImages', 'tickets'));
-    }
 
     public function viewContent(Title $title)
     {
@@ -1003,9 +759,6 @@ class AdminController extends Controller
     {
         $authUser = User::where('id', '=', Auth::user()->id)->first();
 
-        $authUserId = $authUser->id;
-        $authUserCategoryId = $authUser->category_id;
-
         if ($authUser->role_id == 1) {
 
             $supportCategories = SupportCategory::all();
@@ -1019,7 +772,7 @@ class AdminController extends Controller
             }
 
         } elseif ($authUser->role_id !== 1 && $authUser->manage_ticket_in_category == 1) {
-            $supportCategories = SupportCategory::where('support_categories.id', $authUserCategoryId)
+            $supportCategories = SupportCategory::where('support_categories.id', $authUser->category_id)
                                                 ->get();
 
             foreach ($supportCategories as $supportCategory) {
@@ -1031,13 +784,6 @@ class AdminController extends Controller
             }
         }
 
-        // $supportCategories = SupportCategory::with([
-        //     'users' => function ($query) {
-        //         $query->withCount('tickets');
-        //     },
-        // ])->get();
-
-        // Fetch all ticket statuses
         $ticketStatuses = TicketStatus::all();
 
         // Loop through each support category

@@ -356,18 +356,6 @@
                             priorityStyle = 'color: red; font-weight: bold;';
                         }
 
-
-                        var statusStyle = '';
-                        if (ticket.status === 'Pending') {
-                            statusStyle = 'color: orange; font-weight: bold;';
-                        } else if (ticket.status === 'Solved') {
-                            statusStyle = 'color: #84f542; font-weight: bold;';
-                        } else if (ticket.status === 'New') {
-                            statusStyle = 'color: #4684fc; font-weight: bold;';
-                        } else {
-                            statusStyle = 'color: red; font-weight: bold;';
-                        }
-
                         var statusClass = '';
                         if (ticket.status === 'Pending') {
                             statusClass = 'badge badge-md badge-boxed  badge-soft-warning';
@@ -402,7 +390,6 @@
                                     '<td>' + ticket.sender_email + '</td>' +
                                     '<td>' + categoryName + '</td>' +
                                     '<td style="' + priorityStyle + '">' + ticket.priority + '</td>' +
-                                    // '<td style="' + statusStyle + '">' + ticket.status + '</td>' +
                                     '<td>' + '<span class="' + statusClass + '">' + ticket.status + '</span>' + '</td>' +
                                     '<td>' + picName + '</td>' +
                                     '<td>' + remarks + '</td>' +
@@ -568,7 +555,7 @@
 
         function exportDataToExcel(data) {
             // Convert data to Excel format
-            var headers = ['Date', 'Ticket No', 'Sender Name', 'Sender Email', 'Subject', 'Message','Category', 'Priority', 'Status', 'PIC ID', 'Remarks'];
+            var headers = ['Date', 'Ticket No', 'Sender Name', 'Sender Email', 'Subject', 'Message','Category', 'Priority', 'Status', 'PIC', 'Remarks'];
             var excelData = [headers];
 
             data.forEach(function(ticket) {
@@ -582,7 +569,7 @@
                     ticket.category_name || '',
                     ticket.priority || '',
                     ticket.status || '',
-                    ticket.pic_id || '',
+                    ticket.name || '',
                     ticket.remarks || ''
                 ];
                 excelData.push(row);

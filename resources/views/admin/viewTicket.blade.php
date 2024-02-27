@@ -154,7 +154,7 @@
 
                         <div class="row">
                             @foreach ($ticketImages as $ticketImage)
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="card">
                                         <div class="card-body">
                                             <div>

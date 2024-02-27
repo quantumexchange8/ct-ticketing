@@ -8,13 +8,13 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
-                {{-- <div class="page-title-box"> --}}
-                    <div class="row" style="padding:10px;">
-                        <div class="col">
+                <div class="page-title-box">
+                    <div class="row">
+                        <div class="col-10">
                             <h4 class="page-title mt-2">Performance</h4>
                         </div><!--end col-->
                     </div><!--end row-->
-                {{-- </div><!--end page-title-box--> --}}
+                </div><!--end page-title-box-->
             </div><!--end col-->
         </div><!--end row-->
         @php
@@ -22,7 +22,7 @@
             $colorIndex = 0;
         @endphp
 
-        <div id="searchResults">
+        <div>
             @foreach ($supportCategories as $supportCategory)
                 <div class="row">
                     <div class="col-sm-12">

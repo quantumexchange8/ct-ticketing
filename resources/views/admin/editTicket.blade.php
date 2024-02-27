@@ -151,7 +151,7 @@
                                 </div>
                             </div>
 
-                            <div class="row">
+                            {{-- <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label class="t_image">Images</label>
@@ -162,6 +162,22 @@
                                         @endforeach
                                     </div>
                                 </div>
+                            </div> --}}
+
+                            <div class="row">
+                                @foreach ($ticketImages as $ticketImage)
+                                    <div class="col-sm-3">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div>
+                                                    <a href="{{ asset('storage/tickets/' . $ticketImage->t_image) }}" class="file-modal-link">
+                                                        <img src="{{ asset('storage/tickets/' . $ticketImage->t_image) }}" alt="Ticket Image" style="width: 100%; height: 100%">
+                                                    </a>
+                                                </div>
+                                            </div><!--end card-body-->
+                                        </div><!--end card-->
+                                    </div><!--end col-->
+                                @endforeach
                             </div>
 
                             <div class="col-12 text-right">
