@@ -104,7 +104,7 @@
 <script>
     function confirmDelete(formId) {
         var titleId = document.getElementById(formId).getAttribute('data-title-id');
-        console.log('Title ID:', titleId);
+        // console.log('Title ID:', titleId);
 
         Swal.fire({
             title: 'Are you sure?',

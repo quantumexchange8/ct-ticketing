@@ -32,21 +32,18 @@
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                </div>
 
-                                <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="exampleInputPassword1">Description</label>
-                                        <input type="text" class="form-control" name="sub_description" placeholder="Enter Description" autocomplete="off" value="{{ old('sub_description') }}">
-                                        @error('sub_description')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
+                                        <label for="content_id">Category</label>
+                                        <select class="form-control" name="category_id">
+                                            @foreach ($supportCategories as $category)
+                                                <option value="{{ $category->id }}" {{ $category->id == $supportCategory->id ? 'selected' : '' }}>
+                                                    {{ $category->category_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
-                                </div>
-                            </div>
 
-                            <div class="row">
-                                <div class="col-lg-6">
                                     <div class="form-group">
                                         <label for="content_id">Related Topic</label>
                                         <select class="form-control" name="content_id">
@@ -58,6 +55,16 @@
                                             @endforeach
                                         </select>
                                         @error('content_id')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">Description</label>
+                                        <textarea type="text" class="form-control" name="sub_description" placeholder="Enter Description" rows="9" autocomplete="off">{{ old('sub_description') }}</textarea>
+                                        @error('sub_description')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>

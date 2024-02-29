@@ -172,7 +172,7 @@
     $('#exportButton').click(function() {
         var status = $('.page-title').text().trim();
 
-        console.log(status);
+        // console.log(status);
         exportToExcel(status);
     });
 

@@ -63,9 +63,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/update-ticket/{id}', [AdminController::class, 'updateTicket'])->name('updateTicket');
     Route::delete('/delete-ticket/{id}', [AdminController::class, 'deleteTicket'])->name('deleteTicket');
 
+    Route::post('/add-note', [AdminController::class, 'addNote'])->name('addNote');
+    Route::get('/edit-note/{id}', [AdminController::class, 'editNote'])->name('editNote');
+    Route::post('/update-note/{id}', [AdminController::class, 'updateNote'])->name('updateNote');
+    Route::delete('/delete-note/{id}', [AdminController::class, 'deleteNote'])->name('deleteNote');
+
     Route::get('/category-summary/{supportCategory}', [AdminController::class, 'categorySumm'])->name('categorySumm');
 
     Route::get('/performance', [AdminController::class, 'performance'])->name('performance');
+    Route::get('/get-performance', [AdminController::class, 'getPerformance'])->name('getPerformance');
     Route::get('/view-performance/{id}', [AdminController::class, 'viewPerformance'])->name('viewPerformance');
 
     Route::get('/profile', [AdminController::class, 'profile'])->name('profile');

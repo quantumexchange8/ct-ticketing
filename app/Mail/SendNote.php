@@ -9,22 +9,26 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SubmitTicket extends Mailable
+class SendNote extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public $ticket;
-    public $subject;
+    public $note;
+    public $noteTitle;
     public $senderEmail;
+    public $userName;
+    public $userEmail;
 
-    public function __construct($ticket, $subject, $senderEmail)
+    public function __construct($note, $noteTitle, $senderEmail, $userName, $userEmail)
     {
-        $this->ticket = $ticket;
-        $this->subject = $subject;
+        $this->note = $note;
+        $this->noteTitle = $noteTitle;
         $this->senderEmail = $senderEmail;
+        $this->userName = $userName;
+        $this->userEmail = $userEmail;
     }
 
     /**
@@ -35,25 +39,24 @@ class SubmitTicket extends Mailable
         // return $this->view('user.SubmitTicket')
         //             ->subject('Ticket Submission');
 
-        // $recipients = ['amberljq00@gmail.com', 'hivehanis@gmail.com'];
-
         $recipients = [$this->senderEmail];
 
-        $attachments = [];
-        if ($this->ticket->images) {
-            foreach ($this->ticket->images as $image) {
-                $attachments[] = storage_path('storage/tickets/' . $image->t_image);
-            }
-        }
+
+        // $attachments = [];
+        // if ($this->ticket->images) {
+        //     foreach ($this->ticket->images as $image) {
+        //         $attachments[] = storage_path('storage/tickets/' . $image->t_image);
+        //     }
+        // }
 
         $email = $this
             ->to($recipients)
-            ->subject($this->subject)
-            ->view('user.submitTicket', ['ticket' => $this->ticket]);
+            ->subject($this->noteTitle)
+            ->view('admin.sendNote', ['note' => $this->note, 'userName' => $this->userName, 'userEmail' => $this->userEmail]);
 
-        foreach ($attachments as $attachment) {
-            $email->attachFromPath($attachment);
-        }
+        // foreach ($attachments as $attachment) {
+        //     $email->attachFromPath($attachment);
+        // }
 
         return $email;
     }

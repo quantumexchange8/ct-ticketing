@@ -227,46 +227,20 @@
                 title: 'Done',
                 text: '{{ session('success') }}',
                 icon: 'success',
-                timer: 1000, // 3000 milliseconds (3 seconds)
-                showConfirmButton: false, // Hide the "OK" button
+                timer: 1000,
+                showConfirmButton: false,
             });
         @elseif(session('error'))
             Swal.fire({
                 title: 'Error',
                 text: '{{ session('error') }}',
                 icon: 'error',
-                timer: 1000, // 3000 milliseconds (3 seconds)
-                showConfirmButton: false, // Hide the "OK" button
+                timer: 1000,
+                showConfirmButton: false,
             });
         @endif
     });
 </script>
-
-{{-- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var roleSelect = document.querySelector('select[name="role_id"]');
-        var privilegeCheckboxes = document.querySelectorAll('.privilege-checkbox');
-
-        roleSelect.addEventListener('change', function() {
-            // Disable privilege checkboxes when role with id 1 is selected
-            var roleId = roleSelect.value;
-            var disableCheckboxes = roleId === '1';
-
-            privilegeCheckboxes.forEach(function(checkbox) {
-                checkbox.checked = disableCheckboxes;
-                checkbox.disabled = disableCheckboxes;
-            });
-        });
-
-        privilegeCheckboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                if (roleSelect.value === '1') {
-                    checkbox.checked = true; // Ensure checkbox remains checked
-                }
-            });
-        });
-    });
-</script> --}}
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

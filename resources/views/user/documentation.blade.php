@@ -3,6 +3,7 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
+
 <!-- Page Content-->
 <div class="page-content">
     <section class="bg-home" id="{{ $title->title_name }}">
@@ -91,14 +92,13 @@
                 </div><!--end card-->
             </div><!--end col-->
         </div><!--end row-->
-
     </section>
 </div>
 <!-- end page content -->
 
 
 {{-- Content to print --}}
-<div id="contentToPrint" class="page-content" style="display: none;">
+<div id="allContentToPrint" class="page-content" style="display: none;">
     @foreach ($titles as $title)
         <section class="bg-home" style="page-break-before: always;">
             <div class="row">
@@ -131,11 +131,86 @@
     @endforeach
 </div>
 
+
+<div id="contentToPrint" class="card-body" style="display: none;">
+    <div class="row">
+        <div class="col">
+            <h4 class="header-title">{{ $singleTitle->title_name }}</h4>
+        </div>
+    </div>
+
+    <hr class="hr-dashed">
+
+    @foreach ($singleTitle->subtitles as $subtitle)
+        <h5 class="subtitle-name">{{ $subtitle->subtitle_name }}</h5>
+        @foreach ($subtitle->contents as $content)
+            <div class="content-name" id="{{$content->id}}" style="text-align: justify;">
+                <p>{!! $content->content_name !!}</p>
+            </div>
+
+            <div class="text-center">
+                @forelse($content->documentationImages as $image)
+                <img src="{{ asset('storage/documentations/' . $image->d_image) }}" alt="Image" class="image-fluid w-50 h-50">
+                @empty
+                {{-- <b>No image</b> --}}
+                @endforelse
+            </div>
+
+            <br>
+        @endforeach
+    @endforeach
+</div><!--end card-body-->
+
+
+<!-- Modal -->
+<div id="myModal" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-lg" role="document" style="width: 400px; height: 200px; margin-top: 200px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="imageModalLabel">Choose Content to Print</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="display: flex; justify-content: center; gap: 20px;">
+            <button id="printContent" type="button" class="btn btn-soft-primary waves-effect waves-light">Current Content</button>
+            <button id="printAllContent" type="button" class="btn btn-soft-info waves-effect waves-light">All Content</button>
+        </div>
+      </div>
+    </div>
+</div>
+
 {{-- Print --}}
 <script>
-    document.getElementById("exportButton").addEventListener("click", function() {
-        PrintElem("contentToPrint");
+    // Get the modal
+    var modal = document.getElementById("myModal");
+
+    // Get the export button
+    var exportButton = document.getElementById("exportButton");
+
+    // When the user clicks the export button, display the modal
+    exportButton.addEventListener("click", function() {
+        $('#myModal').modal('show');
     });
+
+    // When the user clicks anywhere outside of the modal, close it
+    $(document).on('click', function(event) {
+        if ($(event.target).closest('.modal').length === 0) {
+            $('#myModal').modal('hide');
+        }
+    });
+
+    // Print contentToPrint or allContentToPrint based on user selection
+    document.getElementById("printContent").addEventListener("click", function() {
+        PrintElem("contentToPrint");
+        $('#myModal').modal('hide');
+    });
+
+    document.getElementById("printAllContent").addEventListener("click", function() {
+        PrintElem("allContentToPrint");
+        $('#myModal').modal('hide');
+    });
+
 
     function PrintElem(elem) {
         var mywindow = window.open('', 'PRINT', 'height=400,width=600');
@@ -188,7 +263,7 @@
                     titleId: titleId,
                 },
                 success: function (response) {
-                    console.log('Search Term:', searchTerm);
+                    // console.log('Search Term:', searchTerm);
 
                     var matchedContentIds = response.matchedContentIds;
                     var unmatchedContentIds = response.unmatchedContentIds;

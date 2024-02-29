@@ -72,9 +72,7 @@
                 </div><!--end card-->
             </div> <!-- end col -->
         </div> <!-- end row -->
-
     </div><!-- container -->
-
 </div>
 <!-- end page content -->
 <!-- Sweet-Alert  -->
@@ -86,16 +84,16 @@
                 title: 'Done',
                 text: '{{ session('success') }}',
                 icon: 'success',
-                timer: 1000, // 3000 milliseconds (3 seconds)
-                showConfirmButton: false, // Hide the "OK" button
+                timer: 1000,
+                showConfirmButton: false,
             });
         @elseif(session('error'))
             Swal.fire({
                 title: 'Error',
                 text: '{{ session('error') }}',
                 icon: 'error',
-                timer: 1000, // 3000 milliseconds (3 seconds)
-                showConfirmButton: false, // Hide the "OK" button
+                timer: 1000,
+                showConfirmButton: false,
             });
         @endif
     });
@@ -104,7 +102,6 @@
 <script>
     function confirmDelete(formId) {
         var adminId = document.getElementById(formId).getAttribute('data-admin-id');
-        console.log('Title ID:', adminId);
 
         Swal.fire({
             title: 'Are you sure?',

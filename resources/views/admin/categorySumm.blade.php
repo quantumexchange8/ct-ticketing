@@ -123,8 +123,8 @@
                 title: 'Done',
                 text: '{{ session('success') }}',
                 icon: 'success',
-                timer: 1000, // 3000 milliseconds (3 seconds)
-                showConfirmButton: false, // Hide the "OK" button
+                timer: 1000,
+                showConfirmButton: false,
             });
         @endif
     });
@@ -133,7 +133,6 @@
 <script>
     function confirmDelete(formId) {
         var ticketId = document.getElementById(formId).getAttribute('data-ticket-id');
-        // console.log('Ticket ID:', ticketId);
 
         Swal.fire({
             title: 'Are you sure?',

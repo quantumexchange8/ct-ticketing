@@ -148,7 +148,6 @@
                                             <div class="form-group row d-flex align-items-end">
 
                                                 <div class="col-sm-11">
-                                                    {{-- <input type="file" id="input-file-now" name="t_image" class="dropify" /> --}}
                                                     <input type="file" id="input-file-now" name="car[][t_image]">
                                                 </div><!--end col-->
 
@@ -171,11 +170,6 @@
                                     </div><!--end row-->
                                 </div> <!--end repeter-->
                             </fieldset><!--end fieldset-->
-
-                            {{-- <div class="col-12 text-right">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div> --}}
-
                         </form>
                     </div><!--end card-body-->
                 </div><!--end card-->

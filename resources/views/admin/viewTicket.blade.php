@@ -25,7 +25,7 @@
         </div><!--end row-->
 
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-6">
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
@@ -67,12 +67,40 @@
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="message">Priority</label>
+                                    <select class="form-control" name="priority" disabled>
+                                        <option value="">Select Priority</option>
+                                        <option value="Low" {{ $ticket->priority  === 'Low' ? 'selected' : '' }}>Low</option>
+                                        <option value="Medium" {{ $ticket->priority  === 'Medium' ? 'selected' : '' }}>Medium</option>
+                                        <option value="High" {{ $ticket->priority  === 'High' ? 'selected' : '' }}>High</option>
+                                    </select>
+                                    @error('message')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="message">Status</label>
+                                    <select class="form-control" name="status_id" disabled>
+                                        <option value="">Select Status</option>
+                                        @foreach($ticketStatuses as $ticketStatus)
+                                            <option value="{{ $ticketStatus->id }}" {{ $ticket->ticketStatus->id == $ticketStatus->id ? 'selected' : '' }}>
+                                                {{ $ticketStatus->status }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('message')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             </div>
 
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label for="message">Message</label>
-                                    <textarea type="text" class="form-control" name="message" placeholder="Message" rows="5" readonly>{{ $ticket->message }}</textarea>
+                                    <textarea type="text" class="form-control" name="message" placeholder="Message" rows="12" readonly>{{ $ticket->message }}</textarea>
                                     @error('message')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -97,44 +125,16 @@
                                     @enderror
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="message">Status</label>
-                                    <select class="form-control" name="status_id" disabled>
-                                        <option value="">Select Status</option>
-                                        @foreach($ticketStatuses as $ticketStatus)
-                                            <option value="{{ $ticketStatus->id }}" {{ $ticket->ticketStatus->id == $ticketStatus->id ? 'selected' : '' }}>
-                                                {{ $ticketStatus->status }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('message')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
+                                {{-- <div class="form-group">
                                     <label for="message">Remarks</label>
                                     <textarea type="text" class="form-control" name="remarks" placeholder="Remarks" rows="5" readonly>{{ $ticket->remarks }}</textarea>
                                     @error('remarks')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
-                                </div>
+                                </div> --}}
                             </div>
 
                             <div class="col-lg-6">
-                                <div class="form-group">
-                                    <label for="message">Priority</label>
-                                    <select class="form-control" name="priority" disabled>
-                                        <option value="">Select Priority</option>
-                                        <option value="Low" {{ $ticket->priority  === 'Low' ? 'selected' : '' }}>Low</option>
-                                        <option value="Medium" {{ $ticket->priority  === 'Medium' ? 'selected' : '' }}>Medium</option>
-                                        <option value="High" {{ $ticket->priority  === 'High' ? 'selected' : '' }}>High</option>
-                                    </select>
-                                    @error('message')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
                                 <div class="form-group" >
                                     <label for="message">PIC</label>
                                     <select class="form-control" name="pic_id" disabled>
@@ -154,7 +154,7 @@
 
                         <div class="row">
                             @foreach ($ticketImages as $ticketImage)
-                                <div class="col-sm-3">
+                                <div class="col-sm-6">
                                     <div class="card">
                                         <div class="card-body">
                                             <div>
@@ -178,12 +178,106 @@
                     </div><!--end card-body-->
                 </div><!--end card-->
             </div><!--end col-->
+
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Notes</h4>
+                    </div><!--end card-header-->
+                    <div class="card-body">
+                        <div class="slimscroll activity-scroll">
+                            <div class="activity">
+                                @foreach ($notes as $note)
+                                    <div class="activity-info">
+                                        <div class="icon-info-activity">
+                                            @if ($note->sent == 0)
+                                                <i class="las la-check-circle bg-soft-primary"></i>
+                                            @else
+                                                <i class="las la-comment-dots bg-soft-primary"></i>
+                                            @endif
+                                        </div>
+                                        <div class="activity-info-text">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h6 class="m-0 w-75">{{ $note->note_no }}</h6>
+                                                <span class="text-muted d-block">{{Carbon\Carbon::parse($note->created_at)->format('d M Y') }}</span>
+                                            </div>
+                                            <p class="text-muted mt-3">{{ $note->note_title }}</p>
+                                            <p class="text-muted mt-3">{{ $note->note_description }}
+                                                {{-- <a href="#" class="text-info">[more info]</a> --}}
+                                            </p>
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                                <div class="col-12 text-right">
+                                    <a href="#" class="btn  btn-primary" id="addnotes">
+                                        Add New Notes
+                                    </a>
+                                </div>
+                            </div><!--end activity-->
+                        </div><!--end activity-scroll-->
+                    </div>  <!--end card-body-->
+                </div><!--end card-->
+            </div><!--end col-->
         </div><!--end row-->
+
     </div>
 </div>
 <!-- end page content -->
 
-<!-- Modal Markup -->
+
+<!-- Add notes modal -->
+<div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-lg" role="document" style="max-width: 500px; height: 500px; margin-top: 150px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="imageModalLabel">Add New Notes</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form action="{{ route('addNote') }}" method="POST" >
+                @csrf
+                {{-- <div class="row"> --}}
+                    {{-- <div class="col-lg-6"> --}}
+                        <div class="form-group">
+                            <label for="note_title">Title</label>
+                            {{-- <input type="text" class="form-control" name="note_title" autocomplete="off"> --}}
+                            <textarea type="text" class="form-control" name="note_title" rows="5" autocomplete="off"></textarea>
+                            @error('note_title')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+
+                        </div>
+                    {{-- </div> --}}
+                    {{-- <div class="col-lg-6"> --}}
+                        <div class="form-group">
+                            <label for="note_description">Description</label>
+                            <textarea type="text" class="form-control" name="note_description" rows="5" autocomplete="off"></textarea>
+                            @error('note_description')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group" style="display: none;">
+                            <label for="note_description">Ticket ID</label>
+                            <input type="text" class="form-control" name="ticket_id" value="{{ $ticket->id }}">
+                        </div>
+
+                    {{-- </div> --}}
+                {{-- </div> --}}
+                <div class="col-12 text-right">
+                    <button type="submit" class="btn btn-primary px-4" name="action" value="save_only">Save Only</button>
+                    <button type="submit" class="btn btn-primary px-4" name="action" value="save_and_send_email">Save and Send Email</button>
+                </div>
+            </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- Image modal -->
 <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true" >
     <div class="modal-dialog modal-lg" role="document" style="max-width: 700px; height: 500px;">
       <div class="modal-content">
@@ -202,13 +296,40 @@
 
 <script>
     $(document).ready(function() {
-        console.log('Jquery is working');
+        // console.log('Jquery is working');
         $('.file-modal-link').on('click', function(event) {
-        event.preventDefault();
-        var imageUrl = $(this).attr('href');
-        $('#previewImage').attr('src', imageUrl);
-        $('#imageModal').modal('show');
+            event.preventDefault();
+            var imageUrl = $(this).attr('href');
+                $('#previewImage').attr('src', imageUrl);
+                $('#imageModal').modal('show');
         });
+
+        $('#addnotes').on('click', function(event) {
+            event.preventDefault();
+            $('#noteModal').modal('show');
+        });
+
+        $('#noteModal').on('hidden.bs.modal', function () {
+            // Clear input fields
+            $(this).find('input[type=text]').val('');
+        });
+
+    });
+</script>
+
+<!-- Sweet-Alert  -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('success'))
+            Swal.fire({
+                title: 'Done',
+                text: '{{ session('success') }}',
+                icon: 'success',
+                timer: 1000, // 3000 milliseconds (3 seconds)
+                showConfirmButton: false, // Hide the "OK" button
+            });
+        @endif
     });
 </script>
 

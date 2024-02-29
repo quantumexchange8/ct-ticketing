@@ -71,115 +71,112 @@
             </div><!-- end col-->
         </div><!--end row-->
 
-        {{-- @if (Auth::user()->role_id == 1 || (Auth::user()->role_id !== 1 && Auth::user()->manage_ticket_in_category == 1)) --}}
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="row">
-                        <div class="col-lg-9">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="row align-items-center">
-                                        <div class="col">
-                                            <h4 class="card-title">Unassigned Tickets</h4>
-                                        </div><!--end col-->
-                                    </div>  <!--end row-->
-                                </div><!--end card-header-->
-                                <div class="card-body">
-                                    <div class="tab-content">
-                                        <div class="table-responsive">
-                                            <table class="table mb-0">
-                                                <thead class="thead-light">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h4 class="card-title">Unassigned Tickets</h4>
+                                    </div><!--end col-->
+                                </div>  <!--end row-->
+                            </div><!--end card-header-->
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="table-responsive">
+                                        <table class="table mb-0">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th class="border-top-0">Date</th>
+                                                    <th class="border-top-0">Ticket No</th>
+                                                    <th class="border-top-0">Category</th>
+                                                    <th class="border-top-0">Priority</th>
+                                                    <th class="border-top-0">Actions</th>
+                                                </tr><!--end tr-->
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($unassignedTickets as $ticket)
                                                     <tr>
-                                                        <th class="border-top-0">Date</th>
-                                                        <th class="border-top-0">Ticket No</th>
-                                                        <th class="border-top-0">Category</th>
-                                                        <th class="border-top-0">Priority</th>
-                                                        <th class="border-top-0">Actions</th>
-                                                    </tr><!--end tr-->
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($unassignedTickets as $ticket)
-                                                        <tr>
-                                                            <td>{{ Carbon\Carbon::parse($ticket->created_at)->format('d M Y') }}</td>
-                                                            <td>{{ $ticket->ticket_no}}</td>
-                                                            <td>{!! $ticket->supportCategories->category_name !!}</td>
-                                                            <td style ="{{ $ticket->priority === 'Medium' ? 'color: orange; font-weight: bold;' : ($ticket->priority === 'Low' ? 'color: #84f542; font-weight: bold;' : 'color: red; font-weight: bold;') }}">
-                                                                {{ $ticket->priority }}
-                                                            </td>
-                                                            <td class="text-center" style="display: flex; justify-content: center; gap: 10px;">
-                                                                <a href="{{ route('viewTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
-                                                                    <i class="dripicons-preview"></i>
+                                                        <td>{{ Carbon\Carbon::parse($ticket->created_at)->format('d M Y') }}</td>
+                                                        <td>{{ $ticket->ticket_no}}</td>
+                                                        <td>{!! $ticket->supportCategories->category_name !!}</td>
+                                                        <td style ="{{ $ticket->priority === 'Medium' ? 'color: orange; font-weight: bold;' : ($ticket->priority === 'Low' ? 'color: #84f542; font-weight: bold;' : 'color: red; font-weight: bold;') }}">
+                                                            {{ $ticket->priority }}
+                                                        </td>
+                                                        <td class="text-center" style="display: flex; justify-content: center; gap: 10px;">
+                                                            <a href="{{ route('viewTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
+                                                                <i class="dripicons-preview"></i>
+                                                            </a>
+
+                                                            @if (Auth::user()->role_id == 1)
+                                                                <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
+                                                                    <i class="dripicons-pencil"></i>
                                                                 </a>
 
-                                                                @if (Auth::user()->role_id == 1)
-                                                                    <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                                        <i class="dripicons-pencil"></i>
-                                                                    </a>
+                                                                <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
+                                                                    @method('DELETE')
+                                                                    @csrf
+                                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
+                                                                        <i class="dripicons-trash"></i>
+                                                                    </button>
+                                                                </form>
+                                                            @elseif (Auth::user()->role_id !== 1 && Auth::user()->manage_ticket_in_category == 1 && Auth::user()->category_id == $ticket->category_id)
+                                                                <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
+                                                                    <i class="dripicons-pencil"></i>
+                                                                </a>
 
-                                                                    <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
-                                                                        @method('DELETE')
-                                                                        @csrf
-                                                                        <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
-                                                                            <i class="dripicons-trash"></i>
-                                                                        </button>
-                                                                    </form>
-                                                                @elseif (Auth::user()->role_id !== 1 && Auth::user()->manage_ticket_in_category == 1 && Auth::user()->category_id == $ticket->category_id)
-                                                                    <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                                        <i class="dripicons-pencil"></i>
-                                                                    </a>
-
-                                                                    <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
-                                                                        @method('DELETE')
-                                                                        @csrf
-                                                                        <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
-                                                                            <i class="dripicons-trash"></i>
-                                                                        </button>
-                                                                    </form>
-                                                                @endif
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table> <!--end table-->
-                                        </div><!--end /div-->
+                                                                <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
+                                                                    @method('DELETE')
+                                                                    @csrf
+                                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
+                                                                        <i class="dripicons-trash"></i>
+                                                                    </button>
+                                                                </form>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table> <!--end table-->
+                                    </div><!--end /div-->
+                                </div>
+                            </div><!--end card-body-->
+                        </div><!--end card-->
+                    </div> <!--end col-->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card report-card">
+                            <div class="card-body">
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col">
+                                            <p class="text-dark mb-1 font-weight-semibold">Unassigned</p>
+                                            <h3 class="my-0">{{ $totalUnassigned }}</h3>
                                     </div>
-                                </div><!--end card-body-->
-                            </div><!--end card-->
-                        </div> <!--end col-->
-                        <div class="col-md-6 col-lg-3">
-                            <div class="card report-card">
-                                <div class="card-body">
-                                    <div class="row d-flex justify-content-center">
-                                        <div class="col">
-                                                <p class="text-dark mb-1 font-weight-semibold">Unassigned</p>
-                                                <h3 class="my-0">{{ $totalUnassigned }}</h3>
-                                        </div>
-                                        <div class="col-auto align-self-center">
-                                            <div class="report-main-icon bg-light-alt">
-                                                <i data-feather="alert-triangle" class="align-self-center text-muted icon-md"></i>
-                                            </div>
+                                    <div class="col-auto align-self-center">
+                                        <div class="report-main-icon bg-light-alt">
+                                            <i data-feather="alert-triangle" class="align-self-center text-muted icon-md"></i>
                                         </div>
                                     </div>
-                                    <hr class="hr-dashed">
-                                    <div class="text-center">
-                                        <h6 class="text-primary bg-soft-danger p-3 mb-0 font-11 rounded">
-                                            High: {{ $unassignedHigh }}
-                                        </h6>
-                                        <h6 class="text-primary bg-soft-warning p-3 mb-0 font-11 rounded">
-                                            Medium: {{ $unassignedMedium }}
-                                        </h6>
-                                        <h6 class="text-primary bg-soft-primary p-3 mb-0 font-11 rounded">
-                                            Low: {{ $unassignedLow }}
-                                        </h6>
-                                    </div>
-                                </div><!--end card-body-->
-                            </div><!--end card-->
-                        </div> <!--end col-->
-                    </div>
+                                </div>
+                                <hr class="hr-dashed">
+                                <div class="text-center">
+                                    <h6 class="text-primary bg-soft-danger p-3 mb-0 font-11 rounded">
+                                        High: {{ $unassignedHigh }}
+                                    </h6>
+                                    <h6 class="text-primary bg-soft-warning p-3 mb-0 font-11 rounded">
+                                        Medium: {{ $unassignedMedium }}
+                                    </h6>
+                                    <h6 class="text-primary bg-soft-primary p-3 mb-0 font-11 rounded">
+                                        Low: {{ $unassignedLow }}
+                                    </h6>
+                                </div>
+                            </div><!--end card-body-->
+                        </div><!--end card-->
+                    </div> <!--end col-->
                 </div>
             </div>
-        {{-- @endif --}}
-
+        </div>
 
         <div class="row">
             <div class="col-lg-12">
@@ -269,8 +266,8 @@
                 title: 'Done',
                 text: '{{ session('success') }}',
                 icon: 'success',
-                timer: 1000, // 3000 milliseconds (3 seconds)
-                showConfirmButton: false, // Hide the "OK" button
+                timer: 1000,
+                showConfirmButton: false,
             });
         @endif
     });

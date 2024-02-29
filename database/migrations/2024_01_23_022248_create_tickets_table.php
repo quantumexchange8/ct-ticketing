@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('priority')->nullable();
             $table->string('status_id')->nullable();
             $table->string('pic_id')->nullable();
-            $table->string('remarks')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

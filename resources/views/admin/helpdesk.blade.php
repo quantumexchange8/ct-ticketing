@@ -188,12 +188,12 @@
         $('#category, #priority, #datepick').on('change input', function(e) {
             e.preventDefault();
             currentPage = 1; // Reset to first page when changing select options
-            clearInputValue(); // Clear input value when select options are used
+            clearInputValue();
             var categoryId = $('#category').val();
             var priority = $('#priority').val();
             var datepick = $('#datepick').val();
 
-            console.log(datepick);
+            // console.log(datepick);
             loadTickets(currentPage, perPage, categoryId, priority, datepick);
         });
 
@@ -201,7 +201,7 @@
         $('#searchInput').on('input', function(e) {
             e.preventDefault();
             currentPage = 1;
-            clearSelectOptions(); // Clear select options when input field is used
+            clearSelectOptions();
             var searchTerm = $(this).val().trim();
             var categoryId = $('#category').val();
             var priority = $('#priority').val();
@@ -211,7 +211,6 @@
 
         // Function to clear select options
         function clearSelectOptions() {
-            console.log('Clearing select options');
             $('#category').val('');
             $('#priority').val('');
             $('#datepick').val('');
@@ -280,8 +279,8 @@
                         var picId = (typeof ticket.pic_id !== 'undefined') ? ticket.pic_id : '';
                         var catId = (ticket.category_id) ? ticket.category_id : '';
 
-                        var viewRoute = "/view-ticket/" + ticketId; // Construct the view route
-                        var editRoute = "/edit-ticket/" + ticketId; // Construct the edit route
+                        var viewRoute = "/view-ticket/" + ticketId;
+                        var editRoute = "/edit-ticket/" + ticketId;
                         var deleteRoute = "/delete-ticket/" + ticketId;
 
                         // var actions = `<a href="${viewRoute}" class="btn btn-sm btn-soft-purple btn-circle"><i class="dripicons-preview"></i></a>

@@ -94,7 +94,7 @@
                 type: 'GET',
                 data: { searchTerm: searchTerm },
                 success: function (response) {
-                    console.log('Search Term:', searchTerm);
+                    // console.log('Search Term:', searchTerm);
                     // $('#searchResults').html(response);
 
                     var matchedSubCategoryIds = response.matchedSubCategoryIds;

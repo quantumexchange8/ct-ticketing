@@ -31,4 +31,9 @@ class Ticket extends Model
     {
         return $this->belongsTo(User::class, 'pic_id', 'id');
     }
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class, 'ticket_id', 'id');
+    }
 }

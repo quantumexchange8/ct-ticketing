@@ -56,7 +56,7 @@
 
 <script>
     $(document).ready(function() {
-        console.log('Jquery is working');
+        // console.log('Jquery is working');
         $('.file-modal-link').on('click', function(event) {
         event.preventDefault();
         var imageUrl = $(this).attr('href');

@@ -14,8 +14,6 @@ use App\Models\SupportCategory;
 use App\Models\SupportSubCategory;
 use App\Models\TicketImage;
 use App\Mail\SubmitTicket;
-// use Alert;
-
 
 
 class MemberController extends Controller
@@ -30,22 +28,31 @@ class MemberController extends Controller
         ->orderBy('t_sequence')
         ->first();
 
+        // Export one documentation
+        $singleTitle = $title;
+
+        // Export all documentation
         $titles = Title::with('subtitles.contents')->get();
 
         // Pass the title to the documentation view
-        return view('user.documentation', compact('title', 'titles'));
+        return view('user.documentation', compact('title', 'titles', 'singleTitle'));
     }
     public function documentation(Title $title)
     {
+        // Display documentation
         $title->load([
             'subtitles.contents' => function ($query) {
                 $query->orderBy('c_sequence');
             }
         ]);
 
+        // Export one documentation
+        $singleTitle = $title;
+
+        // Export all documentation
         $titles = Title::with('subtitles.contents')->get();
 
-        return view('user.documentation', compact('title', 'titles'));
+        return view('user.documentation', compact('title', 'titles', 'singleTitle'));
     }
 
     public function support()
@@ -129,11 +136,16 @@ class MemberController extends Controller
                 ->orderBy('id', 'desc')
                 ->first();
 
+        $senderName = $request->input('sender_name');
+        $senderEmail = $request->input('sender_email');
+        $subject = $request->input('subject');
+        $message = $request->input('message');
+
         $ticket = Ticket::create([
-            'sender_name' => $request->input('sender_name'),
-            'sender_email' => $request->input('sender_email'),
-            'subject' => $request->input('subject'),
-            'message' => $request->input('message'),
+            'sender_name' => $senderName,
+            'sender_email' => $senderEmail,
+            'subject' => $subject,
+            'message' => $message,
             'category_id' => $request->input('category_id'),
             'priority' => $request->input('priority'),
             'status_id' => 1
@@ -195,7 +207,7 @@ class MemberController extends Controller
             }
         }
 
-        // Mail::send(new SubmitTicket($ticket));
+        Mail::send(new SubmitTicket($ticket, $subject, $senderEmail));
 
         return redirect()->route('dashboard')->with('success', 'Ticket submitted successfully');
     }

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Title;
 use App\Models\Content;
 use App\Models\DocumentationImage;
@@ -20,7 +21,8 @@ use App\Models\Ticket;
 use App\Models\TicketImage;
 use App\Models\User;
 use App\Models\Role;
-
+use App\Models\Note;
+use App\Mail\SendNote;
 class AdminController extends Controller
 {
 
@@ -482,7 +484,11 @@ class AdminController extends Controller
                     ->where('roles.role_name', '!=', 'Super Admin')
                     ->get();
 
-        return view('admin.viewTicket', compact('ticket', 'supportCategories', 'ticketStatuses', 'ticketImages', 'users'));
+        $notes = Note::where('ticket_id', $id)
+                    ->orderByDesc('created_at')
+                    ->get();
+
+        return view('admin.viewTicket', compact('ticket', 'supportCategories', 'ticketStatuses', 'ticketImages', 'users', 'notes'));
     }
 
     public function createTicket()
@@ -651,7 +657,11 @@ class AdminController extends Controller
                     ->where('roles.role_name', '!=', 'Super Admin')
                     ->get();
 
-        return view('admin.editTicket', compact('ticket', 'supportCategories', 'ticketStatuses', 'ticketImages', 'users'));
+        $notes = Note::where('ticket_id', $id)
+                    ->orderByDesc('created_at')
+                    ->get();
+
+        return view('admin.editTicket', compact('ticket', 'supportCategories', 'ticketStatuses', 'ticketImages', 'users', 'notes'));
     }
 
     public function updateTicket(Request $request, $id)
@@ -719,8 +729,7 @@ class AdminController extends Controller
             'category_id' => $request->input('category_id'),
             'priority' => $request->input('priority'),
             'status_id' => $request->input('status_id'),
-            'pic_id' => $request->input('pic_id'),
-            'remarks' => $request->input('remarks')
+            'pic_id' => $request->input('pic_id')
         ]);
 
         return redirect()->route('ticketSumm', ['status' => $status_id])->with('success', 'Ticket updated successfully.');
@@ -734,13 +743,162 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Ticket deleted successfully.');
     }
 
-    // public function viewTicketImage($id)
-    // {
-    //     $ticketImages = TicketImage::where('ticket_id', $id)->get();
-    //     $tickets = Ticket::find($id);
+    public function addNote(Request $request)
+    {
+        $rules = [
+            'note_title' => 'required|max:255',
+            'note_description' => 'required|max:5000',
+        ];
 
-    //     return view('admin.viewTicketImage', compact('ticketImages', 'tickets'));
-    // }
+        $messages = [
+            'note_title.required' => 'The Title field is required.',
+            'note_description.required' => 'The Description field is required.',
+            'note_title.max' => 'The Title should not exceed 255 characters.',
+            'note_description.max' => 'The Description should not exceed 5000 characters.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+
+        $ticketId = $request->input('ticket_id');
+
+        // Find the ticket
+        $ticket = Ticket::find($ticketId);
+
+        // Get the ticket number
+        $ticketNo = $ticket->ticket_no;
+
+        // Get sender email
+        $senderEmail = $ticket->sender_email;
+
+        // Check if there are existing notes for this ticket
+        $existingNotesCount = Note::where('ticket_id', $ticketId)->count();
+
+        // Determine the note number
+        if ($existingNotesCount == 0) {
+            // If no existing notes, set the note number to ticket_no-00001
+            $noteNo = $ticketNo . '-00001';
+        } else {
+            // If there are existing notes, find the latest note number and increment it
+            $latestNoteNo = Note::where('ticket_id', $ticketId)->latest()->value('note_no');
+            $latestNoteNoNumber = intval(substr($latestNoteNo, -5)); // Extract the numeric part
+            $nextNoteNoNumber = $latestNoteNoNumber + 1;
+            $noteNo = $ticketNo . '-' . str_pad($nextNoteNoNumber, 5, '0', STR_PAD_LEFT);
+        }
+
+        $noteTitle = $request->input('note_title');
+        $noteDescription = $request->input('note_description');
+
+        $note = Note::create([
+            'note_no' => $noteNo,
+            'note_title' => $noteTitle,
+            'note_description' => $noteDescription,
+            'ticket_id' => $ticketId,
+            'sent' => 0
+        ]);
+
+        $authUser = User::where('id', '=', Auth::user()->id)->first();
+
+        $userName = $authUser->name;
+        $userEmail = $authUser->email;
+
+        if ($request->input('action') === 'save_and_send_email') {
+            // Send email
+            Mail::send(new SendNote($note, $noteTitle, $senderEmail, $userName, $userEmail));
+
+            $note->update(['sent' => 1]);
+        }
+
+        return redirect()->route('viewTicket', ['id' => $ticketId])->with('success', 'Note created successfully.');
+    }
+
+    public function editNote($id)
+    {
+        $note = Note::find($id);
+
+        $response = [
+            'note' => $note
+        ];
+
+        return response()->json($response);
+    }
+
+    public function updateNote(Request $request, $id)
+    {
+        $rules = [
+            'note_title' => 'required|max:255',
+            'note_description' => 'required|max:5000',
+        ];
+
+        $messages = [
+            'note_title.required' => 'The Title field is required.',
+            'note_description.required' => 'The Description field is required.',
+            'note_title.max' => 'The Title should not exceed 255 characters.',
+            'note_description.max' => 'The Description should not exceed 5000 characters.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+
+        $ticketId = $request->input('ticket_id');
+
+        // Find the ticket
+        $ticket = Ticket::find($ticketId);
+
+        // Get sender email
+        $senderEmail = $ticket->sender_email;
+
+        $authUser = User::where('id', '=', Auth::user()->id)->first();
+
+        $userName = $authUser->name;
+        $userEmail = $authUser->email;
+
+        $noteTitle = $request->input('note_title');
+        $noteDescription = $request->input('note_description');
+
+        $note = Note::find($id);
+
+        $note->note_title = $noteTitle;
+        $note->note_description = $noteDescription;
+        $note->save();
+
+        if ($request->input('action') === 'save_and_send_email') {
+            // Send email
+            Mail::send(new SendNote($note, $noteTitle, $senderEmail, $userName, $userEmail));
+
+            $note->update(['sent' => 1]);
+        }
+
+        return redirect()->route('editTicket', ['id' => $ticketId])->with('success', 'Note updated successfully.');
+    }
+
+    public function deleteNote($id)
+    {
+        $note = Note::find($id);
+        $note->delete();
+
+        return response()->json(['message' => 'Note deleted successfully.']);
+    }
+
+    public function viewTicketImage($id)
+    {
+        $ticketImages = TicketImage::where('ticket_id', $id)->get();
+        $tickets = Ticket::find($id);
+
+        return view('admin.viewTicketImage', compact('ticketImages', 'tickets'));
+    }
 
     public function viewContent(Title $title)
     {
@@ -750,59 +908,252 @@ class AdminController extends Controller
             }
         ]);
 
+        // Export one documentation
+        $singleTitle = $title;
+
+        // Export all documentation
         $titles = Title::with('subtitles.contents')->get();
 
-        return view('admin.viewContent', compact('title', 'titles'));
+        return view('admin.viewContent', compact('title', 'titles', 'singleTitle'));
     }
 
     public function performance()
     {
+        // $authUser = User::where('id', '=', Auth::user()->id)->first();
+
+        // if ($authUser->role_id == 1) {
+
+        //     $supportCategories = SupportCategory::all();
+
+        //     foreach ($supportCategories as $supportCategory) {
+        //         // Retrieve users associated with the current support category
+        //         $users = $supportCategory->users()->withCount('tickets')->get();
+
+        //         // Assign the users back to the support category
+        //         $supportCategory->users = $users;
+        //     }
+
+        // } elseif ($authUser->role_id !== 1 && $authUser->manage_ticket_in_category == 1) {
+        //     $supportCategories = SupportCategory::where('support_categories.id', $authUser->category_id)
+        //                                         ->get();
+
+        //     foreach ($supportCategories as $supportCategory) {
+        //         // Retrieve users associated with the current support category
+        //         $users = $supportCategory->users()->withCount('tickets')->get();
+
+        //         // Assign the users back to the support category
+        //         $supportCategory->users = $users;
+        //     }
+        // }
+
+        // $ticketStatuses = TicketStatus::all();
+
+        // // Loop through each support category
+        // foreach ($supportCategories as $supportCategory) {
+        //     // Loop through each user in the support category
+        //     foreach ($supportCategory->users as $user) {
+        //         // Initialize a temporary array to hold ticket counts
+        //         $ticketCounts = [];
+
+        //         // Fetch ticket counts for each ticket status for the current user
+        //         foreach ($ticketStatuses as $status) {
+        //             $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->count();
+        //         }
+
+        //         // Assign the temporary array to a different property of the $user object
+        //         $user->ticketCounts = $ticketCounts;
+        //     }
+        // }
+        // return view('admin.performance', compact('supportCategories', 'ticketStatuses'));
+        return view('admin.performance');
+    }
+
+    public function getPerformance(Request $request)
+    {
         $authUser = User::where('id', '=', Auth::user()->id)->first();
+
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+
+        $year = $request->input('filter_year');
+        $month = $request->input('filter_month');
+        $monthNumber = date('m', strtotime($month));
 
         if ($authUser->role_id == 1) {
 
             $supportCategories = SupportCategory::all();
 
-            foreach ($supportCategories as $supportCategory) {
-                // Retrieve users associated with the current support category
-                $users = $supportCategory->users()->withCount('tickets')->get();
+            if ($request->has('filter_month')) {
+                foreach ($supportCategories as $supportCategory) {
+                    // Retrieve users associated with the current support category
+                    $users = $supportCategory->users()->withCount('tickets')->whereMonth('created_at', $monthNumber)->whereYear('created_at', $currentYear)->get();
 
-                // Assign the users back to the support category
-                $supportCategory->users = $users;
+                    // Assign the users back to the support category
+                    $supportCategory->users = $users;
+                }
+            } else {
+                foreach ($supportCategories as $supportCategory) {
+                    // Retrieve users associated with the current support category
+                    $users = $supportCategory->users()->withCount('tickets')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->get();
+
+                    // Assign the users back to the support category
+                    $supportCategory->users = $users;
+                }
             }
+
 
         } elseif ($authUser->role_id !== 1 && $authUser->manage_ticket_in_category == 1) {
             $supportCategories = SupportCategory::where('support_categories.id', $authUser->category_id)
                                                 ->get();
 
-            foreach ($supportCategories as $supportCategory) {
-                // Retrieve users associated with the current support category
-                $users = $supportCategory->users()->withCount('tickets')->get();
+            if ($request->has('filter_month')) {
+                foreach ($supportCategories as $supportCategory) {
+                    // Retrieve users associated with the current support category
+                    $users = $supportCategory->users()->withCount('tickets')->whereMonth('created_at', $monthNumber)->whereYear('created_at', $currentYear)->get();
 
-                // Assign the users back to the support category
-                $supportCategory->users = $users;
+                    // Assign the users back to the support category
+                    $supportCategory->users = $users;
+                }
+            } else {
+                foreach ($supportCategories as $supportCategory) {
+                    // Retrieve users associated with the current support category
+                    $users = $supportCategory->users()->withCount('tickets')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->get();
+
+                    // Assign the users back to the support category
+                    $supportCategory->users = $users;
+                }
             }
+
         }
 
         $ticketStatuses = TicketStatus::all();
 
-        // Loop through each support category
-        foreach ($supportCategories as $supportCategory) {
-            // Loop through each user in the support category
-            foreach ($supportCategory->users as $user) {
-                // Initialize a temporary array to hold ticket counts
-                $ticketCounts = [];
 
-                // Fetch ticket counts for each ticket status for the current user
-                foreach ($ticketStatuses as $status) {
-                    $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->count();
+
+    //    if ($request->has('filter_month')) {
+
+    //         foreach ($supportCategories as $supportCategory) {
+    //             // Loop through each user in the support category
+    //             foreach ($supportCategory->users as $user) {
+    //                 // Initialize a temporary array to hold ticket counts
+    //                 $ticketCounts = [];
+
+    //                 // Fetch ticket counts for each ticket status for the current user
+    //                 foreach ($ticketStatuses as $status) {
+    //                     $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->whereMonth('created_at', $monthNumber)->whereYear('created_at', $currentYear)->count();
+    //                 }
+
+    //                 // Assign the temporary array to a different property of the $user object
+    //                 $user->ticketCounts = $ticketCounts;
+    //             }
+    //         }
+    //     } elseif ($request->has('filter_year')) {
+
+    //         foreach ($supportCategories as $supportCategory) {
+    //             // Loop through each user in the support category
+    //             foreach ($supportCategory->users as $user) {
+    //                 // Initialize a temporary array to hold ticket counts
+    //                 $ticketCounts = [];
+
+    //                 // Fetch ticket counts for each ticket status for the current user
+    //                 foreach ($ticketStatuses as $status) {
+    //                     $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->whereYear('created_at', $year)->count();
+    //                 }
+
+    //                 // Assign the temporary array to a different property of the $user object
+    //                 $user->ticketCounts = $ticketCounts;
+    //             }
+    //         }
+    //     } elseif ($request->has('filter_month') && $request->has('filter_year')) {
+    //         foreach ($supportCategories as $supportCategory) {
+    //             // Loop through each user in the support category
+    //             foreach ($supportCategory->users as $user) {
+    //                 // Initialize a temporary array to hold ticket counts
+    //                 $ticketCounts = [];
+
+    //                 // Fetch ticket counts for each ticket status for the current user
+    //                 foreach ($ticketStatuses as $status) {
+    //                     $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->whereMonth('created_at', $monthNumber)->whereYear('created_at', $year)->count();
+    //                 }
+
+    //                 // Assign the temporary array to a different property of the $user object
+    //                 $user->ticketCounts = $ticketCounts;
+    //             }
+    //         }
+    //     } else {
+
+    //         foreach ($supportCategories as $supportCategory) {
+    //             // Loop through each user in the support category
+    //             foreach ($supportCategory->users as $user) {
+    //                 // Initialize a temporary array to hold ticket counts
+    //                 $ticketCounts = [];
+
+    //                 // Fetch ticket counts for each ticket status for the current user
+    //                 foreach ($ticketStatuses as $status) {
+    //                     $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->whereYear('created_at', $currentYear)->count();
+    //                 }
+
+    //                 // Assign the temporary array to a different property of the $user object
+    //                 $user->ticketCounts = $ticketCounts;
+    //             }
+    //         }
+    //     }
+
+        if ($request->has('filter_month')) {
+
+            foreach ($supportCategories as $supportCategory) {
+                // Loop through each user in the support category
+                foreach ($supportCategory->users as $user) {
+                    // Initialize a temporary array to hold ticket counts
+                    $ticketCounts = [];
+
+                    // Fetch ticket counts for each ticket status for the current user
+                    foreach ($ticketStatuses as $status) {
+                        $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->whereMonth('created_at', $monthNumber)->count();
+                    }
+
+                    // Assign the temporary array to a different property of the $user object
+                    $user->ticketCounts = $ticketCounts;
                 }
+            }
+        } else {
 
-                // Assign the temporary array to a different property of the $user object
-                $user->ticketCounts = $ticketCounts;
+            foreach ($supportCategories as $supportCategory) {
+                // Loop through each user in the support category
+                foreach ($supportCategory->users as $user) {
+                    // Initialize a temporary array to hold ticket counts
+                    $ticketCounts = [];
+
+                    // Fetch ticket counts for each ticket status for the current user
+                    foreach ($ticketStatuses as $status) {
+                        $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->whereMonth('created_at', $currentMonth)->count();
+                    }
+
+                    // Assign the temporary array to a different property of the $user object
+                    $user->ticketCounts = $ticketCounts;
+
+
+                }
             }
         }
-        return view('admin.performance', compact('supportCategories', 'ticketStatuses'));
+
+        // foreach ($supportCategories as $supportCategory) {
+        //     foreach ($supportCategory->users as $user) {
+        //         dd($user->name, $user->ticketCounts, $year, $monthNumber);
+
+        //     }
+        // }
+
+        // Define the colors array
+        $colors = ['#bed3fe', '#e3e6f0', '#b8f4db', '#bde6fa', '#ffebc1', '#99a1b7', '#b2bfc2'];
+
+        $response = [
+            'supportCategories' => $supportCategories,
+            'ticketStatuses' => $ticketStatuses,
+            'colors' => $colors,
+        ];
+
+        return response()->json($response);
     }
 
     public function viewPerformance($id)
@@ -1534,13 +1885,15 @@ class AdminController extends Controller
 
     public function createSub(SupportCategory $supportCategory)
     {
-        // $contents = Content::with('subtitle')->get();
+        // $contents = Content::with('subtitle.title')->get();
 
         $contents = Content::join('subtitles', 'contents.subtitle_id', 'subtitles.id')
                             ->join('titles', 'subtitles.title_id', 'titles.id')
                             ->get();
 
-        return view('admin.createSub', compact('supportCategory', 'contents'));
+        $supportCategories = SupportCategory::all();
+
+        return view('admin.createSub', compact('supportCategory', 'contents', 'supportCategories'));
     }
 
     public function addSub(Request $request, SupportCategory $supportCategory)
@@ -1569,13 +1922,12 @@ class AdminController extends Controller
         }
 
         $createSub = SupportSubCategory::create([
-            'category_id' => $supportCategory->id,
+            'category_id' => $request->input('category_id'),
             'sub_name' => $request->input('sub_name'),
             'sub_description' => $request->input('sub_description'),
             'content_id' => $request->input('content_id')
         ]);
 
-        // return redirect()->route('createSub', ['supportCategory' => $supportCategory]);
         return redirect()->route('supportSubSumm', ['supportCategory' => $supportCategory->id])->with('success', 'New subcategory created successfully.');
     }
 
@@ -1585,8 +1937,9 @@ class AdminController extends Controller
         $contents = Content::join('subtitles', 'contents.subtitle_id', 'subtitles.id')
                             ->join('titles', 'subtitles.title_id', 'titles.id')
                             ->get();
+        $supportCategories = SupportCategory::all();
 
-        return view('admin.editSub', compact('supportSubCategories', 'contents'));
+        return view('admin.editSub', compact('supportSubCategories', 'contents', 'supportCategories'));
     }
 
     public function updateSub(Request $request, $id)
@@ -2001,5 +2354,6 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Admin deleted successfully.');
     }
+
 
 }

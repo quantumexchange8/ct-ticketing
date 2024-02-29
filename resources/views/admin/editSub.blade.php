@@ -32,21 +32,18 @@
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                </div>
 
-                                <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="sub_description">Description</label>
-                                        <input type="text" class="form-control" name="sub_description" placeholder="Enter Description" autocomplete="off" value="{{ $supportSubCategories->sub_description }}">
-                                        @error('sub_description')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
+                                        <label for="content_id">Category</label>
+                                        <select class="form-control" name="category_id">
+                                            @foreach ($supportCategories as $supportCategory)
+                                                <option value="{{ $supportCategory->id }}" {{ $supportSubCategories->supportCategories->id == $supportCategory->id ? 'selected' : '' }}>
+                                                    {{ $supportCategory->category_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
-                                </div>
-                            </div>
 
-                            <div class="row">
-                                <div class="col-lg-6">
                                     <div class="form-group">
                                         <label for="content_id">Related Topic</label>
                                         <select class="form-control" name="content_id">
@@ -62,13 +59,21 @@
                                         @enderror
                                     </div>
                                 </div>
-                            </div>
 
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label for="sub_description">Description</label>
+                                        <textarea type="text" class="form-control" name="sub_description" placeholder="Enter Description" rows="9" autocomplete="off">{{ $supportSubCategories->sub_description }}</textarea>
+                                        @error('sub_description')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="col-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
-
                         </form>
                     </div><!--end card-body-->
                 </div><!--end card-->
