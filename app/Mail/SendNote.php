@@ -19,16 +19,15 @@ class SendNote extends Mailable
     public $note;
     public $noteTitle;
     public $senderEmail;
-    public $userName;
-    public $userEmail;
+    public $emailSubject;
 
-    public function __construct($note, $noteTitle, $senderEmail, $userName, $userEmail)
+    public function __construct($note, $noteTitle, $senderEmail, $emailSubject)
     {
         $this->note = $note;
         $this->noteTitle = $noteTitle;
         $this->senderEmail = $senderEmail;
-        $this->userName = $userName;
-        $this->userEmail = $userEmail;
+        $this->emailSubject = $emailSubject;
+
     }
 
     /**
@@ -51,8 +50,8 @@ class SendNote extends Mailable
 
         $email = $this
             ->to($recipients)
-            ->subject($this->noteTitle)
-            ->view('admin.sendNote', ['note' => $this->note, 'userName' => $this->userName, 'userEmail' => $this->userEmail]);
+            ->subject($this->emailSubject)
+            ->view('admin.sendNote', ['note' => $this->note]);
 
         // foreach ($attachments as $attachment) {
         //     $email->attachFromPath($attachment);

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('contents', function (Blueprint $table) {
             $table->id();
             $table->string('subtitle_id')->nullable();
-            $table->string('content_name', 5000)->nullable();
+            $table->longText('content_name')->nullable();
             $table->string('c_sequence')->nullable();
             $table->timestamps();
             $table->softDeletes();

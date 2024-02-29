@@ -20,7 +20,7 @@
         display: flex;
         flex-direction: column;
         gap: 5px;
-
+        position: static;
         background: #f1f5fa;
         /* box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25); */
 

@@ -202,7 +202,7 @@
                                                 <span class="text-muted d-block">{{Carbon\Carbon::parse($note->created_at)->format('d M Y') }}</span>
                                             </div>
                                             <p class="text-muted mt-3">{{ $note->note_title }}</p>
-                                            <p class="text-muted mt-3">{{ $note->note_description }}
+                                            <p class="text-muted mt-3">{!! $note->note_description !!}
                                                 {{-- <a href="#" class="text-info">[more info]</a> --}}
                                             </p>
                                         </div>
@@ -254,7 +254,8 @@
                     {{-- <div class="col-lg-6"> --}}
                         <div class="form-group">
                             <label for="note_description">Description</label>
-                            <textarea type="text" class="form-control" name="note_description" rows="5" autocomplete="off"></textarea>
+                            {{-- <textarea type="text" class="form-control" name="note_description" rows="5" autocomplete="off"></textarea> --}}
+                            <textarea id="elm1" name="note_description" autocomplete="off"></textarea>
                             @error('note_description')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror

@@ -56,7 +56,7 @@
                                 <div class="col-lg-12">
                                     <div class="form-group">
                                         <label for="content_name">Content</label>
-                                        <textarea id="elm1" name="content_name">{{ $content->content_name }}</textarea>
+                                        <textarea id="elm1" name="content_name">{!! $content->content_name !!}</textarea>
                                         @error('content_name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror

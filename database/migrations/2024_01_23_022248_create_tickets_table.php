@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('sender_name')->nullable();
             $table->string('sender_email')->nullable();
             $table->string('subject')->nullable();
-            $table->string('message', 5000)->nullable();
+            $table->longText('message')->nullable();
             $table->string('category_id')->nullable();
             $table->string('priority')->nullable();
             $table->string('status_id')->nullable();

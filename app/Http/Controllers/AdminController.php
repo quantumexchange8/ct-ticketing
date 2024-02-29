@@ -777,6 +777,9 @@ class AdminController extends Controller
         // Get sender email
         $senderEmail = $ticket->sender_email;
 
+         // Get sender name
+         $ticketSender = $ticket->sender_name;
+
         // Check if there are existing notes for this ticket
         $existingNotesCount = Note::where('ticket_id', $ticketId)->count();
 
@@ -803,14 +806,11 @@ class AdminController extends Controller
             'sent' => 0
         ]);
 
-        $authUser = User::where('id', '=', Auth::user()->id)->first();
-
-        $userName = $authUser->name;
-        $userEmail = $authUser->email;
+        $emailSubject = $ticketNo . '-' . $ticketSender . '[' . $noteTitle . ']';
 
         if ($request->input('action') === 'save_and_send_email') {
             // Send email
-            Mail::send(new SendNote($note, $noteTitle, $senderEmail, $userName, $userEmail));
+            Mail::send(new SendNote($note, $noteTitle, $senderEmail, $emailSubject));
 
             $note->update(['sent' => 1]);
         }
@@ -821,7 +821,7 @@ class AdminController extends Controller
     public function editNote($id)
     {
         $note = Note::find($id);
-
+   
         $response = [
             'note' => $note
         ];
@@ -860,10 +860,11 @@ class AdminController extends Controller
         // Get sender email
         $senderEmail = $ticket->sender_email;
 
-        $authUser = User::where('id', '=', Auth::user()->id)->first();
+        // Get ticket no
+        $ticketNo = $ticket->ticket_no;
 
-        $userName = $authUser->name;
-        $userEmail = $authUser->email;
+        // Get sender name
+        $ticketSender = $ticket->sender_name;
 
         $noteTitle = $request->input('note_title');
         $noteDescription = $request->input('note_description');
@@ -874,9 +875,11 @@ class AdminController extends Controller
         $note->note_description = $noteDescription;
         $note->save();
 
+        $emailSubject = $ticketNo . '-' . $ticketSender . '[' . $noteTitle . ']';
+
         if ($request->input('action') === 'save_and_send_email') {
             // Send email
-            Mail::send(new SendNote($note, $noteTitle, $senderEmail, $userName, $userEmail));
+            Mail::send(new SendNote($note, $noteTitle, $senderEmail, $emailSubject));
 
             $note->update(['sent' => 1]);
         }
@@ -1477,14 +1480,13 @@ class AdminController extends Controller
     {
 
         $rules = [
-            'content_name' => 'required|max:5000',
+            'content_name' => 'required',
             'd_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'subtitle_type' => 'required',
         ];
 
         $messages = [
             'content_name.required' => 'The Content field is required.',
-            'content_name.max' => 'The Content should not exceed 5000 characters.',
             'd_image.image' => 'Must be an image format.',
             'd_image.max' => 'The Image should not exceed 2 GB.',
             'subtitle_type' => 'Please select a subtitle type.',
@@ -1656,14 +1658,13 @@ class AdminController extends Controller
         $rules = [
             'c_sequence' => 'required|numeric',
             'subtitle_id' => 'required',
-            'content_name' => 'required|max:5000',
+            'content_name' => 'required',
         ];
 
         $messages = [
             'c_sequence.required' => 'The Sequence field is required.',
             'subtitle_id.required' => 'The Subtitle field is required.',
             'content_name.required' => 'The Content field is required.',
-            'content_name.max' => 'The Content should not exceed 5000 characters.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);

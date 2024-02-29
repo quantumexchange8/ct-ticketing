@@ -217,7 +217,7 @@
                                                     <span class="text-muted d-block">{{Carbon\Carbon::parse($note->created_at)->format('d M Y') }}</span>
                                                 </div>
                                                 <p class="text-muted mt-3">{{ $note->note_title }}</p>
-                                                <p class="text-muted mt-3">{{ $note->note_description }}
+                                                <p class="text-muted mt-3">{!! $note->note_description !!}
                                                     <a href="#" class="text-info edit-notes" data-note-id="{{ $note->id }}">[Edit]</a>
                                                     <a href="#" class="text-info" onclick="confirmDelete('{{ $note->id }}')">[Delete]</a>
                                                 </p>
@@ -225,11 +225,11 @@
                                         </div>
                                     @endforeach
                                 @endif
-                                <div class="col-12 text-right">
+                                {{-- <div class="col-12 text-right">
                                     <a href="#" class="btn  btn-primary" id="addnotes">
                                         Add New Notes
                                     </a>
-                                </div>
+                                </div> --}}
                             </div><!--end activity-->
                         </div><!--end activity-scroll-->
                     </div>  <!--end card-body-->
@@ -241,53 +241,7 @@
 <!-- end page content -->
 
 <!-- Add notes modal -->
-<div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true" >
-    <div class="modal-dialog modal-lg" role="document" style="max-width: 500px; height: 500px; margin-top: 150px;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="imageModalLabel">Add New Notes</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-            <form action="{{ route('addNote') }}" method="POST" >
-                @csrf
-                {{-- <div class="row"> --}}
-                    {{-- <div class="col-lg-6"> --}}
-                        <div class="form-group">
-                            <label for="note_title">Title</label>
-                            {{-- <input type="text" class="form-control" name="note_title" autocomplete="off"> --}}
-                            <textarea type="text" class="form-control" name="note_title" rows="5" autocomplete="off"></textarea>
-                            @error('note_title')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
 
-                        </div>
-                    {{-- </div> --}}
-                    {{-- <div class="col-lg-6"> --}}
-                        <div class="form-group">
-                            <label for="note_description">Description</label>
-                            <textarea type="text" class="form-control" name="note_description" rows="5" autocomplete="off"></textarea>
-                            @error('note_description')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="form-group" style="display: none;">
-                            <label for="note_description">Ticket ID</label>
-                            <input type="text" class="form-control" name="ticket_id" value="{{ $ticket->id }}">
-                        </div>
-                    {{-- </div> --}}
-                {{-- </div> --}}
-                <div class="col-12 text-right">
-                    <button type="submit" class="btn btn-primary px-4">Submit</button>
-                </div>
-            </form>
-        </div>
-      </div>
-    </div>
-</div>
 
 <!-- Edit notes modal -->
 <div class="modal fade" id="editNoteModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true" >
@@ -313,7 +267,8 @@
 
                     <div class="form-group">
                         <label for="note_description">Description</label>
-                        <textarea type="text" class="form-control" name="note_description" rows="5" autocomplete="off"></textarea>
+                        {{-- <textarea type="text" class="form-control" name="note_description" rows="5" autocomplete="off"></textarea> --}}
+                        <textarea id="elm1" name="note_description" autocomplete="off"></textarea>
                         @error('note_description')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -325,7 +280,7 @@
                     </div>
                 <div class="col-12 text-right">
                     <button type="submit" class="btn btn-primary px-4" name="action" value="save_only">Save Only</button>
-                    <button type="submit" class="btn btn-primary px-4" name="action" value="save_and_send_email">Save and Send Email</button>
+                    <button type="submit" class="btn btn-primary px-4" name="action" id="sendEmail" value="save_and_send_email">Save and Send Email</button>
                 </div>
             </form>
         </div>
@@ -380,9 +335,17 @@
 
                     if (response.note) {
                         $('#editNoteModal textarea[name=note_title]').val(response.note.note_title);
-                        $('#editNoteModal textarea[name=note_description]').val(response.note.note_description);
+                        $('#editNoteModal textarea[id=elm1]').val(response.note.note_description);
 
+                        // $('#elm1').val(response.note.note_description);
                         $('#editNoteModal').modal('show');
+
+                        // Check if notes.sent is 1, then hide the button
+                        // if (response.note.sent == 1) {
+                        //     $('#sendEmail').hide();
+                        // } else {
+                        //     $('#sendEmail').show();
+                        // }
                     } else {
                         console.error('Note data not found in response');
                     }
@@ -397,6 +360,20 @@
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('success'))
+            Swal.fire({
+                title: 'Done',
+                text: '{{ session('success') }}',
+                icon: 'success',
+                timer: 1000, // 3000 milliseconds (3 seconds)
+                showConfirmButton: false, // Hide the "OK" button
+            });
+        @endif
+    });
+</script>
+
 <script>
     function confirmDelete(noteId) {
         Swal.fire({

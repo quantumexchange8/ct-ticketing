@@ -29,9 +29,9 @@
 
                         <h4 class="mt-0 font-15">{{ $note->note_title }}</h4>
 
-                        <p>From: {{ $userName }}</p>
-                        <p>Email: {{ $userEmail }}</p>
-                        <p>{{ $note->note_description }}</p>
+                        {{-- <p>From: {{ $userName }}</p>
+                        <p>Email: {{ $userEmail }}</p> --}}
+                        <p>{!! $note->note_description !!}</p>
                         {{-- <hr/> --}}
 
                     </div>

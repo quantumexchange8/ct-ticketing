@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('category_id')->nullable();
             $table->string('sub_name')->nullable();
-            $table->string('sub_description')->nullable();
+            $table->longText('sub_description')->nullable();
             $table->string('content_id')->nullable();
             $table->timestamps();
             $table->softDeletes();

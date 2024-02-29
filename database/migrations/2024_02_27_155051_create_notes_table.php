@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('notes', function (Blueprint $table) {
             $table->id();
             $table->string('note_no')->nullable();
-            $table->string('note_title')->nullable();
-            $table->string('note_description', 5000)->nullable();
+            $table->longText('note_title')->nullable();
+            $table->longText('note_description')->nullable();
             $table->string('ticket_id')->nullable();
             $table->string('sent')->nullable();
             $table->timestamps();
