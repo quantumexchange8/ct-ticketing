@@ -366,21 +366,39 @@
                             statusClass = 'badge badge-md badge-boxed  badge-soft-danger';
                         }
 
+                        var currentTime = new Date();
                         var dateStyle = '';
-                        var threeDaysAgo = new Date();
-                        var sevenDaysAgo = new Date();
                         var tooltipMessage = '';
 
-                        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-                        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-                        if (ticket.status == 'Pending' && createdAt < sevenDaysAgo) {
-                            dateStyle = 'color: red; font-weight: bold;';
-                            tooltipMessage = 'Ticket is pending for more than 7 days';
-                        } else if (ticket.status == 'Pending' && createdAt < threeDaysAgo) {
-                            dateStyle = 'color: #EDAE49; font-weight: bold;';
-                            tooltipMessage = 'Ticket is pending for more than 3 days';
+                        if (picId == null) {
+                            dateStyle = 'background: #edf3ff';
+                            tooltipMessage = 'Please assign PIC to the ticket.';
+                        } else if (ticket.priority === 'High' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 2 * 60 * 60 * 1000) {
+                            dateStyle = 'color: red';
+                            tooltipMessage = 'Ticket must solve in 2 hours';
+                        } else if (ticket.priority === 'Medium' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 12 * 60 * 60 * 1000) {
+                            dateStyle = 'color: red';
+                            tooltipMessage = 'Ticket must solve in 12 hours';
+                        } else if (ticket.priority === 'Low' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 24 * 60 * 60 * 1000) {
+                            dateStyle = 'color: red';
+                            tooltipMessage = 'Ticket must solve in 24 hours';
                         }
+
+                        // var threeDaysAgo = new Date();
+                        // var sevenDaysAgo = new Date();
+                        // var tooltipMessage = '';
+
+                        // threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+                        // sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+                        // if (ticket.status == 'Pending' && createdAt < sevenDaysAgo) {
+                        //     dateStyle = 'color: red; font-weight: bold;';
+                        //     tooltipMessage = 'Ticket is pending for more than 7 days';
+                        // } else if (ticket.status == 'Pending' && createdAt < threeDaysAgo) {
+                        //     dateStyle = 'color: #EDAE49; font-weight: bold;';
+                        //     tooltipMessage = 'Ticket is pending for more than 3 days';
+                        // }
 
                         var row = '<tr id="' + ticketId + '">' +
                                     '<td style="' + dateStyle + '" title="' + (dateStyle ? tooltipMessage : '') + '">' + formattedDate + '</td>' +

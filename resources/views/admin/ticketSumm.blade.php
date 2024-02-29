@@ -60,26 +60,41 @@
                                     @foreach($status->tickets as $ticket)
                                     @php
                                         $createdAt = Carbon\Carbon::parse($ticket->created_at);
+
+                                        $priorityStyle = '';
+                                        $tooltipMessage = '';
+
+                                        if ($ticket->priority === 'High' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 2) {
+                                            $priorityStyle = 'color: red';
+                                            $tooltipMessage = 'Ticket must be solved in 2 hours';
+                                        } elseif ($ticket->priority === 'Medium' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 12) {
+                                            $priorityStyle = 'color: red';
+                                            $tooltipMessage = 'Ticket must be solved in 12 hours';
+                                        } elseif ($ticket->priority === 'Low' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 24) {
+                                            $priorityStyle = 'color: red';
+                                            $tooltipMessage = 'Ticket must be solved in 24 hours';
+                                        }
+                                    @endphp
+
+                                    {{-- @php
+                                        $createdAt = Carbon\Carbon::parse($ticket->created_at);
                                         $isPendingMoreThanSevenDays = $ticket->ticketStatus->status === 'Pending' && $createdAt->diffInDays(now()) > 7;
                                         $isPendingMoreThanThreeDays = $ticket->ticketStatus->status === 'Pending' && $createdAt->diffInDays(now()) > 3;
-                                    @endphp
+                                    @endphp --}}
                                     <tr>
 
-                                        {{-- <td>
-                                            <!-- Custom Checkbox -->
-                                            <label class="custom-checkbox">
-                                                <input type="checkbox">
-                                                <span class="checkmark"></span>
-                                            </label>
-                                            <!-- End Custom Checkbox -->
-                                        </td> --}}
-
-                                        <td style="{{ $isPendingMoreThanSevenDays ? 'color: red; font-weight: bold;' : ($isPendingMoreThanThreeDays ? 'color: #EDAE49; font-weight: bold;' : '') }}"
+                                        <td style="{{ $priorityStyle }}"
+                                            @if ($priorityStyle)
+                                                title="{{ $tooltipMessage }}"
+                                            @endif>
+                                            {{ $createdAt->format('d M Y') }}
+                                        </td>
+                                        {{-- <td style="{{ $isPendingMoreThanSevenDays ? 'color: red; font-weight: bold;' : ($isPendingMoreThanThreeDays ? 'color: #EDAE49; font-weight: bold;' : '') }}"
                                             @if ($isPendingMoreThanSevenDays || $isPendingMoreThanThreeDays)
                                                 title="{{ $isPendingMoreThanSevenDays ? 'Ticket is pending for more than 7 days.' : 'Ticket is pending for more than 3 days.' }}"
                                             @endif>
                                             {{ $createdAt->format('d M Y') }}
-                                        </td>
+                                        </td> --}}
                                         <td>{{ $ticket->ticket_no }}</td>
                                         <td>{{ $ticket->sender_name }}</td>
                                         <td>{{ $ticket->sender_email }}</td>

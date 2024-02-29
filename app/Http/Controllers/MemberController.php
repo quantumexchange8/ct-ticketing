@@ -212,10 +212,4 @@ class MemberController extends Controller
         return redirect()->route('dashboard')->with('success', 'Ticket submitted successfully');
     }
 
-
-    public function content()
-    {
-        $titles = Title::with('subtitles.contents')->get();
-        return view('user.content', compact('titles'));
-    }
 }

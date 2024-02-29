@@ -256,24 +256,57 @@
 
                     deleteButton.appendTo(deleteForm);
 
+                    var currentTime = new Date();
                     var cardStyle = '';
                     var tooltipMessage = '';
-                    var threeDaysAgo = new Date();
-                    var sevenDaysAgo = new Date();
 
-                    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-                    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
                     if (picId == null) {
                         cardStyle = 'background: #edf3ff';
                         tooltipMessage = 'Please assign PIC to the ticket.';
-                    } else if (picId !== null && ticket.status == 'Pending' && createdAt < sevenDaysAgo) {
-                        cardStyle = 'background: #fcc0cf';
-                        tooltipMessage = 'Ticket is pending for more than 7 days';
-                    } else if (picId !== null && ticket.status == 'Pending' && createdAt < threeDaysAgo) {
-                        cardStyle = 'background: #fff9ee';
-                        tooltipMessage = 'Ticket is pending for more than 3 days';
+                    } else if (ticket.priority === 'High' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 2 * 60 * 60 * 1000) {
+                        cardStyle = 'background: #f4cccc';
+                        tooltipMessage = 'Ticket must solve in 2 hours';
+                    } else if (ticket.priority === 'Medium' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 12 * 60 * 60 * 1000) {
+                        cardStyle = 'background: #f4cccc';
+                        tooltipMessage = 'Ticket must solve in 12 hours';
+                    } else if (ticket.priority === 'Low' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 24 * 60 * 60 * 1000) {
+                        cardStyle = 'background: #f4cccc';
+                        tooltipMessage = 'Ticket must solve in 24 hours';
                     }
+
+                    // if (picId == null) {
+                    //     cardStyle = 'background: #edf3ff';
+                    //     tooltipMessage = 'Please assign PIC to the ticket.';
+                    // } else if (ticket.priority === 'High' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 2 * 60 * 60 * 1000) {
+                    //     cardStyle = 'background: #f4cccc';
+                    //     tooltipMessage = 'Ticket must solve in 2 hours';
+                    // } else if (ticket.priority === 'Medium' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 12 * 60 * 60 * 1000) {
+                    //     cardStyle = 'background: #fff9ee';
+                    //     tooltipMessage = 'Ticket must solve in 12 hours';
+                    // } else if (ticket.priority === 'Low' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 24 * 60 * 60 * 1000) {
+                    //     cardStyle = 'background: #d9ead3';
+                    //     tooltipMessage = 'Ticket must solve in 24 hours';
+                    // }
+
+                    // var threeDaysAgo = new Date();
+                    // var sevenDaysAgo = new Date();
+
+                    // threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+                    // sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+                    // if (picId == null) {
+                    //     cardStyle = 'background: #edf3ff';
+                    //     tooltipMessage = 'Please assign PIC to the ticket.';
+                    // } else if (picId !== null && ticket.status == 'Pending' && createdAt < sevenDaysAgo) {
+                    //     cardStyle = 'background: #fcc0cf';
+                    //     tooltipMessage = 'Ticket is pending for more than 7 days';
+                    // } else if (picId !== null && ticket.status == 'Pending' && createdAt < threeDaysAgo) {
+                    //     cardStyle = 'background: #fff9ee';
+                    //     tooltipMessage = 'Ticket is pending for more than 3 days';
+                    // }
+
+
 
                     var task = $('<div class="task" id="' + ticketId + '" style="cursor: move;" draggable="true">');
                     var card = $('<div class="card ' + priorityIconClass + '" style="' + cardStyle + '" title="' + (cardStyle ? tooltipMessage : '') + '">');

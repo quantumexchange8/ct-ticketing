@@ -50,15 +50,38 @@
                                 </thead>
                                 <tbody>
                                     @foreach($supportCategory->tickets as $ticket)
-                                    @php
+                                    {{-- @php
                                         $createdAt = Carbon\Carbon::parse($ticket->created_at);
                                         $isPendingMoreThanSevenDays = $ticket->ticketStatus->status === 'Pending' && $createdAt->diffInDays(now()) > 7;
                                         $isPendingMoreThanThreeDays = $ticket->ticketStatus->status === 'Pending' && $createdAt->diffInDays(now()) > 3;
+                                    @endphp --}}
+                                    @php
+                                        $createdAt = Carbon\Carbon::parse($ticket->created_at);
+
+                                        $priorityStyle = '';
+                                        $tooltipMessage = '';
+
+                                        if ($ticket->priority === 'High' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 2) {
+                                            $priorityStyle = 'color: red';
+                                            $tooltipMessage = 'Ticket must be solved in 2 hours';
+                                        } elseif ($ticket->priority === 'Medium' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 12) {
+                                            $priorityStyle = 'color: red';
+                                            $tooltipMessage = 'Ticket must be solved in 12 hours';
+                                        } elseif ($ticket->priority === 'Low' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 24) {
+                                            $priorityStyle = 'color: red';
+                                            $tooltipMessage = 'Ticket must be solved in 24 hours';
+                                        }
                                     @endphp
                                     <tr>
-                                        <td style="{{ $isPendingMoreThanSevenDays ? 'color: red; font-weight: bold;' : ($isPendingMoreThanThreeDays ? 'color: #EDAE49; font-weight: bold;' : '') }}"
+                                        {{-- <td style="{{ $isPendingMoreThanSevenDays ? 'color: red; font-weight: bold;' : ($isPendingMoreThanThreeDays ? 'color: #EDAE49; font-weight: bold;' : '') }}"
                                             @if ($isPendingMoreThanSevenDays || $isPendingMoreThanThreeDays)
                                                 title="{{ $isPendingMoreThanSevenDays ? 'Pending for more than 7 days' : 'Pending for more than 3 days' }}"
+                                            @endif>
+                                            {{ $createdAt->format('d M Y') }}
+                                        </td> --}}
+                                        <td style="{{ $priorityStyle }}"
+                                            @if ($priorityStyle)
+                                                title="{{ $tooltipMessage }}"
                                             @endif>
                                             {{ $createdAt->format('d M Y') }}
                                         </td>
