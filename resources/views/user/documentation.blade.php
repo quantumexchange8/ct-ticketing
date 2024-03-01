@@ -73,7 +73,8 @@
                         @foreach ($title->subtitles as $subtitle)
                             <h5 class="subtitle-name">{{ $subtitle->subtitle_name }}</h5>
                             @foreach ($subtitle->contents as $content)
-                                <div class="content-name" id="{{$content->id}}" style="text-align: justify;">
+                                <div class="content-name" id="{{$content->id}}" style="text-align: justify; ">
+                                    {{-- <p style="font-family: Allura; font-weight: 400; font-style: normal; font-size: 52px;">{!! $content->content_name !!}</p> --}}
                                     <p>{!! $content->content_name !!}</p>
                                 </div>
 

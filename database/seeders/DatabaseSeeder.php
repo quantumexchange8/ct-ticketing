@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             SupportCategorySeeder::class,
             SupportSubCategorySeeder::class,
             TicketStatusSeeder::class,
+            EmailSignatureSeeder::class,
        ]);
     }
 }

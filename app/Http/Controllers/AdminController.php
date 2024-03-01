@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\SendNote;
 use App\Models\Title;
 use App\Models\Content;
 use App\Models\DocumentationImage;
@@ -22,7 +23,7 @@ use App\Models\TicketImage;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Note;
-use App\Mail\SendNote;
+use App\Models\EmailSignature;
 class AdminController extends Controller
 {
 
@@ -104,6 +105,89 @@ class AdminController extends Controller
             return redirect()->route('adminDashboard')->with('success', 'Profile updated successfully');
         }
     }
+
+    public function emailSignature()
+    {
+        $user = auth()->user();
+        $emailSignature = EmailSignature::where('user_id', $user->id)->first();
+
+        return view('admin.emailSignature', compact('user', 'emailSignature'));
+
+        // return view('admin.emailSignature');
+    }
+
+    public function getEmailSignature(Request $request)
+    {
+        $user = auth()->user();
+        $emailSignature = EmailSignature::where('user_id', $user->id)->first();
+
+        $response = [
+            'user' => $user,
+            'emailSignature' => $emailSignature,
+        ];
+
+        return response()->json($response);
+    }
+
+    // public function updateEmailSignature(Request $request)
+    // {
+    //     $user = auth()->user();
+
+    //     $userId = $user->id;
+
+    //     $update = EmailSignature::find($userId);
+
+    //     if ($request->has('sign_off')) {
+    //         $update->sign_off = $request->input('sign_off');
+    //         $update->save();
+    //     }
+
+    //     if ($request->has('font_family')) {
+    //         $update->font_family = $request->input('font_family');
+    //         $update->save();
+    //     }
+
+    //     if ($request->has('font_size')) {
+    //         $update->font_size = $request->input('font_size');
+    //         $update->save();
+    //     }
+
+    //     if ($request->has('font_color')) {
+    //         $update->font_color = $request->input('font_color');
+    //         $update->save();
+    //     }
+
+    //     return response()->json(['message' => 'Email Signature updated successfully']);
+    // }
+
+    public function updateEmailSignature(Request $request)
+    {
+        $user = auth()->user();
+        $userId = $user->id;
+
+        $updateData = [];
+
+        if ($request->has('sign_off')) {
+            $updateData['sign_off'] = $request->input('sign_off');
+        }
+
+        if ($request->has('font_family')) {
+            $updateData['font_family'] = $request->input('font_family');
+        }
+
+        if ($request->has('font_size')) {
+            $updateData['font_size'] = $request->input('font_size');
+        }
+
+        if ($request->has('font_color')) {
+            $updateData['font_color'] = $request->input('font_color');
+        }
+
+        $update = EmailSignature::where('user_id', $userId)->update($updateData);
+
+        return response()->json(['message' => 'Email Signature updated successfully']);
+    }
+
 
     public function adminDashboard(Request $request)
     {
@@ -808,9 +892,12 @@ class AdminController extends Controller
 
         $emailSubject = $ticketNo . '-' . $ticketSender . '[' . $noteTitle . ']';
 
+        $user = auth()->user();
+        $emailSignature = EmailSignature::where('user_id', $user->id)->first();
+
         if ($request->input('action') === 'save_and_send_email') {
             // Send email
-            Mail::send(new SendNote($note, $noteTitle, $senderEmail, $emailSubject));
+            Mail::send(new SendNote($note, $noteTitle, $senderEmail, $emailSubject, $user, $emailSignature));
 
             $note->update(['sent' => 1]);
         }
@@ -821,7 +908,7 @@ class AdminController extends Controller
     public function editNote($id)
     {
         $note = Note::find($id);
-   
+
         $response = [
             'note' => $note
         ];
@@ -831,6 +918,9 @@ class AdminController extends Controller
 
     public function updateNote(Request $request, $id)
     {
+
+        $noteId = $request->input('note_id');
+
         $rules = [
             'note_title' => 'required|max:255',
             'note_description' => 'required|max:5000',
@@ -857,6 +947,7 @@ class AdminController extends Controller
         // Find the ticket
         $ticket = Ticket::find($ticketId);
 
+        
         // Get sender email
         $senderEmail = $ticket->sender_email;
 
@@ -869,7 +960,7 @@ class AdminController extends Controller
         $noteTitle = $request->input('note_title');
         $noteDescription = $request->input('note_description');
 
-        $note = Note::find($id);
+        $note = Note::find($noteId);
 
         $note->note_title = $noteTitle;
         $note->note_description = $noteDescription;
@@ -877,11 +968,15 @@ class AdminController extends Controller
 
         $emailSubject = $ticketNo . '-' . $ticketSender . '[' . $noteTitle . ']';
 
+        $user = auth()->user();
+        $emailSignature = EmailSignature::where('user_id', $user->id)->first();
+
         if ($request->input('action') === 'save_and_send_email') {
             // Send email
-            Mail::send(new SendNote($note, $noteTitle, $senderEmail, $emailSubject));
+            $note->sent = 1;
+            $note->save();
 
-            $note->update(['sent' => 1]);
+            Mail::send(new SendNote($note, $noteTitle, $senderEmail, $emailSubject, $user, $emailSignature));
         }
 
         return redirect()->route('editTicket', ['id' => $ticketId])->with('success', 'Note updated successfully.');
@@ -2236,6 +2331,8 @@ class AdminController extends Controller
             'name' => $request->input('name'),
             'username' => $request->input('username'),
             'email' => $request->input('email'),
+            'phone_number' => $request->input('phone_number'),
+            'position' => $request->input('position'),
             'role_id' => $request->input('role_id'),
             'password' => $hashedPassword,
             'category_id' => $request->input('category_id'),
@@ -2247,6 +2344,16 @@ class AdminController extends Controller
             'manage_support_category' => $request->has('manage_support_category') ? 1 : 0,
             'manage_support_subcategory' => $request->has('manage_support_subcategory') ? 1 : 0,
             'manage_status' => $request->has('manage_status') ? 1 : 0,
+        ]);
+
+        $newUserId = $admin->id;
+
+        $emailSignature = EmailSignature::create([
+            'user_id' => $newUserId,
+            'sign_off' => 'Best regards,',
+            'font_family' => 'Allura',
+            'font_size' => '35',
+            'font_color' => '#ffffff'
         ]);
 
         return redirect()->route('adminSumm')->with('success', 'New admin created successfully');
@@ -2296,6 +2403,8 @@ class AdminController extends Controller
         $updateAdmin->name = $request->input('name');
         $updateAdmin->username = $request->input('username');
         $updateAdmin->email = $request->input('email');
+        $updateAdmin->phone_number = $request->input('phone_number');
+        $updateAdmin->position = $request->input('position');
         $updateAdmin->role_id = $request->input('role_id');
         $updateAdmin->category_id = $request->input('category_id');
         $updateAdmin->manage_ticket_in_category = $request->has('manage_ticket_in_category') ? 1 : 0;

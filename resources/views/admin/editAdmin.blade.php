@@ -59,9 +59,9 @@
 
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="username">New Password</label>
-                                        <input type="text" class="form-control" name="newpassword" placeholder="Enter new password" autocomplete="off">
-                                        @error('newpassword')
+                                        <label for="phone_number">Phone Number</label>
+                                        <input type="text" class="form-control" name="phone_number" placeholder="Enter Phone Number" autocomplete="off" value="{{ $user->phone_number }}">
+                                        @error('phone_number')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
@@ -69,22 +69,6 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-lg-6" style="display: none;">
-                                    <div class="form-group">
-                                        <label for="role_id">Role</label>
-                                        <select class="form-control" name="role_id">
-                                        @foreach($roles as $role)
-                                            <option value="{{ $role->id }}" {{ $user->roles->id == $role->id ? 'selected' : '' }}>
-                                                {!! $role->role_name !!}
-                                            </option>
-                                        @endforeach
-                                        </select>
-                                        @error('role_id')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label for="category_id">Category</label>
@@ -97,6 +81,42 @@
                                         @endforeach
                                         </select>
                                         @error('category_id')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label for="position">Position</label>
+                                        <input type="text" class="form-control" name="position" placeholder="Enter Position" autocomplete="off" value="{{ $user->position }}">
+                                        @error('position')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label for="username">New Password</label>
+                                        <input type="text" class="form-control" name="newpassword" placeholder="Enter new password" autocomplete="off">
+                                        @error('newpassword')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-lg-6" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="role_id">Role</label>
+                                        <select class="form-control" name="role_id">
+                                        @foreach($roles as $role)
+                                            <option value="{{ $role->id }}" {{ $user->roles->id == $role->id ? 'selected' : '' }}>
+                                                {!! $role->role_name !!}
+                                            </option>
+                                        @endforeach
+                                        </select>
+                                        @error('role_id')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>

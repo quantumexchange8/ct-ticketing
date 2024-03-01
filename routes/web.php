@@ -75,6 +75,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/profile', [AdminController::class, 'profile'])->name('profile');
     Route::post('/update-profile/{id}', [AdminController::class, 'updateProfile'])->name('updateProfile');
 
+    Route::get('/email-signature', [AdminController::class, 'emailSignature'])->name('emailSignature');
+    Route::get('/get-email-signature', [AdminController::class, 'getEmailSignature'])->name('getEmailSignature');
+    Route::post('/update-email-signature', [AdminController::class, 'updateEmailSignature'])->name('updateEmailSignature');
+
     // Administration
     Route::get('/title-summary', [AdminController::class, 'titleSumm'])->name('titleSumm');
     Route::get('/view-more-subtitle/{id}', [AdminController::class, 'viewMoreSubtitle'])->name('viewMoreSubtitle');

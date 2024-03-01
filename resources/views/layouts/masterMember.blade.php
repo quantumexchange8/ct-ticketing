@@ -24,6 +24,12 @@
         <link href="{{ asset('assets/plugins/daterangepicker/daterangepicker.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
 
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Allura&family=Courgette&family=Grand+Hotel&family=Great+Vibes&family=Inter:wght@500&family=Parisienne&family=Sacramento&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
 
     <body class="dark-sidenav">
@@ -40,7 +46,7 @@
                         <img src="{{ asset('assets/images/logo-dark.png') }}" alt="logo-large" class="logo-lg logo-dark">
                     </span> --}}
                     <span>
-                        <img src="{{ asset('assets/images/current-tech-logo.png') }}" alt="logo-large"  width="40%" height="90%">
+                        <img src="{{ asset('assets/images/current-tech-logo-white.png') }}" alt="logo-large"  width="40%" height="90%">
                     </span>
                 </a>
             </div>

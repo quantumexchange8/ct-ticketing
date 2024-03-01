@@ -262,21 +262,24 @@
                         @error('note_title')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
-
                     </div>
 
                     <div class="form-group">
                         <label for="note_description">Description</label>
-                        {{-- <textarea type="text" class="form-control" name="note_description" rows="5" autocomplete="off"></textarea> --}}
                         <textarea id="elm1" name="note_description" autocomplete="off"></textarea>
                         @error('note_description')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
 
-                    <div class="form-group" style="display: none;">
-                        <label for="note_description">Ticket ID</label>
+                    <div class="form-group">
+                        <label for="ticket_id">Ticket ID</label>
                         <input type="text" class="form-control" name="ticket_id" value="{{ $ticket->id }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="note_id">Note ID</label>
+                        <input type="text" class="form-control" name="note_id" value="{{ $note->id }}">
                     </div>
                 <div class="col-12 text-right">
                     <button type="submit" class="btn btn-primary px-4" name="action" value="save_only">Save Only</button>
@@ -334,10 +337,21 @@
                 success: function(response) {
 
                     if (response.note) {
-                        $('#editNoteModal textarea[name=note_title]').val(response.note.note_title);
-                        $('#editNoteModal textarea[id=elm1]').val(response.note.note_description);
 
-                        // $('#elm1').val(response.note.note_description);
+                        var editor = tinymce.get('elm1');
+
+                        // Check if the editor instance exists
+                        if (editor) {
+                            // Set the content of the editor
+                            editor.setContent(response.note.note_description);
+                        } else {
+                            // If the editor instance does not exist, log an error
+                            console.error('TinyMCE editor instance not found');
+                        }
+
+                        $('#editNoteModal textarea[name=note_title]').val(response.note.note_title);
+                        $('#editNoteModal input[name=note_id]').val(response.note.id);
+                        $('#editNoteModal input[name=ticket_id]').val(response.note.ticket_id);
                         $('#editNoteModal').modal('show');
 
                         // Check if notes.sent is 1, then hide the button
