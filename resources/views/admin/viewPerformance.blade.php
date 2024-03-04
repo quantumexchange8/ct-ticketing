@@ -59,18 +59,43 @@
                                 <tbody>
 
                                     @foreach($tickets as $ticket)
+
                                     @php
+                                        $createdAt = Carbon\Carbon::parse($ticket->created_at);
+
+                                        $priorityStyle = '';
+                                        $tooltipMessage = '';
+
+                                        if ($ticket->priority === 'High' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 2) {
+                                            $priorityStyle = 'color: red';
+                                            $tooltipMessage = 'The ticket has been unsolved for 2 hours.';
+                                        } elseif ($ticket->priority === 'Medium' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 12) {
+                                            $priorityStyle = 'color: red';
+                                            $tooltipMessage = 'The ticket has been unsolved for 12 hours.';
+                                        } elseif ($ticket->priority === 'Low' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 24) {
+                                            $priorityStyle = 'color: red';
+                                            $tooltipMessage = 'The ticket has been unsolved for 24 hours.';
+                                        }
+                                    @endphp
+
+                                    {{-- @php
                                         $createdAt = Carbon\Carbon::parse($ticket->created_at);
                                         $isPendingMoreThanSevenDays = $ticket->ticketStatus->status === 'Pending' && $createdAt->diffInDays(now()) > 7;
                                         $isPendingMoreThanThreeDays = $ticket->ticketStatus->status === 'Pending' && $createdAt->diffInDays(now()) > 3;
-                                    @endphp
+                                    @endphp --}}
                                     <tr>
-                                        <td style="{{ $isPendingMoreThanSevenDays ? 'color: red; font-weight: bold;' : ($isPendingMoreThanThreeDays ? 'color: #EDAE49; font-weight: bold;' : '') }}"
+                                        <td style="{{ $priorityStyle }}"
+                                            @if ($priorityStyle)
+                                                title="{{ $tooltipMessage }}"
+                                            @endif>
+                                            {{ $createdAt->format('d M Y') }}
+                                        </td>
+                                        {{-- <td style="{{ $isPendingMoreThanSevenDays ? 'color: red; font-weight: bold;' : ($isPendingMoreThanThreeDays ? 'color: #EDAE49; font-weight: bold;' : '') }}"
                                             @if ($isPendingMoreThanSevenDays || $isPendingMoreThanThreeDays)
                                                 title="{{ $isPendingMoreThanSevenDays ? 'Pending for more than 7 days' : 'Pending for more than 3 days' }}"
                                             @endif>
                                             {{ $createdAt->format('d M Y') }}
-                                        </td>
+                                        </td> --}}
                                         <td>{{ $ticket->ticket_no }}</td>
                                         <td>{{ $ticket->sender_name }}</td>
                                         <td>{{ $ticket->sender_email }}</td>
@@ -98,21 +123,17 @@
                                                 <i class="dripicons-preview"></i>
                                             </a>
 
-                                            {{-- @can('update', $ticket) --}}
-                                                <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                    <i class="dripicons-pencil"></i>
-                                                </a>
-                                            {{-- @endcan --}}
+                                            <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
+                                                <i class="dripicons-pencil"></i>
+                                            </a>
 
-                                            {{-- @can('delete', $ticket) --}}
-                                                <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
-                                                    @method('DELETE')
-                                                    @csrf
-                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
-                                                        <i class="dripicons-trash"></i>
-                                                    </button>
-                                                </form>
-                                            {{-- @endcan --}}
+                                            <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
+                                                @method('DELETE')
+                                                @csrf
+                                                <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
+                                                    <i class="dripicons-trash"></i>
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                     @endforeach

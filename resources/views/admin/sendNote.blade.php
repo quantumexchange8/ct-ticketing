@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Allura&family=Courgette&family=Grand+Hotel&family=Great+Vibes&family=Inter:wght@500&family=Parisienne&family=Sacramento&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <div class="page-content">
@@ -55,12 +55,17 @@
                         </div>
 
                         <hr>
-                        <div style="font-family: Book Antiqua; font-size: 13px;">Email: {{$user->email }}</div>
-                        <div style="font-family: Book Antiqua; font-size: 13px;">Phone Number: {{$user->phone_number }}</div>
+                        <div style="font-family: Book Antiqua; font-size: 13px;">Email: {{ $user->email }}</div>
+                        <div style="font-family: Book Antiqua; font-size: 13px;">Phone Number: {{ $user->phone_number }}</div>
 
                         {{-- <a href="https://wa.link/96dzqq"><i class="fa fa-whatsapp" style="font-size:30px;color:green">Whatsapp</i></a> --}}
                         {{-- <a href="https://tttttt.me/amberlee_415"><i class="fa fa-whatsapp" style="font-size:30px;color:green"></i>Telegram</a> --}}
                         {{-- <a href="mailto: leejiaqi0415@gmail.com"><i class="fa fa-whatsapp" style="font-size:30px;color:green">Gmail</i></a> --}}
+
+                        <div style="display:flex; flex-direction:row; gap:20px; margin-top:5px;">
+                            <a href="https://{{ $user->whatsapp_me }}"><i class="fa-brands fa-square-whatsapp fa-2xl" style="color: #16da9f;"></i></a>
+                            <a href="https://t.me/{{ $user->telegram_username }}"><i class="fa-brands fa-telegram fa-2xl" style="color: #74C0FC;"></i></a>
+                        </div>
 
                     </div>
                 </div>

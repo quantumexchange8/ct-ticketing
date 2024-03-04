@@ -66,13 +66,13 @@
 
                                         if ($ticket->priority === 'High' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 2) {
                                             $priorityStyle = 'color: red';
-                                            $tooltipMessage = 'Ticket must be solved in 2 hours';
+                                            $tooltipMessage = 'The ticket has been unsolved for 2 hours.';
                                         } elseif ($ticket->priority === 'Medium' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 12) {
                                             $priorityStyle = 'color: red';
-                                            $tooltipMessage = 'Ticket must be solved in 12 hours';
+                                            $tooltipMessage = 'The ticket has been unsolved for 12 hours.';
                                         } elseif ($ticket->priority === 'Low' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 24) {
                                             $priorityStyle = 'color: red';
-                                            $tooltipMessage = 'Ticket must be solved in 24 hours';
+                                            $tooltipMessage = 'The ticket has been unsolved for 24 hours.';
                                         }
                                     @endphp
 

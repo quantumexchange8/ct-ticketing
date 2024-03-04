@@ -99,6 +99,30 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
+                                        <div style="display: flex; flex-direction: row; align-items: baseline; gap: 5px;">
+                                            <label for="whatsapp_me">WhatsApp Me</label><a href="https://create.wa.link/"><i class="fa-solid fa-circle-info" title="How to create whatsapp me link?"></i></a>
+                                        </div>
+                                        <input type="text" class="form-control" name="whatsapp_me" placeholder="Ex: wa.link/u64q5m" autocomplete="off" value="{{ $user->whatsapp_me }}">
+                                        @error('whatsapp_me')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label for="telegram_username">Telegram Username</label>
+                                        <input type="text" class="form-control" name="telegram_username" placeholder="Ex: amberlee_415" autocomplete="off" value="{{ $user->telegram_username }}">
+                                        @error('telegram_username')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
                                         <label for="username">New Password</label>
                                         <input type="text" class="form-control" name="newpassword" placeholder="Enter new password" autocomplete="off">
                                         @error('newpassword')

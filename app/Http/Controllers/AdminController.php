@@ -116,7 +116,7 @@ class AdminController extends Controller
         // return view('admin.emailSignature');
     }
 
-    public function getEmailSignature(Request $request)
+    public function getEmailSignature()
     {
         $user = auth()->user();
         $emailSignature = EmailSignature::where('user_id', $user->id)->first();
@@ -165,25 +165,53 @@ class AdminController extends Controller
         $user = auth()->user();
         $userId = $user->id;
 
-        $updateData = [];
+        $updateEmailData = [];
+
+        $updateUserData = [];
 
         if ($request->has('sign_off')) {
-            $updateData['sign_off'] = $request->input('sign_off');
+            $updateEmailData['sign_off'] = $request->input('sign_off');
         }
 
         if ($request->has('font_family')) {
-            $updateData['font_family'] = $request->input('font_family');
+            $updateEmailData['font_family'] = $request->input('font_family');
         }
 
         if ($request->has('font_size')) {
-            $updateData['font_size'] = $request->input('font_size');
+            $updateEmailData['font_size'] = $request->input('font_size');
         }
 
         if ($request->has('font_color')) {
-            $updateData['font_color'] = $request->input('font_color');
+            $updateEmailData['font_color'] = $request->input('font_color');
         }
 
-        $update = EmailSignature::where('user_id', $userId)->update($updateData);
+        if ($request->has('name')) {
+            $updateUserData['name'] = $request->input('name');
+        }
+
+        if ($request->has('phone_number')) {
+            $updateUserData['phone_number'] = $request->input('phone_number');
+        }
+
+        if ($request->has('position')) {
+            $updateUserData['position'] = $request->input('position');
+        }
+
+        if ($request->has('email')) {
+            $updateUserData['email'] = $request->input('email');
+        }
+
+        if ($request->has('whatsapp_me')) {
+            $updateUserData['whatsapp_me'] = $request->input('whatsapp_me');
+        }
+
+        if ($request->has('telegram_username')) {
+            $updateUserData['telegram_username'] = $request->input('telegram_username');
+        }
+
+        $updateEmail = EmailSignature::where('user_id', $userId)->update($updateEmailData);
+
+        $updateUser = User::where('id', $userId)->update($updateUserData);
 
         return response()->json(['message' => 'Email Signature updated successfully']);
     }
@@ -194,13 +222,30 @@ class AdminController extends Controller
         $ticketStatuses = TicketStatus::all();
         $ticketCounts = [];
         $currentYear = now()->year;
+        $authUser = User::where('id', '=', Auth::user()->id)->first();
 
         foreach ($ticketStatuses as $status) {
             // Get ticket counts for each priority within the status
-            $tickets = Ticket::where('status_id', $status->id)
+
+            if ($authUser->role_id == 1) {
+                $tickets = Ticket::where('status_id', $status->id)
                 ->whereYear('created_at', $currentYear)
                 ->whereNull('deleted_at')
                 ->get();
+            } else if ($authUser->role_id !== 1 && $authUser->manage_ticket_in_category == 1) {
+                $tickets = Ticket::where('status_id', $status->id)
+                ->where('category_id', $authUser->category_id)
+                ->whereYear('created_at', $currentYear)
+                ->whereNull('deleted_at')
+                ->get();
+            } else if ($authUser->role_id !== 1 && $authUser->manage_own_ticket == 1) {
+                $tickets = Ticket::where('status_id', $status->id)
+                ->where('pic_id', $authUser->id)
+                ->whereYear('created_at', $currentYear)
+                ->whereNull('deleted_at')
+                ->get();
+            }
+
 
             // Initialize priority counts for this status
             $highCount = 0;
@@ -233,7 +278,24 @@ class AdminController extends Controller
             ];
         }
 
-        $unassignedTickets = Ticket::whereYear('created_at', $currentYear)->whereNull('pic_id')->orderByDesc('tickets.id')->get();
+        if ($authUser->role_id == 1) {
+            $unassignedTickets = Ticket::whereYear('created_at', $currentYear)
+                                        ->whereNull('pic_id')
+                                        ->orderByDesc('tickets.id')
+                                        ->get();
+        } else if ($authUser->role_id !== 1 && $authUser->manage_ticket_in_category == 1) {
+            $unassignedTickets = Ticket::whereYear('created_at', $currentYear)
+                                        ->whereNull('pic_id')
+                                        ->where('category_id', $authUser->category_id)
+                                        ->orderByDesc('tickets.id')
+                                        ->get();
+        } else if ($authUser->role_id !== 1 && $authUser->manage_own_ticket == 1) {
+            $unassignedTickets = Ticket::whereYear('created_at', $currentYear)
+                                        ->whereNull('pic_id')
+                                        ->where('category_id', $authUser->category_id)
+                                        ->orderByDesc('tickets.id')
+                                        ->get();
+        }
 
         $unassignedHigh = 0;
         $unassignedMedium = 0;
@@ -947,7 +1009,7 @@ class AdminController extends Controller
         // Find the ticket
         $ticket = Ticket::find($ticketId);
 
-        
+
         // Get sender email
         $senderEmail = $ticket->sender_email;
 
@@ -1078,169 +1140,70 @@ class AdminController extends Controller
         $monthNumber = date('m', strtotime($month));
 
         if ($authUser->role_id == 1) {
-
+            // Fetch all support categories
             $supportCategories = SupportCategory::all();
-
-            if ($request->has('filter_month')) {
-                foreach ($supportCategories as $supportCategory) {
-                    // Retrieve users associated with the current support category
-                    $users = $supportCategory->users()->withCount('tickets')->whereMonth('created_at', $monthNumber)->whereYear('created_at', $currentYear)->get();
-
-                    // Assign the users back to the support category
-                    $supportCategory->users = $users;
-                }
-            } else {
-                foreach ($supportCategories as $supportCategory) {
-                    // Retrieve users associated with the current support category
-                    $users = $supportCategory->users()->withCount('tickets')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->get();
-
-                    // Assign the users back to the support category
-                    $supportCategory->users = $users;
-                }
-            }
-
-
-        } elseif ($authUser->role_id !== 1 && $authUser->manage_ticket_in_category == 1) {
-            $supportCategories = SupportCategory::where('support_categories.id', $authUser->category_id)
-                                                ->get();
-
-            if ($request->has('filter_month')) {
-                foreach ($supportCategories as $supportCategory) {
-                    // Retrieve users associated with the current support category
-                    $users = $supportCategory->users()->withCount('tickets')->whereMonth('created_at', $monthNumber)->whereYear('created_at', $currentYear)->get();
-
-                    // Assign the users back to the support category
-                    $supportCategory->users = $users;
-                }
-            } else {
-                foreach ($supportCategories as $supportCategory) {
-                    // Retrieve users associated with the current support category
-                    $users = $supportCategory->users()->withCount('tickets')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->get();
-
-                    // Assign the users back to the support category
-                    $supportCategory->users = $users;
-                }
-            }
-
+        } else if ($authUser->role_id !== 1 && $authUser->manage_ticket_in_category == 1) {
+            // Fetch all support categories
+            $supportCategories = SupportCategory::where('id', $authUser->category_id)->get();
         }
 
+        // Fetch all ticket statuses
         $ticketStatuses = TicketStatus::all();
 
+        // Loop through each support category
+        foreach ($supportCategories as $supportCategory) {
+            // Retrieve users associated with the current support category along with their tickets
+            $users = $supportCategory->users()->with('tickets.ticketStatus')->get();
 
+            // Loop through each user in the support category
+            foreach ($users as $user) {
+                // Initialize an array to hold ticket counts for each status
+                $ticketCounts = [];
 
-    //    if ($request->has('filter_month')) {
-
-    //         foreach ($supportCategories as $supportCategory) {
-    //             // Loop through each user in the support category
-    //             foreach ($supportCategory->users as $user) {
-    //                 // Initialize a temporary array to hold ticket counts
-    //                 $ticketCounts = [];
-
-    //                 // Fetch ticket counts for each ticket status for the current user
-    //                 foreach ($ticketStatuses as $status) {
-    //                     $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->whereMonth('created_at', $monthNumber)->whereYear('created_at', $currentYear)->count();
-    //                 }
-
-    //                 // Assign the temporary array to a different property of the $user object
-    //                 $user->ticketCounts = $ticketCounts;
-    //             }
-    //         }
-    //     } elseif ($request->has('filter_year')) {
-
-    //         foreach ($supportCategories as $supportCategory) {
-    //             // Loop through each user in the support category
-    //             foreach ($supportCategory->users as $user) {
-    //                 // Initialize a temporary array to hold ticket counts
-    //                 $ticketCounts = [];
-
-    //                 // Fetch ticket counts for each ticket status for the current user
-    //                 foreach ($ticketStatuses as $status) {
-    //                     $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->whereYear('created_at', $year)->count();
-    //                 }
-
-    //                 // Assign the temporary array to a different property of the $user object
-    //                 $user->ticketCounts = $ticketCounts;
-    //             }
-    //         }
-    //     } elseif ($request->has('filter_month') && $request->has('filter_year')) {
-    //         foreach ($supportCategories as $supportCategory) {
-    //             // Loop through each user in the support category
-    //             foreach ($supportCategory->users as $user) {
-    //                 // Initialize a temporary array to hold ticket counts
-    //                 $ticketCounts = [];
-
-    //                 // Fetch ticket counts for each ticket status for the current user
-    //                 foreach ($ticketStatuses as $status) {
-    //                     $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->whereMonth('created_at', $monthNumber)->whereYear('created_at', $year)->count();
-    //                 }
-
-    //                 // Assign the temporary array to a different property of the $user object
-    //                 $user->ticketCounts = $ticketCounts;
-    //             }
-    //         }
-    //     } else {
-
-    //         foreach ($supportCategories as $supportCategory) {
-    //             // Loop through each user in the support category
-    //             foreach ($supportCategory->users as $user) {
-    //                 // Initialize a temporary array to hold ticket counts
-    //                 $ticketCounts = [];
-
-    //                 // Fetch ticket counts for each ticket status for the current user
-    //                 foreach ($ticketStatuses as $status) {
-    //                     $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->whereYear('created_at', $currentYear)->count();
-    //                 }
-
-    //                 // Assign the temporary array to a different property of the $user object
-    //                 $user->ticketCounts = $ticketCounts;
-    //             }
-    //         }
-    //     }
-
-        if ($request->has('filter_month')) {
-
-            foreach ($supportCategories as $supportCategory) {
-                // Loop through each user in the support category
-                foreach ($supportCategory->users as $user) {
-                    // Initialize a temporary array to hold ticket counts
-                    $ticketCounts = [];
-
-                    // Fetch ticket counts for each ticket status for the current user
+                if ($request->has('filter_month') && $request->has('filter_year')) {
+                    // Loop through each ticket status
                     foreach ($ticketStatuses as $status) {
-                        $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->whereMonth('created_at', $monthNumber)->count();
+                        // Count tickets with the current status for the current user
+                        $ticketCounts[$status->status] = $user->tickets()
+                                                    ->where('status_id', $status->id)
+                                                    ->whereMonth('created_at', $monthNumber)
+                                                    ->whereYear('created_at', $year)
+                                                    ->count();
                     }
 
-                    // Assign the temporary array to a different property of the $user object
-                    $user->ticketCounts = $ticketCounts;
-                }
-            }
-        } else {
+                    // Calculate the total ticket count for the user
+                    $totalTickets = $user->tickets()
+                                    ->whereMonth('created_at', $monthNumber)
+                                    ->whereYear('created_at', $year)
+                                    ->count();
 
-            foreach ($supportCategories as $supportCategory) {
-                // Loop through each user in the support category
-                foreach ($supportCategory->users as $user) {
-                    // Initialize a temporary array to hold ticket counts
-                    $ticketCounts = [];
-
-                    // Fetch ticket counts for each ticket status for the current user
+                } else {
+                    // Loop through each ticket status
                     foreach ($ticketStatuses as $status) {
-                        $ticketCounts[$status->status] = $user->tickets()->where('status_id', $status->id)->whereMonth('created_at', $currentMonth)->count();
+                        // Count tickets with the current status for the current user
+                        $ticketCounts[$status->status] = $user->tickets()
+                                                    ->where('status_id', $status->id)
+                                                    ->whereMonth('created_at', $currentMonth)
+                                                    ->whereYear('created_at', $currentYear)
+                                                    ->count();
                     }
 
-                    // Assign the temporary array to a different property of the $user object
-                    $user->ticketCounts = $ticketCounts;
-
-
+                    // Calculate the total ticket count for the user
+                    $totalTickets = $user->tickets()
+                                    ->whereMonth('created_at', $currentMonth)
+                                    ->whereYear('created_at', $currentYear)
+                                    ->count();
                 }
+
+                // Assign the ticket counts and total ticket count to the user object
+                $user->ticketCounts = $ticketCounts;
+                $user->totalTickets = $totalTickets;
             }
+
+            // Assign the users back to the support category
+            $supportCategory->users = $users;
         }
 
-        // foreach ($supportCategories as $supportCategory) {
-        //     foreach ($supportCategory->users as $user) {
-        //         dd($user->name, $user->ticketCounts, $year, $monthNumber);
-
-        //     }
-        // }
 
         // Define the colors array
         $colors = ['#bed3fe', '#e3e6f0', '#b8f4db', '#bde6fa', '#ffebc1', '#99a1b7', '#b2bfc2'];
@@ -2333,6 +2296,8 @@ class AdminController extends Controller
             'email' => $request->input('email'),
             'phone_number' => $request->input('phone_number'),
             'position' => $request->input('position'),
+            'whatsapp_me' => $request->input('whatsapp_me'),
+            'telegram_username' => $request->input('telegram_username'),
             'role_id' => $request->input('role_id'),
             'password' => $hashedPassword,
             'category_id' => $request->input('category_id'),
@@ -2352,7 +2317,7 @@ class AdminController extends Controller
             'user_id' => $newUserId,
             'sign_off' => 'Best regards,',
             'font_family' => 'Allura',
-            'font_size' => '35',
+            'font_size' => '30',
             'font_color' => '#ffffff'
         ]);
 
@@ -2405,6 +2370,8 @@ class AdminController extends Controller
         $updateAdmin->email = $request->input('email');
         $updateAdmin->phone_number = $request->input('phone_number');
         $updateAdmin->position = $request->input('position');
+        $updateAdmin->whatsapp_me = $request->input('whatsapp_me');
+        $updateAdmin->telegram_username = $request->input('telegram_username');
         $updateAdmin->role_id = $request->input('role_id');
         $updateAdmin->category_id = $request->input('category_id');
         $updateAdmin->manage_ticket_in_category = $request->has('manage_ticket_in_category') ? 1 : 0;

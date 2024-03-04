@@ -63,13 +63,13 @@
 
                                         if ($ticket->priority === 'High' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 2) {
                                             $priorityStyle = 'color: red';
-                                            $tooltipMessage = 'Ticket must be solved in 2 hours';
+                                            $tooltipMessage = 'The ticket has been unsolved for 2 hours.';
                                         } elseif ($ticket->priority === 'Medium' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 12) {
                                             $priorityStyle = 'color: red';
-                                            $tooltipMessage = 'Ticket must be solved in 12 hours';
+                                            $tooltipMessage = 'The ticket has been unsolved for 12 hours.';
                                         } elseif ($ticket->priority === 'Low' && $ticket->status !== 'Solved' && $ticket->status !== 'Closed' && $createdAt && $createdAt->diffInHours(now()) > 24) {
                                             $priorityStyle = 'color: red';
-                                            $tooltipMessage = 'Ticket must be solved in 24 hours';
+                                            $tooltipMessage = 'The ticket has been unsolved for 24 hours.';
                                         }
                                     @endphp
                                     <tr>
@@ -101,21 +101,17 @@
                                                 <i class="dripicons-preview"></i>
                                             </a>
 
-                                            @can('update', $ticket)
-                                                <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                    <i class="dripicons-pencil"></i>
-                                                </a>
-                                            @endcan
+                                            <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
+                                                <i class="dripicons-pencil"></i>
+                                            </a>
 
-                                            @can('delete', $ticket)
-                                                <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
-                                                    @method('DELETE')
-                                                    @csrf
-                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
-                                                        <i class="dripicons-trash"></i>
-                                                    </button>
-                                                </form>
-                                            @endcan
+                                            <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
+                                                @method('DELETE')
+                                                @csrf
+                                                <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
+                                                    <i class="dripicons-trash"></i>
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                     @endforeach

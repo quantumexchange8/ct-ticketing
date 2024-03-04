@@ -266,13 +266,13 @@
                         tooltipMessage = 'Please assign PIC to the ticket.';
                     } else if (ticket.priority === 'High' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 2 * 60 * 60 * 1000) {
                         cardStyle = 'background: #f4cccc';
-                        tooltipMessage = 'Ticket must solve in 2 hours';
+                        tooltipMessage = 'The ticket has been unsolved for 2 hours.';
                     } else if (ticket.priority === 'Medium' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 12 * 60 * 60 * 1000) {
                         cardStyle = 'background: #f4cccc';
-                        tooltipMessage = 'Ticket must solve in 12 hours';
+                        tooltipMessage = 'The ticket has been unsolved for 12 hours.';
                     } else if (ticket.priority === 'Low' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 24 * 60 * 60 * 1000) {
                         cardStyle = 'background: #f4cccc';
-                        tooltipMessage = 'Ticket must solve in 24 hours';
+                        tooltipMessage = 'The ticket has been unsolved for 24 hours.';
                     }
 
                     // if (picId == null) {

@@ -272,14 +272,14 @@
                         @enderror
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" style="display: none;">
                         <label for="ticket_id">Ticket ID</label>
                         <input type="text" class="form-control" name="ticket_id" value="{{ $ticket->id }}">
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" style="display: none;">
                         <label for="note_id">Note ID</label>
-                        <input type="text" class="form-control" name="note_id" value="{{ $note->id }}">
+                        <input type="text" class="form-control" name="note_id" value="{{ isset($note) ? $note->id : '' }}">
                     </div>
                 <div class="col-12 text-right">
                     <button type="submit" class="btn btn-primary px-4" name="action" value="save_only">Save Only</button>

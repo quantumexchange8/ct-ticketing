@@ -168,13 +168,13 @@
                             @endforeach
                         </div>
 
-                        @can('update', $ticket)
+                        @if (Auth::user()->role_id == 1 || (Auth::user()->role_id !== 1 && Auth::user()->manage_ticket_in_category == 1))
                         <div class="col-12 text-right">
                             <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn  btn-primary">
                                 Edit Ticket
                             </a>
                         </div>
-                        @endcan
+                        @endif
                     </div><!--end card-body-->
                 </div><!--end card-->
             </div><!--end col-->
@@ -209,11 +209,13 @@
                                     </div>
                                 @endforeach
 
+                                @if ($ticket->pic_id !== null)
                                 <div class="col-12 text-right">
                                     <a href="#" class="btn  btn-primary" id="addnotes">
                                         Add New Notes
                                     </a>
                                 </div>
+                                @endif
                             </div><!--end activity-->
                         </div><!--end activity-scroll-->
                     </div>  <!--end card-body-->

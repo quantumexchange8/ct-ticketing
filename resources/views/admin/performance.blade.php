@@ -10,11 +10,11 @@
             <div class="col-sm-12" style="padding: 15px;">
                 {{-- <div class="page-title-box"> --}}
                     <div class="row">
-                        <div class="col-9">
+                        <div class="col-8">
                             <h4 class="page-title mt-2">Performance</h4>
                         </div><!--end col-->
-                        <div class="col-3"  style="display: flex; justify-content: flex-end; align-items: stretch;">
-                            <div class="col-sm-6">
+                        <div class="col-4"  style="display: flex; ">
+                            <div class="col-sm-5">
                                 <div class="form-group">
                                     @php
                                         $months = [
@@ -30,7 +30,7 @@
                                     </select>
                                 </div>
                             </div>
-                            {{-- <div class="col-sm-4">
+                            <div class="col-sm-5">
                                 <div class="form-group">
                                     @php
                                         $currentYear = now()->year;
@@ -43,8 +43,8 @@
                                         @endfor
                                     </select>
                                 </div>
-                            </div> --}}
-                            <div class="col-sm-6" >
+                            </div>
+                            <div class="col-sm-2" >
                                 <button type="button" class="btn btn-info waves-effect waves-light" id="reset">Reset</button>
                             </div><!--end col-->
                         </div>
@@ -116,6 +116,22 @@
             e.preventDefault();
             var month = $('#filtermonth').val();
             var year = $('#filteryear').val();
+
+            // Check if the month is empty
+            if (month.trim() === '') {
+                // Set the month to the current month
+                var currentDate = new Date();
+                var monthNumber = currentDate.getMonth() + 1; // Months are zero-based, so we add 1
+                month = monthNumber.toString();
+            }
+
+            // Check if the year is empty
+            if (year.trim() === '') {
+                // Set the year to the current year
+                var currentDate = new Date();
+                year = currentDate.getFullYear().toString();
+            }
+
             console.log('Month',month);
             console.log('Year',year);
             loadPerformance(month, year);
@@ -131,6 +147,7 @@
         });
 
         function loadPerformance(month, year) {
+
             $.ajax({
                 url: '/get-performance',
                 method: 'GET',
@@ -162,14 +179,14 @@
                             supportCategory.users.forEach(function(user) {
                                 // Create a column for each user
                                 categoryHtml += '<div class="col-sm-3">';
-                                categoryHtml += '<div class="card">';
+                                categoryHtml += '<div class="card" style="margin-left: 11px;">';
                                 categoryHtml += '<a href="/view-performance/' + user.id + '">';
                                 categoryHtml += '<div class="card-header">';
                                 categoryHtml += '<h4 class="card-title">' + user.name + '</h4>';
                                 categoryHtml += '<div style="display: flex; align-items: center;">';
                                 categoryHtml += '<h4 class="card-title" style="margin-right: 5px;">Total Tickets</h4>';
                                 categoryHtml += '<span>:</span>';
-                                categoryHtml += '<h4 class="card-title" style="margin-left: 5px;">' + user.tickets_count + '</h4>';
+                                categoryHtml += '<h4 class="card-title" style="margin-left: 5px;">' + user.totalTickets + '</h4>';
                                 categoryHtml += '</div>'; // end flex container
                                 categoryHtml += '</div>'; // end card-header
                                 categoryHtml += '<div class="card-body">';
