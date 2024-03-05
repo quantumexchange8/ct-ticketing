@@ -196,9 +196,16 @@
 
             // Loop through each status
             statuses.forEach(function(statuses) {
+                var ticketSummRoute = "{{ route('ticketSumm', ':status') }}"; // Define the route URL
+                ticketSummRoute = ticketSummRoute.replace(':status', statuses.status.id);
+
                 var swimLane = $('<div class="swim-lane" id="' + statuses.status.id + '">');
                 var kanbanMainCard = $('<div class="kanban-main-card">');
-                var kanbanBoxTitle = $('<div class="kanban-box-title">').append('<h4 class="card-title mt-0 mb-3">' + statuses.status.status +  ' (' + statuses.ticket_count + ')' + '</h4>');
+                // var kanbanBoxTitle = $('<div class="kanban-box-title">').append('<h4 class="card-title mt-0 mb-3">' + statuses.status.status +  ' (' + statuses.ticket_count + ')' + '</h4>');
+                    var kanbanBoxTitle = $('<div class="kanban-box-title">')
+                    .append('<a href="' + ticketSummRoute + '">' + '<h4 class="card-title mt-0 mb-3">' + statuses.status.status +  ' (' + statuses.ticket_count + ')' + '</h4>' + '</a>');
+
+
 
                 // Append kanban box title to kanban main card
                 kanbanMainCard.append(kanbanBoxTitle);

@@ -139,6 +139,22 @@
                                     </div>
                                 </div>
 
+                                <div class="col-lg-6">
+
+                                    <div class="form-group">
+                                        <label for="profile_picture">Profile Picture</label>
+                                        <div>
+                                            <input type="file" class="theme-input-style" name="profile_picture" autocomplete="off" >
+                                        </div>
+
+                                        @error('profile_picture')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
                                 <div class="col-lg-6" style="display: none;">
                                     <div class="form-group">
                                         <label for="role_id">Role</label>
@@ -154,9 +170,9 @@
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
+
                                 </div>
                             </div>
-
 
                             <div class="privileges">
                                 <div class="row">

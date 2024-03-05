@@ -207,7 +207,9 @@ class MemberController extends Controller
             }
         }
 
-        Mail::send(new SubmitTicket($ticket, $subject, $senderEmail));
+        $emailSubject = $ticketNo . '-' . $senderName;
+
+        Mail::send(new SubmitTicket($ticket, $subject, $senderEmail, $emailSubject));
 
         return redirect()->route('dashboard')->with('success', 'Ticket submitted successfully');
     }

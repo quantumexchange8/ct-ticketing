@@ -168,7 +168,7 @@
                             @endforeach
                         </div>
 
-                        @if (Auth::user()->role_id == 1 || (Auth::user()->role_id !== 1 && Auth::user()->manage_ticket_in_category == 1))
+                        @if (Auth::user()->role_id == 1 || (Auth::user()->role_id !== 1 && Auth::user()->manage_ticket_in_category == 1) || (Auth::user()->role_id !== 1 && Auth::user()->id == $ticket->pic_id))
                         <div class="col-12 text-right">
                             <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn  btn-primary">
                                 Edit Ticket

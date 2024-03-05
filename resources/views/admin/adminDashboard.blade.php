@@ -65,21 +65,53 @@
                         @php
                             $iconIndex = ($iconIndex + 1) % count($icons);
                         @endphp
+
                     @endforeach
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card report-card">
+                            <div class="card-body">
+                                <a href="{{ route('unassignedTicket') }}">
+                                    <div class="row d-flex justify-content-center">
+                                        <div class="col">
+                                                <p class="text-dark mb-1 font-weight-semibold">Unassigned</p>
+                                                <h3 class="my-0">{{ $totalUnassigned }}</h3>
+                                        </div>
+                                        <div class="col-auto align-self-center">
+                                            <div class="report-main-icon bg-light-alt">
+                                                <i data-feather="alert-triangle" class="align-self-center text-muted icon-md"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="hr-dashed">
+                                    <div class="text-center">
+                                        <h6 class="text-primary bg-soft-danger p-3 mb-0 font-11 rounded">
+                                            High: {{ $unassignedHigh }}
+                                        </h6>
+                                        <h6 class="text-primary bg-soft-warning p-3 mb-0 font-11 rounded">
+                                            Medium: {{ $unassignedMedium }}
+                                        </h6>
+                                        <h6 class="text-primary bg-soft-primary p-3 mb-0 font-11 rounded">
+                                            Low: {{ $unassignedLow }}
+                                        </h6>
+                                    </div>
+                                </a>
+                            </div><!--end card-body-->
+                        </div><!--end card-->
+                    </div> <!--end col-->
 
                 </div><!--end row-->
             </div><!-- end col-->
         </div><!--end row-->
 
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-lg-12">
                 <div class="row">
-                    <div class="col-lg-9">
+                    <div class="col-lg-12">
                         <div class="card">
                             <div class="card-header">
                                 <div class="row align-items-center">
                                     <div class="col">
-                                        <h4 class="card-title">Unassigned Tickets</h4>
+                                        <h4 class="card-title">Unassigned Tickets (5 latest records)</h4>
                                     </div><!--end col-->
                                 </div>  <!--end row-->
                             </div><!--end card-header-->
@@ -110,19 +142,7 @@
                                                                 <i class="dripicons-preview"></i>
                                                             </a>
 
-                                                            @if (Auth::user()->role_id == 1)
-                                                                <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                                    <i class="dripicons-pencil"></i>
-                                                                </a>
-
-                                                                <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
-                                                                    @method('DELETE')
-                                                                    @csrf
-                                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
-                                                                        <i class="dripicons-trash"></i>
-                                                                    </button>
-                                                                </form>
-                                                            @elseif (Auth::user()->role_id !== 1 && Auth::user()->manage_ticket_in_category == 1 && Auth::user()->category_id == $ticket->category_id)
+                                                            @if (Auth::user()->role_id == 1 || (Auth::user()->role_id !== 1 && Auth::user()->manage_ticket_in_category == 1 && Auth::user()->category_id == $ticket->category_id))
                                                                 <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
                                                                     <i class="dripicons-pencil"></i>
                                                                 </a>
@@ -145,38 +165,9 @@
                             </div><!--end card-body-->
                         </div><!--end card-->
                     </div> <!--end col-->
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card report-card">
-                            <div class="card-body">
-                                <div class="row d-flex justify-content-center">
-                                    <div class="col">
-                                            <p class="text-dark mb-1 font-weight-semibold">Unassigned</p>
-                                            <h3 class="my-0">{{ $totalUnassigned }}</h3>
-                                    </div>
-                                    <div class="col-auto align-self-center">
-                                        <div class="report-main-icon bg-light-alt">
-                                            <i data-feather="alert-triangle" class="align-self-center text-muted icon-md"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr class="hr-dashed">
-                                <div class="text-center">
-                                    <h6 class="text-primary bg-soft-danger p-3 mb-0 font-11 rounded">
-                                        High: {{ $unassignedHigh }}
-                                    </h6>
-                                    <h6 class="text-primary bg-soft-warning p-3 mb-0 font-11 rounded">
-                                        Medium: {{ $unassignedMedium }}
-                                    </h6>
-                                    <h6 class="text-primary bg-soft-primary p-3 mb-0 font-11 rounded">
-                                        Low: {{ $unassignedLow }}
-                                    </h6>
-                                </div>
-                            </div><!--end card-body-->
-                        </div><!--end card-->
-                    </div> <!--end col-->
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <div class="row">
             <div class="col-lg-12">

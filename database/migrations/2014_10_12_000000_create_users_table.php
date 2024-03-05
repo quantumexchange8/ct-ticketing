@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('position')->nullable();
             $table->string('whatsapp_me')->nullable();
             $table->string('telegram_username')->nullable();
+            $table->string('profile_picture')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->string('role_id')->nullable();

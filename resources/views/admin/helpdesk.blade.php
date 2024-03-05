@@ -371,16 +371,17 @@
                         var tooltipMessage = '';
 
 
-                        if (picId == null) {
-                            dateStyle = 'background: #edf3ff';
-                            tooltipMessage = 'Please assign PIC to the ticket.';
-                        } else if (ticket.priority === 'High' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 2 * 60 * 60 * 1000) {
+                        // if (picId == null) {
+                        //     dateStyle = 'background: #edf3ff';
+                        //     tooltipMessage = 'Please assign PIC to the ticket.';
+                        // } else
+                        if (ticket.priority === 'High' && ticket.status == 'Pending' && currentTime - createdAt > 2 * 60 * 60 * 1000) {
                             dateStyle = 'color: red';
                             tooltipMessage = 'The ticket has been unsolved for 2 hours.';
-                        } else if (ticket.priority === 'Medium' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 12 * 60 * 60 * 1000) {
+                        } else if (ticket.priority === 'Medium' && ticket.status == 'Pending' && currentTime - createdAt > 12 * 60 * 60 * 1000) {
                             dateStyle = 'color: red';
                             tooltipMessage = 'The ticket has been unsolved for 12 hours.';
-                        } else if (ticket.priority === 'Low' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 24 * 60 * 60 * 1000) {
+                        } else if (ticket.priority === 'Low' && ticket.status == 'Pending' && currentTime - createdAt > 24 * 60 * 60 * 1000) {
                             dateStyle = 'color: red';
                             tooltipMessage = 'The ticket has been unsolved for 24 hours.';
                         }

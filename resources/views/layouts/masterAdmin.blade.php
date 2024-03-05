@@ -12,7 +12,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <!-- App favicon -->
-        <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+        <link rel="shortcut icon" href="{{ asset('assets/images/current-tech-logo-white.png') }}">
 
         <!-- Kanban -->
         <link href="{{ asset('assets/plugins/dragula/dragula.min.css') }}" rel="stylesheet" type="text/css" />
@@ -83,17 +83,18 @@
                     </li>
 
                     <li>
-                        <a href="{{ route('ticket') }}"> <i data-feather="sliders" class="align-self-center menu-icon"></i><span>Ticket - Board</span></a>
+                        <a href="{{ route('ticket') }}"> <i data-feather="sliders" class="align-self-center menu-icon"></i><span>Ticket</span></a>
                     </li>
 
-                    <li>
+                    {{-- <li>
                         <a href="javascript: void(0);"><i data-feather="list" class="align-self-center menu-icon"></i><span>Ticket - List</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
                         <ul class="nav-second-level" aria-expanded="false">
                             @foreach ($ticketStatuses as $status)
                                 <li class="nav-item"><a class="nav-link" href="{{ route('ticketSumm', $status) }}"><i class="ti-control-record"></i>{{ $status->status }}</a></li>
                             @endforeach
+                                <li class="nav-item"><a class="nav-link" href="{{ route('unassignedTicket') }}"><i class="ti-control-record"></i>Unassigned</a></li>
                         </ul>
-                    </li>
+                    </li> --}}
 
                     @if (Auth::user()->role_id == 1)
                         <li>
@@ -333,7 +334,10 @@
                             <a class="nav-link dropdown-toggle waves-effect waves-light nav-user mr-3" data-toggle="dropdown" href="#" role="button"
                                 aria-haspopup="false" aria-expanded="false">
                                 <span class="ml-1 nav-user-name hidden-sm">{{ auth()->user()->name }}</span>
-                                {{-- <img src="assets/images/users/user-5.jpg" alt="profile-user" class="rounded-circle" /> --}}
+                                @if (auth()->user()->profile_picture)
+                                    <img src="{{ asset('storage/profilePicture/' . auth()->user()->profile_picture) }}" alt="profile-user" class="rounded-circle" />
+                                @endif
+
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a class="dropdown-item" href="{{ route('profile') }}"><i data-feather="user" class="align-self-center icon-xs icon-dual mr-1"></i> Profile</a>

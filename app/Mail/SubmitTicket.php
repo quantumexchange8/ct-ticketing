@@ -19,12 +19,14 @@ class SubmitTicket extends Mailable
     public $ticket;
     public $subject;
     public $senderEmail;
+    public $emailSubject;
 
-    public function __construct($ticket, $subject, $senderEmail)
+    public function __construct($ticket, $subject, $senderEmail, $emailSubject)
     {
         $this->ticket = $ticket;
         $this->subject = $subject;
         $this->senderEmail = $senderEmail;
+        $this->emailSubject = $emailSubject;
     }
 
     /**
@@ -35,9 +37,9 @@ class SubmitTicket extends Mailable
         // return $this->view('user.SubmitTicket')
         //             ->subject('Ticket Submission');
 
-        // $recipients = ['amberljq00@gmail.com', 'hivehanis@gmail.com'];
+        $recipients = ['amberljq00@gmail.com'];
 
-        $recipients = [$this->senderEmail];
+        // $recipients = [$this->senderEmail];
 
         $attachments = [];
         if ($this->ticket->images) {
@@ -48,7 +50,7 @@ class SubmitTicket extends Mailable
 
         $email = $this
             ->to($recipients)
-            ->subject($this->subject)
+            ->subject($this->emailSubject)
             ->view('user.submitTicket', ['ticket' => $this->ticket]);
 
         foreach ($attachments as $attachment) {

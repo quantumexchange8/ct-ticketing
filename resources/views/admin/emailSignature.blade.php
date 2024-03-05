@@ -19,7 +19,14 @@
         <!-- end page title end breadcrumb -->
         <div class="row">
             @php
+                // if ($profile_picture) {
+                //     $profilePictureUrl = asset("storage/profilePicture/{$profile_picture}");
+                // }
+                // else {
+                //     $profilePictureUrl = asset('assets/images/current-tech-logo-black.png');
+                // }
                 $logoUrl = asset('assets/images/current-tech-logo-black.png');
+
             @endphp
             {{-- <div class="col-lg-6" id="emailSignatureData">
                 <div class="card">
@@ -171,7 +178,17 @@
                 const emailSignature = data.emailSignature;
                 const user = data.user;
                 const logoUrl = '{{ $logoUrl }}';
-                console.log(logoUrl);
+
+
+                var name = (user.name) ? user.name : '';
+                var phoneNumber = (user.phone_number) ? user.phone_number : '';
+                var email = (user.email) ? user.email : '';
+                var position = (user.position) ? user.position : '';
+                var profilePicture = (user.profile_picture) ? user.profile_picture : '';
+
+                var whatsappMe = (user.whatsapp_me) ? user.whatsapp_me : '';
+                var telegramUsername = (user.telegram_username) ? user.telegram_username : '';
+
                 document.getElementById('emailSignatureData').innerHTML =
                     '<div class="card">' +
                         '<div class="card-header">' +
@@ -238,13 +255,13 @@
                                 '<div class="col-lg-6">' +
                                     '<div class="form-group">' +
                                         '<label for="name">Name</label>' +
-                                        '<input type="text" class="form-control" name="name" value="' + user.name + '" autocomplete="off" onchange="updateEmailSignature(event)">' +
+                                        '<input type="text" class="form-control" name="name" value="' + name + '" autocomplete="off" onchange="updateEmailSignature(event)">' +
                                     '</div>' +
                                 '</div>' +
                                 '<div class="col-lg-6">' +
                                     '<div class="form-group">' +
                                         '<label for="position">Position</label>' +
-                                        '<input type="text" class="form-control" name="position" value="' + user.position + '" autocomplete="off" onchange="updateEmailSignature(event)">' +
+                                        '<input type="text" class="form-control" name="position" value="' + position + '" autocomplete="off" onchange="updateEmailSignature(event)">' +
                                     '</div>' +
                                 '</div>' +
                             '</div>' +
@@ -252,13 +269,13 @@
                                 '<div class="col-lg-6">' +
                                     '<div class="form-group">' +
                                     '<label for="phone_number">Phone Number</label>' +
-                                    '<input type="text" class="form-control" name="phone_number" value="' + user.phone_number + '" autocomplete="off" onchange="updateEmailSignature(event)">' +
+                                    '<input type="text" class="form-control" name="phone_number" value="' + phoneNumber + '" autocomplete="off" onchange="updateEmailSignature(event)">' +
                                     '</div>' +
                                 '</div>' +
                                 '<div class="col-lg-6">' +
                                     '<div class="form-group">' +
                                         '<label for="email">Email</label>' +
-                                        '<input type="email" class="form-control" name="email" value="' + user.email + '" autocomplete="off" onchange="updateEmailSignature(event)">' +
+                                        '<input type="email" class="form-control" name="email" value="' + email + '" autocomplete="off" onchange="updateEmailSignature(event)">' +
                                     '</div>' +
                                 '</div>' +
                             '</div>' +
@@ -269,13 +286,13 @@
                                             '<label for="whatsapp_me">WhatsApp Me</label>' +
                                             '<a href="https://create.wa.link/"><i class="fa-solid fa-circle-info" title="How to create whatsapp me link?"></i></a>' +
                                         '</div>' +
-                                        '<input type="text" class="form-control" name="whatsapp_me" value="' + user.whatsapp_me + '" autocomplete="off" placeholder="Ex: wa.link/u64q5m" onchange="updateEmailSignature(event)">' +
+                                        '<input type="text" class="form-control" name="whatsapp_me" value="' + whatsappMe + '" autocomplete="off" placeholder="Ex: wa.link/u64q5m" onchange="updateEmailSignature(event)">' +
                                     '</div>' +
                                 '</div>' +
                                 '<div class="col-lg-6">' +
                                     '<div class="form-group">' +
                                         '<label for="telegram_username">Telegram Username</label>' +
-                                        '<input type="text" class="form-control" name="telegram_username" value="' + user.telegram_username + '" autocomplete="off" placeholder="Ex: amberlee_415" onchange="updateEmailSignature(event)">' +
+                                        '<input type="text" class="form-control" name="telegram_username" value="' + telegramUsername + '" autocomplete="off" placeholder="Ex: amberlee_415" onchange="updateEmailSignature(event)">' +
                                     '</div>' +
                                 '</div>' +
                             '</div>' +
@@ -294,22 +311,35 @@
                     '<div class="card">' +
                         '<div class="card-body">' +
                             '<div class="row">' +
-                                '<div class="col-lg-12">' +
+                                (profilePicture !== '' ?
+                                    '<div class="col-lg-2">' +
+                                        '<div class="row" style="display: flex; justify-content: center;">' +
+                                            '<img src="/storage/profilePicture/' + profilePicture + '" style="width: 100%; height: 100%">' +
+                                        '</div>' +
+                                    '</div>'
+                                :
+                                    '<div class="col-lg-2">' +
+                                        '<div class="row" style="display: flex; justify-content: center;">' +
+                                            '<img src="assets/images/current-tech-logo-black.png" style="width: 100%; height: 100%">' +
+                                        '</div>' +
+                                    '</div>'
+                                ) +
+
+
+                                '<div class="col-lg-10">' +
                                     '<div class="row">' +
                                         '<div class="col-lg-12">' +
                                             '<div style="font-size: ' + emailSignature.font_size + 'px; font-family: ' + emailSignature.font_family + '; color: ' + emailSignature.font_color + '; ">' +
                                                  emailSignature.sign_off  +
                                             '</div>' +
-                                            '<div style="font-family: Palatino Linotype; font-size: 20px;">' + user.name + '</div>' +
-                                            '<div style="font-family: Book Antiqua; font-size: 15px;"> Current Tech Industries Sdn Bhd |' + user.position + '</div>' +
+                                            '<div style="font-family: Palatino Linotype; font-size: 18px;">' + user.name + '</div>' +
+                                            '<div style="font-family: Book Antiqua; font-size: 15px;"> Current Tech Industries Sdn Bhd </div>' +
+                                            '<div style="font-family: Book Antiqua; font-size: 15px;"> ' + user.position + '</div>' +
                                         '</div>' +
-                                        // '<div class="col-lg-6">' +
-                                        //     '<img src="' + logoUrl + '" alt="logo-large"  width="90%" height="90%">' +
-                                        // '</div>' +
                                     '</div>' +
                                     '<hr>' +
-                                    '<div style="font-family: Book Antiqua; font-size: 13px;">Email: ' + user.email + '</div>' +
-                                    '<div style="font-family: Book Antiqua; font-size: 13px;">Phone Number: ' + user.phone_number + '</div>' +
+                                    '<div style="font-family: Book Antiqua; font-size: 15px;">Email: ' + user.email + '</div>' +
+                                    '<div style="font-family: Book Antiqua; font-size: 15px;">Phone Number: ' + user.phone_number + '</div>' +
                                     '<div style="display:flex; flex-direction:row; gap:20px; margin-top:5px;">' +
                                         '<a href="https://' + user.whatsapp_me + '">' +
                                         '<i class="fa-brands fa-square-whatsapp fa-2xl" style="color: #16da9f;"></i>' +

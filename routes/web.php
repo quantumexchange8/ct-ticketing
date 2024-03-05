@@ -51,6 +51,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/view-ticket-image/{id}', [AdminController::class, 'viewTicketImage'])->name('viewTicketImage');
     Route::get('/view-ticket/{id}', [AdminController::class, 'viewTicket'])->name('viewTicket');
 
+    Route::get('/unassigned-ticket', [AdminController::class, 'unassignedTicket'])->name('unassignedTicket');
+
     Route::get('/ticket', [AdminController::class, 'ticket'])->name('ticket');
     Route::get('/get-ticket-by-status', [AdminController::class, 'getTicketByStatus'])->name('getTicketByStatus');
     Route::post('/update-ticket-kanban', [AdminController::class, 'updateTicketKanban'])->name('updateTicketKanban');
@@ -74,6 +76,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/profile', [AdminController::class, 'profile'])->name('profile');
     Route::post('/update-profile/{id}', [AdminController::class, 'updateProfile'])->name('updateProfile');
+    Route::delete('/delete-profile-picture', [AdminController::class, 'deleteProfilePicture'])->name('deleteProfilePicture');
 
     Route::get('/email-signature', [AdminController::class, 'emailSignature'])->name('emailSignature');
     Route::get('/get-email-signature', [AdminController::class, 'getEmailSignature'])->name('getEmailSignature');

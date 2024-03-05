@@ -9,15 +9,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/current-tech-logo-white.png') }}">
 
 <!-- App css -->
 <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/css/jquery-ui.min.css') }}" rel="stylesheet">
+{{-- <link href="{{ asset('assets/css/jquery-ui.min.css') }}" rel="stylesheet">
 <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('assets/css/metisMenu.min.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/plugins/daterangepicker/daterangepicker.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ asset('assets/plugins/daterangepicker/daterangepicker.css') }}" rel="stylesheet" type="text/css" /> --}}
+{{-- <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" /> --}}
 
 </head>
 <body>
@@ -55,7 +55,7 @@
     </div>
 
     <!-- jQuery  -->
-    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+    {{-- <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/metismenu.min.js') }}"></script>
     <script src="{{ asset('assets/js/waves.js') }}"></script>
@@ -63,7 +63,7 @@
     <script src="{{ asset('assets/js/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/moment.js') }}"></script>
-    <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js') }}"></script> --}}
 
     <!-- App js -->
     <script src="{{ asset('assets/js/app.js') }}"></script>

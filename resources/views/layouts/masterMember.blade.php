@@ -12,7 +12,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <!-- App favicon -->
-        <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+        <link rel="shortcut icon" href="{{ asset('assets/images/current-tech-logo-white.png') }}">
 
         <link href="{{ asset('assets/plugins/dropify/css/dropify.min.css') }}" rel="stylesheet">
 

@@ -29,10 +29,12 @@ class AdminController extends Controller
 
     public function profile()
     {
-        $user = auth()->user();
+        $user = User::where('id', '=', Auth::user()->id)->first();
         $supportCategories = SupportCategory::all();
 
-        return view('admin.profile', compact('user', 'supportCategories'));
+        $profile_picture = $user->profile_picture;
+
+        return view('admin.profile', compact('user', 'supportCategories', 'profile_picture'));
     }
 
     public function updateProfile(Request $request, $id)
@@ -72,9 +74,37 @@ class AdminController extends Controller
 
         $updateAdmin = User::find($id);
 
+        $full_name_with_underscores = str_replace(' ', '_', $request->input('name'));
+
+        $photoPath = 'storage/profilePicture/';
+
+        // Check if a new profile picture has been uploaded
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+            $extension = $file->getClientOriginalExtension();
+            $filename = $full_name_with_underscores . '_profile_picture.' . $extension; // Modify the file name
+
+            // Delete all previous files with the same full name
+            $filesToDelete = glob($photoPath . $full_name_with_underscores . '_profile_picture.*');
+            foreach ($filesToDelete as $fileToDelete) {
+                if (File::exists($fileToDelete)) {
+                    File::delete($fileToDelete);
+                }
+            }
+
+            // Upload the new profile picture
+            $file->move($photoPath, $filename);
+        } else {
+            // If no new file uploaded, retain the old profile picture filename
+            $filename = $updateAdmin->profile_picture;
+        }
+
+        $updateAdmin->profile_picture = $filename;
+
         $updateAdmin->name = $request->input('name');
         $updateAdmin->username = $request->input('username');
         $updateAdmin->email = $request->input('email');
+
         $updateAdmin->save();
 
         if ($request->filled('oldpassword') && $request->filled('newpassword') && $request->filled('retypepassword')) {
@@ -106,12 +136,36 @@ class AdminController extends Controller
         }
     }
 
+    public function deleteProfilePicture(Request $request)
+    {
+        $imageName = $request->input('imageUrl');
+
+        $photoPath = 'storage/profilePicture/';
+
+        // Delete all previous files with the same full name
+        $filesToDelete = glob($photoPath . $imageName);
+        foreach ($filesToDelete as $fileToDelete) {
+            if (File::exists($fileToDelete)) {
+                File::delete($fileToDelete);
+            }
+        }
+
+        $user = User::where('profile_picture', $imageName)->first();
+        if ($user) {
+            $user->profile_picture = null; // Set the profile picture column to null
+            $user->save();
+        }
+
+        return response()->json(['message' => 'Profile picture deleted successfully']);
+    }
+
     public function emailSignature()
     {
         $user = auth()->user();
         $emailSignature = EmailSignature::where('user_id', $user->id)->first();
+        $profile_picture = $user->profile_picture;
 
-        return view('admin.emailSignature', compact('user', 'emailSignature'));
+        return view('admin.emailSignature', compact('user', 'emailSignature', 'profile_picture'));
 
         // return view('admin.emailSignature');
     }
@@ -219,7 +273,7 @@ class AdminController extends Controller
 
     public function adminDashboard(Request $request)
     {
-        $ticketStatuses = TicketStatus::all();
+        $ticketStatuses = TicketStatus::where('status', '!=', 'Closed')->get();
         $ticketCounts = [];
         $currentYear = now()->year;
         $authUser = User::where('id', '=', Auth::user()->id)->first();
@@ -617,6 +671,33 @@ class AdminController extends Controller
         return view('admin.ticketSumm', compact('status', 'tickets'));
     }
 
+    public function unassignedTicket()
+    {
+        $unassignedTickets = Ticket::whereNull('pic_id')
+                                ->orderByDesc('tickets.id')
+                                ->get();
+
+        $authUser = User::where('id', '=', Auth::user()->id)->first();
+
+        if ($authUser->role_id == 1) {
+            $unassignedTickets = Ticket::whereNull('pic_id')
+            ->orderByDesc('tickets.id')
+            ->get();
+        } else if ($authUser->role_id !== 1 && $authUser->manage_ticket_in_category == 1) {
+            $unassignedTickets = Ticket::whereNull('pic_id')
+            ->where('category_id', $authUser->category_id)
+            ->orderByDesc('tickets.id')
+            ->get();
+        } else if ($authUser->role_id !== 1 && $authUser->manage_own_ticket == 1) {
+            $unassignedTickets = Ticket::whereNull('pic_id')
+            ->where('category_id', $authUser->category_id)
+            ->orderByDesc('tickets.id')
+            ->get();
+        }
+
+        return view('admin.unassignedTicket', compact('unassignedTickets'));
+    }
+
     public function viewTicket($id)
     {
         $ticket = Ticket::find($id);
@@ -866,7 +947,8 @@ class AdminController extends Controller
             }
         }
 
-        $updateTicket->update([
+        // Update ticket details
+        $updateData = [
             'ticket_no' => $request->input('ticket_no'),
             'sender_name' => $request->input('sender_name'),
             'sender_email' => $request->input('sender_email'),
@@ -874,9 +956,16 @@ class AdminController extends Controller
             'message' => $request->input('message'),
             'category_id' => $request->input('category_id'),
             'priority' => $request->input('priority'),
-            'status_id' => $request->input('status_id'),
-            'pic_id' => $request->input('pic_id')
-        ]);
+            'status_id' => $status_id, // Update status_id with input value
+            'pic_id' => $picId
+        ];
+
+        // If status_id is 1, update it to 2
+        if ($status_id == 1) {
+            $updateData['status_id'] = 2;
+        }
+
+        $updateTicket->update($updateData);
 
         return redirect()->route('ticketSumm', ['status' => $status_id])->with('success', 'Ticket updated successfully.');
     }
@@ -2290,6 +2379,15 @@ class AdminController extends Controller
 
         $hashedPassword = Hash::make($request->input('password'));
 
+        $full_name_with_underscores = str_replace(' ', '_', $request->input('name'));
+
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+            $extension = $file->getClientOriginalExtension();
+            $filename = $full_name_with_underscores . '_profile_picture.' . $extension; // Modify the file name
+            $file->move('storage/profilePicture/', $filename);
+        }
+
         $admin = User::create([
             'name' => $request->input('name'),
             'username' => $request->input('username'),
@@ -2298,6 +2396,7 @@ class AdminController extends Controller
             'position' => $request->input('position'),
             'whatsapp_me' => $request->input('whatsapp_me'),
             'telegram_username' => $request->input('telegram_username'),
+            'profile_picture' => $filename,
             'role_id' => $request->input('role_id'),
             'password' => $hashedPassword,
             'category_id' => $request->input('category_id'),
@@ -2317,8 +2416,8 @@ class AdminController extends Controller
             'user_id' => $newUserId,
             'sign_off' => 'Best regards,',
             'font_family' => 'Allura',
-            'font_size' => '30',
-            'font_color' => '#ffffff'
+            'font_size' => '25',
+            'font_color' => '#000000'
         ]);
 
         return redirect()->route('adminSumm')->with('success', 'New admin created successfully');
@@ -2327,7 +2426,7 @@ class AdminController extends Controller
     public function editAdmin($id)
     {
         $user = User::find($id);
-        $roles = Role::where('role_name', '!=', 'Super Admin')->get();
+        $roles = Role::all();
         $supportCategories = SupportCategory::all();
 
         return view('admin.editAdmin', compact('user', 'roles', 'supportCategories'));
@@ -2362,8 +2461,35 @@ class AdminController extends Controller
                     ->withErrors($validator)
                     ->withInput();
         }
-
         $updateAdmin = User::find($id);
+
+        $full_name_with_underscores = str_replace(' ', '_', $request->input('name'));
+
+        $photoPath = 'storage/profilePicture/';
+
+        // Check if a new profile picture has been uploaded
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+            $extension = $file->getClientOriginalExtension();
+            $filename = $full_name_with_underscores . '_profile_picture.' . $extension; // Modify the file name
+
+            // Delete all previous files with the same full name
+            $filesToDelete = glob($photoPath . $full_name_with_underscores . '_profile_picture.*');
+            foreach ($filesToDelete as $fileToDelete) {
+                if (File::exists($fileToDelete)) {
+                    File::delete($fileToDelete);
+                }
+            }
+
+            // Upload the new profile picture
+            $file->move($photoPath, $filename);
+        } else {
+            // If no new file uploaded, retain the old profile picture filename
+            $filename = $updateAdmin->profile_picture;
+        }
+
+        $updateAdmin->profile_picture = $filename;
+
 
         $updateAdmin->name = $request->input('name');
         $updateAdmin->username = $request->input('username');
