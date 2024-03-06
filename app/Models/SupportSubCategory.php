@@ -16,8 +16,8 @@ class SupportSubCategory extends Model
         return $this->belongsTo(SupportCategory::class, 'category_id', 'id');
     }
 
-    public function contents()
-    {
-        return $this->belongsTo(Content::class, 'content_id', 'id');
-    }
+    // public function contents()
+    // {
+    //     return $this->belongsTo(Content::class, 'content_id', 'id');
+    // }
 }

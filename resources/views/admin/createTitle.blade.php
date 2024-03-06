@@ -4,13 +4,13 @@
 <!-- Page Content-->
 <div class="page-content">
     <div class="container-fluid">
-        <!-- Page-Title -->
+
         <div class="row">
             <div class="col-sm-12">
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title">Create Title</h4>
+                            <h4 class="page-title">{{ $project->project_name}}</h4>
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -18,10 +18,13 @@
         </div><!--end row-->
 
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-sm-12">
                 <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Create Title</h4>
+                    </div><!--end card-header-->
                     <div class="card-body">
-                        <form action="{{ route('addTitle') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('addTitle', ['project' => $project]) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
                                 <div class="col-lg-6">
@@ -39,10 +42,10 @@
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </form>
-                    </div><!--end card-body-->
-                </div><!--end card-->
-            </div><!--end col-->
-        </div><!--end row-->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <!-- end page content -->

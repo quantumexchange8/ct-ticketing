@@ -10,7 +10,7 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title">{{ $project->project_name}} -> {{ $title->title_name }}</h4>
+                            <h4 class="page-title">Edit Project</h4>
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -20,19 +20,15 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title">Edit Subtitle</h4>
-                    </div><!--end card-header-->
                     <div class="card-body">
-                        <form action="{{ route('updateSubtitle', $subtitle->id) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('updateProject', $project->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
-
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="s_sequence">Subtitle Sequence</label>
-                                        <input type="number" class="form-control" name="s_sequence" placeholder="Enter Subtitle Sequence" autocomplete="off" value="{{ $subtitle->s_sequence }}">
-                                        @error('s_sequence')
+                                        <label for="project_name">Project Name</label>
+                                        <input type="text" class="form-control" name="project_name" placeholder="Enter Project Name" autocomplete="off" value="{{ $project->project_name }}">
+                                        @error('project_name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
@@ -40,9 +36,24 @@
 
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label for="subtitle_name">Subtitle</label>
-                                        <input type="text" class="form-control" name="subtitle_name" placeholder="Enter Title" autocomplete="off" value="{{ $subtitle->subtitle_name }}">
-                                        @error('subtitle_name')
+                                        <label for="show">Show?</label>
+                                        <select class="form-control" name="show">
+                                            <option value="1" {{ $project->show  === '1' ? 'selected' : '' }}>Yes</option>
+                                            <option value="0" {{ $project->show  === '0' ? 'selected' : '' }}>No</option>
+                                        </select>
+                                        @error('message')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label for="description">Description</label>
+                                        <input type="text" class="form-control" name="description" placeholder="Enter Description" autocomplete="off" value="{{ $project->description }}">
+                                        @error('description')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>

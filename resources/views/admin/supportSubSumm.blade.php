@@ -10,7 +10,7 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title">Support Tool</h4>
+                            <h4 class="page-title">FAQ</h4>
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -32,7 +32,7 @@
                                         <th style="display: none;">Subcategory ID</th>
                                         <th>Name</th>
                                         <th>Description</th>
-                                        <th>Related Topic</th>
+                                        {{-- <th>Related Topic</th> --}}
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -43,7 +43,7 @@
                                             <td style="display: none;">{{ $supportSubCategory->id }}</td>
                                             <td>{{ $supportSubCategory->sub_name }}</td>
                                             <td>{!! $supportSubCategory->sub_description !!}</td>
-                                            <td>{{ $supportSubCategory->contents->subtitle->title->title_name }} - {{ $supportSubCategory->contents->subtitle->subtitle_name }}</td>
+                                            {{-- <td>{{ $supportSubCategory->contents->subtitle->title->title_name }} - {{ $supportSubCategory->contents->subtitle->subtitle_name }}</td> --}}
                                             <td class="text-center">
                                                 <div style="display: flex; justify-content: center; gap: 10px;">
                                                     <a href="{{ route('editSub', ['id' => $supportSubCategory->id]) }}" class="btn btn-sm btn-soft-success btn-circle">

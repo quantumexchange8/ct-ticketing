@@ -58,7 +58,7 @@
                                         <select class="form-control" name="subtitle_id">
                                             <option value="">Select Subtitle</option>
                                             @foreach ($subtitles as $subtitle)
-                                                <option value="{{ $subtitle->id }}" {{ old('subtitle_id') == $subtitle->id ? 'selected' : '' }}>{{ $subtitle->title->title_name}} - {{ $subtitle->subtitle_name }} </option>
+                                                <option value="{{ $subtitle->id }}" {{ old('subtitle_id') == $subtitle->id ? 'selected' : '' }}>{{ $subtitle->title->projects->project_name }} - {{ $subtitle->title->title_name}} - {{ $subtitle->subtitle_name }} </option>
                                             @endforeach
                                         </select>
                                         @error('subtitle_id')
@@ -71,7 +71,7 @@
                                         <select class="form-control" name="title_id">
                                             <option value="">Select Title</option>
                                             @foreach ($titles as $title)
-                                                <option value="{{ $title->id }}" {{ old('title_id') == $title->id ? 'selected' : '' }}>{{ $title->title_name}}</option>
+                                                <option value="{{ $title->id }}" {{ old('title_id') == $title->id ? 'selected' : '' }}>{{ $subtitle->title->projects->project_name }} - {{ $title->title_name}}</option>
                                             @endforeach
                                         </select>
                                         @error('title_id')

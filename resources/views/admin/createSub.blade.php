@@ -44,7 +44,7 @@
                                         </select>
                                     </div>
 
-                                    <div class="form-group">
+                                    {{-- <div class="form-group">
                                         <label for="content_id">Related Topic</label>
                                         <select class="form-control" name="content_id">
                                             <option>Select Related Topic</option>
@@ -57,7 +57,8 @@
                                         @error('content_id')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
-                                    </div>
+                                    </div> --}}
+                                    
                                 </div>
 
                                 <div class="col-lg-6">

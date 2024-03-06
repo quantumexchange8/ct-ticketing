@@ -55,11 +55,16 @@
                 <ul class="metismenu left-sidenav-menu">
 
                     <li class="menu-label mt-0">Main</li>
-                    {{-- <li>
+                    <li>
                         <a href="{{ route('dashboard') }}"> <i data-feather="home" class="align-self-center menu-icon"></i><span>Dashboard</span></a>
+                    </li>
+
+                    {{-- <li>
+                        <a href="{{ route('documentation') }}"><i data-feather="file-text" class="align-self-center menu-icon"></i><span>Documentation</span></a>
                     </li> --}}
                     @php
-                        $titles = App\Models\Title::all();
+                        $selectedProjectId = Session::get('selected_project_id');
+                        $titles = App\Models\Title::where('project_id', $selectedProjectId)->get();
                     @endphp
 
                     <li>

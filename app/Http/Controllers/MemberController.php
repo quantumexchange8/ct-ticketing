@@ -13,46 +13,76 @@ use App\Models\Title;
 use App\Models\SupportCategory;
 use App\Models\SupportSubCategory;
 use App\Models\TicketImage;
+use App\Models\Project;
 use App\Mail\SubmitTicket;
-
+use Illuminate\Support\Facades\Session;
 
 class MemberController extends Controller
 {
 
+
+
+    // public function dashboard()
+    // {
+    //     // Retrieve the first Title ordered by t_sequence
+    //     $title = Title::with(['subtitles.contents' => function ($query) {
+    //         $query->orderBy('c_sequence');
+    //     }])
+    //     ->orderBy('t_sequence')
+    //     ->first();
+
+    //     // Export one documentation
+    //     $singleTitle = $title;
+
+    //     // Export all documentation
+    //     $titles = Title::with('subtitles.contents')->get();
+
+    //     // Pass the title to the documentation view
+    //     return view('user.documentation', compact('title', 'titles', 'singleTitle'));
+    // }
+
     public function dashboard()
     {
-        // Retrieve the first Title ordered by t_sequence
-        $title = Title::with(['subtitles.contents' => function ($query) {
-            $query->orderBy('c_sequence');
-        }])
-        ->orderBy('t_sequence')
-        ->first();
+        $projects = Project::where('show', 1)->get();
 
-        // Export one documentation
-        $singleTitle = $title;
+        return view('user.dashboard', compact('projects'));
+    }
+    public function selectProject($projectId)
+    {
+        Session::put('selected_project_id', $projectId);
 
-        // Export all documentation
-        $titles = Title::with('subtitles.contents')->get();
-
-        // Pass the title to the documentation view
-        return view('user.documentation', compact('title', 'titles', 'singleTitle'));
+        $title = Title::where('project_id', $projectId)->first();
+        if ($title) {
+            return redirect()->route('documentation', ['title' => $title->id]);
+        } else {
+            // Display a blank page
+            return view('user.blank');
+        }
     }
     public function documentation(Title $title)
     {
-        // Display documentation
-        $title->load([
-            'subtitles.contents' => function ($query) {
-                $query->orderBy('c_sequence');
+        $projectId = Session::get('selected_project_id');
+
+        // Fetch project by ID
+        $project = Project::find($projectId);
+
+        // Eager load relationships
+        $project->load([
+            'titles' => function ($query) use ($title) {
+                $query->where('id', $title->id)
+                      ->with('subtitles.contents', function ($query) {
+                          $query->orderBy('c_sequence');
+                      });
             }
         ]);
 
         // Export one documentation
-        $singleTitle = $title;
+        $singleProject = $project;
 
         // Export all documentation
-        $titles = Title::with('subtitles.contents')->get();
+        $allContents = Title::with('subtitles.contents')->where('titles.project_id', $projectId)->get();
 
-        return view('user.documentation', compact('title', 'titles', 'singleTitle'));
+        return view('user.documentation', compact('project', 'title', 'singleProject', 'allContents'));
     }
 
     public function support()

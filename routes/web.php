@@ -23,7 +23,7 @@ use App\Mail\SubmitTicket;
 // });
 
 Route::get('/', [MemberController::class, 'dashboard'])->name('dashboard');
-
+Route::get('/select-project/{projectId}', [MemberController::class, 'selectProject'])->name('selectProject');
 Route::get('/documentation/{title}', [MemberController::class, 'documentation'])->name('documentation');
 
 Route::get('/support', [MemberController::class, 'support'])->name('support');
@@ -82,11 +82,19 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/get-email-signature', [AdminController::class, 'getEmailSignature'])->name('getEmailSignature');
     Route::post('/update-email-signature', [AdminController::class, 'updateEmailSignature'])->name('updateEmailSignature');
 
+    // Project
+    Route::get('/project-summary', [AdminController::class, 'projectSumm'])->name('projectSumm');
+    Route::get('/create-project', [AdminController::class, 'createProject'])->name('createProject');
+    Route::post('/add-project', [AdminController::class, 'addProject'])->name('addProject');
+    Route::get('/edit-project/{id}', [AdminController::class, 'editProject'])->name('editProject');
+    Route::post('/update-project/{id}', [AdminController::class, 'updateProject'])->name('updateProject');
+    Route::delete('/delete-project/{id}', [AdminController::class, 'deleteProject'])->name('deleteProject');
+
     // Administration
-    Route::get('/title-summary', [AdminController::class, 'titleSumm'])->name('titleSumm');
+    Route::get('/title-summary/{project}', [AdminController::class, 'titleSumm'])->name('titleSumm');
     Route::get('/view-more-subtitle/{id}', [AdminController::class, 'viewMoreSubtitle'])->name('viewMoreSubtitle');
-    Route::get('/create-title', [AdminController::class, 'createTitle'])->name('createTitle');
-    Route::post('/add-title', [AdminController::class, 'addTitle'])->name('addTitle');
+    Route::get('/create-title/{project}', [AdminController::class, 'createTitle'])->name('createTitle');
+    Route::post('/add-title/{project}', [AdminController::class, 'addTitle'])->name('addTitle');
     Route::get('/edit-title/{id}', [AdminController::class, 'editTitle'])->name('editTitle');
     Route::post('/update-title/{id}', [AdminController::class, 'updateTitle'])->name('updateTitle');
     Route::delete('/delete-title/{id}', [AdminController::class, 'deleteTitle'])->name('deleteTitle');
@@ -106,7 +114,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/update-content/{id}', [AdminController::class, 'updateContent'])->name('updateContent');
     Route::delete('/delete-content/{id}', [AdminController::class, 'deleteContent'])->name('deleteContent');
 
-    Route::get('/support-category-summary', [AdminController::class, 'supportCategorySumm'])->name('supportCategorySumm');
+    Route::get('/support-tool', [AdminController::class, 'supportTool'])->name('supportTool');
+
+    Route::get('/support-category-summary/{project}', [AdminController::class, 'supportCategorySumm'])->name('supportCategorySumm');
     Route::get('/create-category', [AdminController::class, 'createCategory'])->name('createCategory');
     Route::post('/add-category', [AdminController::class, 'addCategory'])->name('addCategory');
     Route::get('/edit-category/{id}', [AdminController::class, 'editCategory'])->name('editCategory');

@@ -22,8 +22,8 @@ class Content extends Model
         return $this->hasMany(DocumentationImage::class, 'content_id', 'id');
     }
 
-    public function supportSubCategories()
-    {
-        return $this->hasMany(SupportSubCategory::class, 'content_id', 'id');
-    }
+    // public function supportSubCategories()
+    // {
+    //     return $this->hasMany(SupportSubCategory::class, 'content_id', 'id');
+    // }
 }

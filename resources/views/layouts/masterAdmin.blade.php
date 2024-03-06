@@ -73,6 +73,7 @@
                                                     ->get();
                     $supportCategories = App\Models\SupportCategory::all();
                     $ticketStatuses = App\Models\TicketStatus::all();
+                    $projects = App\Models\Project::all();
                 @endphp
 
                 <ul class="metismenu left-sidenav-menu">
@@ -120,15 +121,31 @@
                     @endif
 
                     <hr class="hr-dashed hr-menu">
+                    <li class="menu-label my-2">Project</li>
+
+                    <li>
+                        <a href="{{ route('projectSumm') }}"><i data-feather="pocket" class="align-self-center menu-icon"></i><span>Project</span></a>
+                    </li>
+
+                    <hr class="hr-dashed hr-menu">
+                    <li class="menu-label my-2">Documentation</li>
+                    @foreach ($projects as $project)
+                        <li>
+                            <a href="{{ route('titleSumm', $project) }}"><i data-feather="zap" class="align-self-center menu-icon"></i><span>{{ $project->project_name }}</span></a>
+                        </li>
+                    @endforeach
+
+
+                    <hr class="hr-dashed hr-menu">
                     <li class="menu-label my-2">Administration</li>
 
-                    @if (Auth::user()->manage_title == 1)
+                    {{-- @if (Auth::user()->manage_title == 1)
                         <li>
                             <a href="{{ route('titleSumm') }}"> <i data-feather="slack" class="align-self-center menu-icon"></i><span>Title</span></a>
                         </li>
-                    @endif
+                    @endif --}}
 
-                    @if (Auth::user()->manage_subtitle == 1)
+                    {{-- @if (Auth::user()->manage_subtitle == 1)
                         <li>
                             <a href="javascript: void(0);"><i data-feather="wind" class="align-self-center menu-icon"></i><span>Subtitle</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
                             <ul class="nav-second-level" aria-expanded="false">
@@ -159,13 +176,16 @@
                                 @endforeach
                             </ul>
                         </li>
-                    @endif
+                    @endif --}}
+                    <li>
+                        <a href="{{ route('supportTool') }}"><i data-feather="tool" class="align-self-center menu-icon"></i><span>Support Tools</span></a>
+                    </li>
 
-                    @if (Auth::user()->manage_support_category == 1)
+                    {{-- @if (Auth::user()->manage_support_category == 1)
                         <li>
                             <a href="{{ route('supportCategorySumm') }}"><i data-feather="tool" class="align-self-center menu-icon"></i><span>Support Tool</span></a>
                         </li>
-                    @endif
+                    @endif --}}
 
                     @if (Auth::user()->manage_status == 1)
                         <li>
@@ -179,6 +199,7 @@
                             <a href="{{ route('adminSumm') }}"> <i data-feather="user" class="align-self-center menu-icon"></i><span>Admin</span></a>
                         </li>
                     @endif
+
 
                     <hr class="hr-dashed hr-menu">
                     <li class="menu-label my-2">Preview Documentation</li>

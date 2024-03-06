@@ -10,13 +10,14 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title">Subtitle</h4>
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('titleSumm') }}">Title</a></li>
+                            <h4 class="page-title"> {{ $project->project_name }} -> {{ $subtitles->first() ? $subtitles->first()->title->title_name : '' }}</h4>
+
+                            {{-- <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{{ route('titleSumm', ['project' => $project->id]) }}">Title ({{ $subtitles->first() ? $subtitles->first()->title->title_name : '' }})</a></li>
                                 <li class="breadcrumb-item active">
-                                    {{ $subtitles->first() ? $subtitles->first()->title->title_name : '' }}
+                                    Subtitle
                                 </li>
-                            </ol>
+                            </ol> --}}
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -26,6 +27,9 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Subtitle</h4>
+                    </div><!--end card-header-->
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-bordered">

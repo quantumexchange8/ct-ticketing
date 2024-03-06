@@ -6,8 +6,7 @@
 
 <!-- Page Content-->
 <div class="page-content">
-    <section class="bg-home" id="{{ $title->title_name }}">
-
+    <section class="bg-home" >
         <div class="row">
             <div class="col-lg-12">
                 <div class="card my-4">
@@ -18,14 +17,17 @@
                                 $colorIndex = 0;
                             @endphp
 
-                            @foreach ($title->subtitles as $subtitle)
-                                <a href="#{{ $subtitle->subtitle_name }}" >
-                                    <button type="button" class="btn btn-round waves-effect waves-light" style="background-color: {{ $colors[$colorIndex] }}">{{ $subtitle->subtitle_name }}</button>
-                                </a>
-                                @php
-                                    $colorIndex = ($colorIndex + 1) % count($colors); // Cycle through colors
-                                @endphp
+                            @foreach ($project->titles as $title)
+                                @foreach ($title->subtitles as $subtitle)
+                                    <a href="#{{ $subtitle->subtitle_name }}" >
+                                        <button type="button" class="btn btn-round waves-effect waves-light" style="background-color: {{ $colors[$colorIndex] }}">{{ $subtitle->subtitle_name }}</button>
+                                    </a>
+                                    @php
+                                        $colorIndex = ($colorIndex + 1) % count($colors); // Cycle through colors
+                                    @endphp
+                                @endforeach
                             @endforeach
+
                         </div>
                     </div><!--end card-body-->
                 </div><!--end card-->
@@ -39,7 +41,7 @@
 
                         <div class="row">
                             <div class="col">
-                                <h4 class="header-title">{{ $title->title_name }}</h4>
+                                <h4 class="header-title">{{ $title->title_name ?? null}}</h4>
                             </div>
 
                             <div style="display: flex; justify-content: flex-end;">
@@ -66,27 +68,29 @@
                                     </div>
                                 </div><!--end col-->
                             </div>
+                            <!-- Your buttons and dropdowns -->
                         </div>
 
                         <hr class="hr-dashed">
 
-                        @foreach ($title->subtitles as $subtitle)
+                        @foreach ($project->titles as $title)
+                            @foreach ($title->subtitles as $subtitle)
                             <h5 class="subtitle-name">{{ $subtitle->subtitle_name }}</h5>
-                            @foreach ($subtitle->contents as $content)
-                                <div class="content-name" id="{{$content->id}}" style="text-align: justify; ">
-                                    {{-- <p style="font-family: Allura; font-weight: 400; font-style: normal; font-size: 52px;">{!! $content->content_name !!}</p> --}}
-                                    <p>{!! $content->content_name !!}</p>
-                                </div>
+                                @foreach ($subtitle->contents as $content)
+                                    <div class="content-name" id="{{$content->id}}" style="text-align: justify; ">
+                                        <p>{!! $content->content_name !!}</p>
+                                    </div>
 
-                                <div class="text-center">
-                                    @forelse($content->documentationImages as $image)
-                                    <img src="{{ asset('storage/documentations/' . $image->d_image) }}" alt="Image" class="image-fluid w-50 h-50">
-                                    @empty
-                                    {{-- <b>No image</b> --}}
-                                    @endforelse
-                                </div>
+                                    <div class="text-center">
+                                        @forelse($content->documentationImages as $image)
+                                            <img src="{{ asset('storage/documentations/' . $image->d_image) }}" alt="Image" class="image-fluid w-50 h-50">
+                                        @empty
+                                            {{-- No image --}}
+                                        @endforelse
+                                    </div>
 
-                                <br>
+                                    <br>
+                                @endforeach
                             @endforeach
                         @endforeach
                     </div><!--end card-body-->
@@ -97,18 +101,17 @@
 </div>
 <!-- end page content -->
 
-
 {{-- Content to print --}}
 <div id="allContentToPrint" class="page-content" style="display: none;">
-    @foreach ($titles as $title)
+    @foreach ($allContents as $project)
         <section class="bg-home" style="page-break-before: always;">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="header-title">{{ $title->title_name }}</h4>
+                            <h4 class="header-title">{{ $project->title_name }}</h4>
                             <hr class="hr-dashed">
-                            @foreach ($title->subtitles as $subtitle)
+                            @foreach ($project->subtitles as $subtitle)
                                 <h5 class="subtitle-name">{{ $subtitle->subtitle_name }}</h5>
                                 @foreach ($subtitle->contents as $content)
                                     <div class="content-name" id="{{ $content->id }}" style="text-align: justify;">
@@ -118,7 +121,7 @@
                                         @forelse($content->documentationImages as $image)
                                         <img src="{{ asset('storage/documentations/' . $image->d_image) }}" alt="Image" class="image-fluid" width="250" height="250" style="display: block; margin: 0 auto;">
                                         @empty
-                                        {{-- <b>No image</b> --}}
+
                                         @endforelse
                                     </div>
                                     <br>
@@ -136,28 +139,30 @@
 <div id="contentToPrint" class="card-body" style="display: none;">
     <div class="row">
         <div class="col">
-            <h4 class="header-title">{{ $singleTitle->title_name }}</h4>
+            <h4 class="header-title">{{ $title->title_name }}</h4>
         </div>
     </div>
 
     <hr class="hr-dashed">
 
-    @foreach ($singleTitle->subtitles as $subtitle)
+    @foreach ($singleProject->titles as $title)
+        @foreach ($title->subtitles as $subtitle)
         <h5 class="subtitle-name">{{ $subtitle->subtitle_name }}</h5>
-        @foreach ($subtitle->contents as $content)
-            <div class="content-name" id="{{$content->id}}" style="text-align: justify;">
-                <p>{!! $content->content_name !!}</p>
-            </div>
+            @foreach ($subtitle->contents as $content)
+                <div class="content-name" id="{{$content->id}}" style="text-align: justify; ">
+                    <p>{!! $content->content_name !!}</p>
+                </div>
 
-            <div class="text-center">
-                @forelse($content->documentationImages as $image)
-                <img src="{{ asset('storage/documentations/' . $image->d_image) }}" alt="Image" class="image-fluid w-50 h-50">
-                @empty
-                {{-- <b>No image</b> --}}
-                @endforelse
-            </div>
+                <div class="text-center">
+                    @forelse($content->documentationImages as $image)
+                        <img src="{{ asset('storage/documentations/' . $image->d_image) }}" alt="Image" class="image-fluid w-50 h-50">
+                    @empty
+                        {{-- No image --}}
+                    @endforelse
+                </div>
 
-            <br>
+                <br>
+            @endforeach
         @endforeach
     @endforeach
 </div><!--end card-body-->
@@ -312,6 +317,7 @@
         });
     });
 </script>
+
 
 <!-- Sweet-Alert  -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>

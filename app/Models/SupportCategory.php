@@ -26,4 +26,9 @@ class SupportCategory extends Model
     {
         return $this->hasMany(User::class, 'category_id', 'id');
     }
+
+    public function projects()
+    {
+        return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
 }

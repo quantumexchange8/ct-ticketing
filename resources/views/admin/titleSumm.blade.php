@@ -10,7 +10,7 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title">Title</h4>
+                            <h4 class="page-title">{{ $project->project_name}}</h4>
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -20,6 +20,9 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Title</h4>
+                    </div><!--end card-header-->
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-bordered">
@@ -71,8 +74,7 @@
                         <span class="float-right">
                             {{-- <button id="but_add" class="btn btn-danger">Add New Title</button>
                             <button class="btn  btn-primary" id="submit_data" data-endpoint="update-title" >Submit</button> --}}
-
-                            <a href="{{ route('createTitle') }}">
+                            <a href="{{ route('createTitle', ['project' => $project->id]) }}">
                                 <button class="btn btn-danger mt-2">Add New Title</button>
                             </a>
                         </span><!--end table-->

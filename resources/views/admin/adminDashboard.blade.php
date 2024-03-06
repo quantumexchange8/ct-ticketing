@@ -30,7 +30,7 @@
                     @endphp
 
                     @foreach ($ticketStatuses as $ticketStatus)
-                        <div class="col-md-6 col-lg-3">
+                        <div class="col-md-6 col-lg-4">
                             <div class="card report-card">
                                 <div class="card-body">
                                     <a href="{{ route('ticketSumm', ['status' => $ticketStatus->id]) }}">
@@ -67,7 +67,7 @@
                         @endphp
 
                     @endforeach
-                    <div class="col-md-6 col-lg-3">
+                    <div class="col-md-6 col-lg-4">
                         <div class="card report-card">
                             <div class="card-body">
                                 <a href="{{ route('unassignedTicket') }}">

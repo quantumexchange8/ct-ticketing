@@ -10,7 +10,7 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title">Edit Title</h4>
+                            <h4 class="page-title">{{ $project->project_name}}</h4>
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -20,6 +20,9 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Edit Title</h4>
+                    </div><!--end card-header-->
                     <div class="card-body">
                         <form action="{{ route('updateTitle', $title->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf

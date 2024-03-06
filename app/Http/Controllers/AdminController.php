@@ -24,6 +24,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Note;
 use App\Models\EmailSignature;
+use App\Models\Project;
 class AdminController extends Controller
 {
 
@@ -270,10 +271,11 @@ class AdminController extends Controller
         return response()->json(['message' => 'Email Signature updated successfully']);
     }
 
-
     public function adminDashboard(Request $request)
     {
-        $ticketStatuses = TicketStatus::where('status', '!=', 'Closed')->get();
+        $ticketStatuses = TicketStatus::where('status', '!=', 'Closed')
+                                        ->where('status', '!=', 'Solved')
+                                        ->get();
         $ticketCounts = [];
         $currentYear = now()->year;
         $authUser = User::where('id', '=', Auth::user()->id)->first();
@@ -1314,11 +1316,105 @@ class AdminController extends Controller
         return view('admin.viewPerformance', compact('tickets', 'users'));
     }
 
-    public function titleSumm()
+    public function projectSumm()
     {
-        $titles = Title::orderBy('t_sequence')->get();
+        $projects = Project::all();
 
-        return view('admin.titleSumm', compact('titles'));
+        return view('admin.projectSumm', compact('projects'));
+    }
+
+    public function createProject()
+    {
+        return view('admin.createProject');
+    }
+
+    public function addProject(Request $request)
+    {
+        $rules = [
+            'project_name' => 'required|max:255',
+            'description' => 'required|max:255',
+        ];
+
+        $messages = [
+            'project_name.required' => 'The Project Name field is required.',
+            'project_name.max' => 'The Project Name should not exceed 255 characters.',
+            'description.required' => 'The Description field is required.',
+            'description.max' => 'The Description should not exceed 255 characters.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $project = Project::create([
+            'project_name' => $request->input('project_name'),
+            'description' => $request->input('description'),
+            'show' => $request->input('show')
+        ]);
+
+        return redirect()->route('projectSumm')->with('success', 'New project created successfully.');
+    }
+
+    public function editProject($id)
+    {
+        $project = Project::find($id);
+
+        return view('admin.editProject', compact('project'));
+    }
+
+    public function updateProject(Request $request, $id)
+    {
+        $rules = [
+            'project_name' => 'required|max:255',
+            'description' => 'required|max:255',
+        ];
+
+        $messages = [
+            'project_name.required' => 'The Project Name field is required.',
+            'project_name.max' => 'The Project Name should not exceed 255 characters.',
+            'description.required' => 'The Description field is required.',
+            'description.max' => 'The Description should not exceed 255 characters.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $updateProject = Project::find($id);
+
+        $updateProject->update([
+            'project_name' => $request->input('project_name'),
+            'description' => $request->input('description'),
+            'show' => $request->input('show')
+        ]);
+
+        return redirect()->route('projectSumm')->with('success', 'Project updated successfully.');
+    }
+
+    public function deleteProject($id)
+    {
+        $deleteProject = Project::find($id);
+
+        $deleteProject->delete();
+
+        return redirect()->back()->with('success', 'Project deleted successfully.');
+    }
+
+    public function titleSumm(Project $project)
+    {
+        $titles = Title::where('project_id', $project->id)->orderBy('t_sequence')->get();
+
+        return view('admin.titleSumm', compact('titles', 'project'));
     }
 
     public function viewMoreSubtitle($id)
@@ -1327,15 +1423,17 @@ class AdminController extends Controller
 
         $title = Title::find($id);
 
-        return view('admin.viewMoreSubtitle', compact('subtitles', 'title'));
+        $project = Project::where('id', $title->project_id)->first();
+
+        return view('admin.viewMoreSubtitle', compact('subtitles', 'title', 'project'));
     }
 
-    public function createTitle()
+    public function createTitle(Project $project)
     {
-        return view('admin.createTitle');
+        return view('admin.createTitle', compact('project'));
     }
 
-    public function addTitle(Request $request)
+    public function addTitle(Request $request, Project $project)
     {
         $rules = [
             'title_name' => 'required|max:255',
@@ -1355,23 +1453,26 @@ class AdminController extends Controller
                 ->withInput();
         }
 
-        $number = Title::orderBy('t_sequence', 'desc')->first();
+        $number = Title::where('project_id', $project->id)->orderBy('t_sequence', 'desc')->first();
 
         $newTsequence = $number ? $number->t_sequence + 1 : 1;
 
         $title = Title::create([
             'title_name' => $request->input('title_name'),
-            't_sequence' => $newTsequence
+            't_sequence' => $newTsequence,
+            'project_id' => $project->id
         ]);
 
-        return redirect()->route('titleSumm')->with('success', 'New title created successfully.');
+        return redirect()->route('titleSumm', ['project' => $project->id])->with('success', 'New title created successfully.');
     }
 
     public function editTitle($id)
     {
         $title = Title::find($id);
 
-        return view('admin.editTitle', compact('title'));
+        $project = Project::where('id', $title->project_id)->first();
+
+        return view('admin.editTitle', compact('title', 'project'));
     }
 
     public function updateTitle(Request $request, $id)
@@ -1403,7 +1504,7 @@ class AdminController extends Controller
             't_sequence' => $request->input('t_sequence')
         ]);
 
-        return redirect()->route('titleSumm')->with('success', 'Title updated successfully.');
+        return redirect()->route('titleSumm', ['project' => $updateTitle->project_id])->with('success', 'Title updated successfully.');
     }
 
     public function deleteTitle($id)
@@ -1501,16 +1602,22 @@ class AdminController extends Controller
     {
         $contents = Content::where('subtitle_id', $id)->orderBy('c_sequence')->get();
 
-        $subtitle = Subtitle::join('titles', 'titles.id', 'subtitles.title_id')
+        $subtitles = Subtitle::join('titles', 'titles.id', 'subtitles.title_id')
                             ->where('subtitles.id', $id)
                             ->first();
 
-        return view('admin.viewMoreContent', compact('contents', 'subtitle'));
+        $title = Title::where('id', $subtitles->id)->first();
+
+        $project = Project::where('id', $title->project_id)->first();
+
+        return view('admin.viewMoreContent', compact('contents', 'subtitles', 'title', 'project'));
     }
 
     public function createSubtitle(Title $title)
     {
-        return view('admin.createSubtitle', compact('title'));
+        $project = $title->projects;
+
+        return view('admin.createSubtitle', compact('title', 'project'));
     }
 
     public function addSubtitle(Request $request, Title $title)
@@ -1551,7 +1658,11 @@ class AdminController extends Controller
     {
         $subtitle = Subtitle::find($id);
 
-        return view('admin.editSubtitle', compact('subtitle'));
+        $title = Title::where('id', $subtitle->id)->first();
+
+        $project = Project::where('id', $title->id)->first();
+
+        return view('admin.editSubtitle', compact('subtitle', 'title', 'project'));
     }
 
     public function updateSubtitle(Request $request, $id)
@@ -1617,10 +1728,11 @@ class AdminController extends Controller
 
     public function createContent()
     {
-        $titles = Title::all();
+        $projects = Project::all();
+        $titles = Title::with('projects')->get();
         $subtitles = Subtitle::with('title')->get();
 
-        return view('admin.createContent', compact('titles', 'subtitles'));
+        return view('admin.createContent', compact('projects', 'titles', 'subtitles'));
     }
 
     public function addContent(Request $request)
@@ -1880,9 +1992,17 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Content deleted successfully.');
     }
 
-    public function supportCategorySumm()
+    public function supportTool()
     {
-        $supportCategories = SupportCategory::all();
+        $projects = Project::all();
+
+        return view('admin.supportTool', compact('projects'));
+    }
+
+
+    public function supportCategorySumm(Project $project)
+    {
+        $supportCategories = SupportCategory::where('project_id', $project->id)->get();
 
         return view('admin.supportCategorySumm', compact('supportCategories'));
     }
@@ -2021,12 +2141,13 @@ class AdminController extends Controller
 
     public function supportSubSumm(SupportCategory $supportCategory)
     {
-        $supportCategory->load([
-            'supportSubCategories',
-            'supportSubCategories.contents',
-            'supportSubCategories.contents.subtitle',
-            'supportSubCategories.contents.subtitle.title'
-        ]);
+        // $supportCategory->load([
+        //     'supportSubCategories',
+        //     'supportSubCategories.contents',
+        //     'supportSubCategories.contents.subtitle',
+        //     'supportSubCategories.contents.subtitle.title',
+        //     'supportSubCategories.contents.subtitle.title.projects'
+        // ]);
 
         return view('admin.supportSubSumm', compact('supportCategory'));
     }
@@ -2039,6 +2160,7 @@ class AdminController extends Controller
                             ->join('titles', 'subtitles.title_id', 'titles.id')
                             ->get();
 
+
         $supportCategories = SupportCategory::all();
 
         return view('admin.createSub', compact('supportCategory', 'contents', 'supportCategories'));
@@ -2049,7 +2171,8 @@ class AdminController extends Controller
         $rules = [
             'sub_name' => 'required|max:255',
             'sub_description' => 'required|max:255',
-            'content_id' => 'required'
+            // 'content_id' => 'required',
+            'category_id' => 'required'
         ];
 
         $messages = [
@@ -2057,7 +2180,8 @@ class AdminController extends Controller
             'sub_name.max' => 'The Subcategory Name field should not exceed 255 characters.',
             'sub_description.required' => 'The Description field is required.',
             'sub_description.max' => 'The Description should not exceed 255 characters.',
-            'content_id.required' => 'Related Topic is required.',
+            // 'content_id.required' => 'Related Topic is required.',
+            'category_id.required' => 'Category Name is required.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -2073,7 +2197,7 @@ class AdminController extends Controller
             'category_id' => $request->input('category_id'),
             'sub_name' => $request->input('sub_name'),
             'sub_description' => $request->input('sub_description'),
-            'content_id' => $request->input('content_id')
+            // 'content_id' => $request->input('content_id')
         ]);
 
         return redirect()->route('supportSubSumm', ['supportCategory' => $supportCategory->id])->with('success', 'New subcategory created successfully.');
@@ -2082,9 +2206,9 @@ class AdminController extends Controller
     public function editSub($id)
     {
         $supportSubCategories = SupportSubCategory::find($id);
-        $contents = Content::join('subtitles', 'contents.subtitle_id', 'subtitles.id')
-                            ->join('titles', 'subtitles.title_id', 'titles.id')
-                            ->get();
+        // $contents = Content::join('subtitles', 'contents.subtitle_id', 'subtitles.id')
+        //                     ->join('titles', 'subtitles.title_id', 'titles.id')
+        //                     ->get();
         $supportCategories = SupportCategory::all();
 
         return view('admin.editSub', compact('supportSubCategories', 'contents', 'supportCategories'));
@@ -2095,7 +2219,8 @@ class AdminController extends Controller
         $rules = [
             'sub_name' => 'required|max:255',
             'sub_description' => 'required|max:255',
-            'content_id' => 'required'
+            // 'content_id' => 'required',
+            'category_id' => 'required'
         ];
 
         $messages = [
@@ -2103,7 +2228,8 @@ class AdminController extends Controller
             'sub_name.max' => 'The Subcategory Name should not exceed 255 characters.',
             'sub_description.required' => 'The Description field is required.',
             'sub_description.max' => 'Description should not exceed 255 characters.',
-            'content_id.required' => 'Related Topic is required.',
+            // 'content_id.required' => 'Related Topic is required.',
+            'category_id.required' => 'Category Name is required.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -2122,7 +2248,7 @@ class AdminController extends Controller
         $updateSubCat->update([
             'sub_name' => $request->input('sub_name'),
             'sub_description' => $request->input('sub_description'),
-            'content_id' => $request->input('content_id')
+            // 'content_id' => $request->input('content_id')
         ]);
 
         return redirect()->route('supportSubSumm', ['supportCategory' => $categoryId]);

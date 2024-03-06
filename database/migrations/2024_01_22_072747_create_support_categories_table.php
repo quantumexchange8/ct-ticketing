@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('support_categories', function (Blueprint $table) {
             $table->id();
             $table->string('category_name')->nullable();
+            $table->string('project_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
