@@ -77,11 +77,11 @@
                     </li>
 
                     <li>
-                        <a href="{{ route('support') }}"> <i data-feather="info" class="align-self-center menu-icon"></i><span>Support Tools</span></a>
+                        <a href="{{ route('support', ['project' => $selectedProjectId]) }}"> <i data-feather="info" class="align-self-center menu-icon"></i><span>Support Tools</span></a>
                     </li>
 
                     <li>
-                        <a href="{{ route('openTicket') }}"> <i data-feather="send" class="align-self-center menu-icon"></i><span>Submit a Ticket</span></a>
+                        <a href="{{ route('openTicket', ['project' => $selectedProjectId]) }}"> <i data-feather="send" class="align-self-center menu-icon"></i><span>Submit a Ticket</span></a>
                     </li>
 
                 </ul>

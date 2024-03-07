@@ -26,9 +26,9 @@ Route::get('/', [MemberController::class, 'dashboard'])->name('dashboard');
 Route::get('/select-project/{projectId}', [MemberController::class, 'selectProject'])->name('selectProject');
 Route::get('/documentation/{title}', [MemberController::class, 'documentation'])->name('documentation');
 
-Route::get('/support', [MemberController::class, 'support'])->name('support');
+Route::get('/support/{project}', [MemberController::class, 'support'])->name('support');
 
-Route::get('/open-ticket', [MemberController::class, 'openTicket'])->name('openTicket');
+Route::get('/open-ticket/{project}', [MemberController::class, 'openTicket'])->name('openTicket');
 Route::post('/submit-ticket', [MemberController::class, 'submitTicket'])->name('submitTicket');
 
 Route::get('/search-support-tools', [SearchController::class, 'searchSupportTools'])->name('searchSupportTools');
@@ -116,6 +116,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/support-tool', [AdminController::class, 'supportTool'])->name('supportTool');
 
+    Route::get('/support-category', [AdminController::class, 'supportCategory'])->name('supportCategory');
+
     Route::get('/support-category-summary/{project}', [AdminController::class, 'supportCategorySumm'])->name('supportCategorySumm');
     Route::get('/create-category', [AdminController::class, 'createCategory'])->name('createCategory');
     Route::post('/add-category', [AdminController::class, 'addCategory'])->name('addCategory');
@@ -123,8 +125,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/update-category/{id}', [AdminController::class, 'updateCategory'])->name('updateCategory');
     Route::delete('/delete-category/{id}', [AdminController::class, 'deleteCategory'])->name('deleteCategory');
 
-    Route::get('/support-sub-summary/{supportCategory}', [AdminController::class, 'supportSubSumm'])->name('supportSubSumm');
-    Route::get('/create-sub/{supportCategory}', [AdminController::class, 'createSub'])->name('createSub');
+    Route::get('/support-sub-summary/{supportCategory}/{project}', [AdminController::class, 'supportSubSumm'])->name('supportSubSumm');
+    Route::get('/create-sub/{supportCategory}/{project}', [AdminController::class, 'createSub'])->name('createSub');
     Route::post('/add-sub/{supportCategory}', [AdminController::class, 'addSub'])->name('addSub');
     Route::get('/edit-sub/{id}', [AdminController::class, 'editSub'])->name('editSub');
     Route::post('/update-sub/{id}', [AdminController::class, 'updateSub'])->name('updateSub');
@@ -143,9 +145,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/edit-admin/{id}', [AdminController::class, 'editAdmin'])->name('editAdmin');
     Route::post('/update-admin/{id}', [AdminController::class, 'updateAdmin'])->name('updateAdmin');
     Route::delete('/delete-admin/{id}', [AdminController::class, 'deleteAdmin'])->name('deleteAdmin');
-
-    // Preview documentation
-    Route::get('/view-content/{title}', [AdminController::class, 'viewContent'])->name('viewContent');
 
 });
 

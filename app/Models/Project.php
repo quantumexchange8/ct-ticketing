@@ -17,8 +17,13 @@ class Project extends Model
         return $this->hasMany(Title::class, 'project_id', 'id');
     }
 
-    public function supportCategories()
+    public function supportSubCategories()
     {
-        return $this->hasMany(SupportCategory::class, 'project_id', 'id');
+        return $this->hasMany(SupportSubCategory::class, 'project_id', 'id');
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'pic_id', 'id');
     }
 }

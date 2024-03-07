@@ -20,4 +20,9 @@ class SupportSubCategory extends Model
     // {
     //     return $this->belongsTo(Content::class, 'content_id', 'id');
     // }
+
+    public function projects()
+    {
+        return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
 }

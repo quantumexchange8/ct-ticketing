@@ -31,7 +31,7 @@
                                 <div class="card-body p-0 auth-header-box">
                                     <div class="text-center p-3">
                                         <a href="index.html" class="logo logo-admin">
-                                            <img src="{{ asset('assets/images/logo-sm.png') }}" height="50" alt="logo" class="auth-logo">
+                                            <img src="{{ asset('assets/images/current-tech-logo-white.png') }}" height="50" alt="logo" class="auth-logo">
                                         </a>
                                         <h4 class="mt-3 mb-1 font-weight-semibold text-white font-18">Welcome to CT-Ticketing</h4>
                                         {{-- <p class="text-muted  mb-0">Sign in to continue to Dastyle.</p> --}}

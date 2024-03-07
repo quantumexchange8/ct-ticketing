@@ -44,8 +44,9 @@ class MemberController extends Controller
     public function dashboard()
     {
         $projects = Project::where('show', 1)->get();
-
-        return view('user.dashboard', compact('projects'));
+        $supportCategories = SupportCategory::all();
+        
+        return view('user.dashboard', compact('projects', 'supportCategories'));
     }
     public function selectProject($projectId)
     {
@@ -85,33 +86,39 @@ class MemberController extends Controller
         return view('user.documentation', compact('project', 'title', 'singleProject', 'allContents'));
     }
 
-    public function support()
+    public function support(Project $project)
     {
-        $supportCategories = SupportCategory::with([
-            'supportSubCategories' => function ($query) {
-                $query->select(
-                    'support_sub_categories.*',
-                    'support_categories.*',
-                    'contents.*',
-                    'subtitles.*',
-                    'titles.*',
-                    'support_sub_categories.id as sub_category_id'
-                )
-                ->join('support_categories', 'support_categories.id', '=', 'support_sub_categories.category_id')
-                ->join('contents', 'contents.id', '=', 'support_sub_categories.content_id')
-                ->join('subtitles', 'subtitles.id', '=', 'contents.subtitle_id')
-                ->join('titles', 'titles.id', '=', 'subtitles.title_id');
-            },
-        ])->get();
+        // Fetch the support subcategories associated with the project
+        $supportSubCategories = SupportSubCategory::where('project_id', $project->id)->get();
 
-        return view('user.support', compact('supportCategories'));
+        // Extract the unique category IDs from the support subcategories
+        $categoryIds = $supportSubCategories->pluck('category_id')->unique();
+
+        // Fetch the support categories based on the extracted category IDs
+        $supportCategories = SupportCategory::whereIn('id', $categoryIds)->get();
+
+        // Initialize an array to store support subcategories for each category
+        $supportSubCategoriesByCategory = [];
+
+        // Retrieve support subcategories for each category
+        foreach ($supportCategories as $category) {
+            $sub = SupportSubCategory::where('project_id', $project->id)
+                                    ->where('category_id', $category->id)
+                                    ->get();
+
+            // Store support subcategories for the current category
+            $supportSubCategoriesByCategory[$category->id] = $sub;
+        }
+
+        return view('user.support', compact('supportCategories', 'project', 'supportSubCategoriesByCategory'));
     }
 
-    public function openTicket()
+    public function openTicket(Project $project)
     {
         $supportCategories = SupportCategory::all();
+        $projects = Project::all();
 
-        return view('user.openTicket', compact('supportCategories'));
+        return view('user.openTicket', compact('supportCategories', 'projects', 'project'));
     }
 
     public function submitTicket(Request $request)
@@ -171,6 +178,17 @@ class MemberController extends Controller
         $subject = $request->input('subject');
         $message = $request->input('message');
 
+        $projectId = null;
+        $projectName = null;
+
+        if ($request->has('project_id')) {
+            $projectId = $request->input('project_id');
+        }
+
+        if ($request->has('p_name')) {
+            $projectName = $request->input('p_name');
+        }
+
         $ticket = Ticket::create([
             'sender_name' => $senderName,
             'sender_email' => $senderEmail,
@@ -178,7 +196,9 @@ class MemberController extends Controller
             'message' => $message,
             'category_id' => $request->input('category_id'),
             'priority' => $request->input('priority'),
-            'status_id' => 1
+            'status_id' => 1,
+            'project_id' => $projectId,
+            'p_name' => $projectName
         ]);
 
         $ticketId = $ticket->id;
@@ -239,9 +259,9 @@ class MemberController extends Controller
 
         $emailSubject = $ticketNo . '-' . $senderName;
 
-        Mail::send(new SubmitTicket($ticket, $subject, $senderEmail, $emailSubject));
+        // Mail::send(new SubmitTicket($ticket, $subject, $senderEmail, $emailSubject));
 
-        return redirect()->route('dashboard')->with('success', 'Ticket submitted successfully');
+        return redirect()->back()->with('success', 'Ticket submitted successfully');
     }
 
 }

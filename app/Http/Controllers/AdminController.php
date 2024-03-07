@@ -184,37 +184,6 @@ class AdminController extends Controller
         return response()->json($response);
     }
 
-    // public function updateEmailSignature(Request $request)
-    // {
-    //     $user = auth()->user();
-
-    //     $userId = $user->id;
-
-    //     $update = EmailSignature::find($userId);
-
-    //     if ($request->has('sign_off')) {
-    //         $update->sign_off = $request->input('sign_off');
-    //         $update->save();
-    //     }
-
-    //     if ($request->has('font_family')) {
-    //         $update->font_family = $request->input('font_family');
-    //         $update->save();
-    //     }
-
-    //     if ($request->has('font_size')) {
-    //         $update->font_size = $request->input('font_size');
-    //         $update->save();
-    //     }
-
-    //     if ($request->has('font_color')) {
-    //         $update->font_color = $request->input('font_color');
-    //         $update->save();
-    //     }
-
-    //     return response()->json(['message' => 'Email Signature updated successfully']);
-    // }
-
     public function updateEmailSignature(Request $request)
     {
         $user = auth()->user();
@@ -1151,23 +1120,6 @@ class AdminController extends Controller
         return view('admin.viewTicketImage', compact('ticketImages', 'tickets'));
     }
 
-    public function viewContent(Title $title)
-    {
-        $title->load([
-            'subtitles.contents' => function ($query) {
-                $query->orderBy('c_sequence');
-            }
-        ]);
-
-        // Export one documentation
-        $singleTitle = $title;
-
-        // Export all documentation
-        $titles = Title::with('subtitles.contents')->get();
-
-        return view('admin.viewContent', compact('title', 'titles', 'singleTitle'));
-    }
-
     public function performance()
     {
         // $authUser = User::where('id', '=', Auth::user()->id)->first();
@@ -1526,67 +1478,6 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Title and associated contents deleted successfully.');
     }
 
-    // public function updateTitle(Request $request)
-    // {
-    //     $data = $request->input('data');
-
-    //     // Get the list of IDs in the request
-    //     $requestTitleIds = collect($data)->pluck('id')->toArray();
-
-    //     // Find titles that are not present in the request
-    //     $titlesToDelete = Title::whereNotIn('id', $requestTitleIds)->get();
-
-    //     // Delete titles not present in the request
-    //     foreach ($titlesToDelete as $titleToDelete) {
-    //         // Delete associated content records
-    //         $titleToDelete->contents()->delete();
-
-    //         // Delete the title itself
-    //         $titleToDelete->delete();
-    //     }
-
-    //     foreach ($data as $row) {
-    //         // Validate each row of data
-    //         // $validator = Validator::make($row, [
-    //         //     'title_name' => 'required|max:255',
-    //         // ], [
-    //         //     'title_name.max' => 'Title should not exceed 255 characters.',
-    //         // ]);
-
-    //         // // Check if validation fails
-    //         // if ($validator->fails()) {
-    //         //     return response()->json(['error' => $validator->errors()], 400);
-    //         // }
-
-    //         $id = $row['id'];
-    //         $title = $row['title'];
-    //         $t_sequence = $row['tsequence'];
-
-    //         // Check if the record exists
-    //         $existingTitle = Title::find($id);
-
-    //         if ($existingTitle) {
-    //             // Update the existing record
-    //             $existingTitle->update([
-    //                 'title_name' => $title,
-    //                 't_sequence' => $t_sequence,
-    //             ]);
-    //         } else {
-    //             // Count the number of existing titles
-    //             $titleCount = Title::count();
-
-    //             // Create a new record
-    //             $newTitle = Title::create([
-    //                 'title_name' => $title,
-    //                 't_sequence' => $titleCount + 1,
-    //             ]);
-    //         }
-    //     }
-
-    //     return response()->json(['message' => 'Title updated successfully']);
-    // }
-
-
     public function subtitleSumm(Title $title)
     {
         $title->load([
@@ -1820,87 +1711,6 @@ class AdminController extends Controller
         return redirect()->route('contentSumm', ['subtitle' => $subtitleId])->with('success', 'New content created successfully.');
     }
 
-    // public function updateContent(Request $request)
-    // {
-    //     $data = $request->input('data');
-
-    //     $titleId = isset($data[0]['tid']) ? $data[0]['tid'] : null;
-
-    //     // Get the list of IDs in the request
-    //     $requestContentIds = collect($data)->pluck('id')->toArray();
-
-    //     // Find titles that are not present in the request
-    //     $titlesToDelete = Content::whereNotIn('id', $requestContentIds)
-    //                             ->where('title_id', $titleId)
-    //                             ->get();
-
-    //     // Delete titles not present in the request
-    //     foreach ($titlesToDelete as $titleToDelete) {
-    //         $titleToDelete->delete();
-    //     }
-
-    //     foreach ($data as $row) {
-    //         // Validate each row of data
-    //         $validator = Validator::make($row, [
-    //             'subtitle' => 'required|max:255',
-    //             'content' => 'required|max:255',
-    //         ], [
-    //             'subtitle.max' => 'Subtitle should not exceed 255 characters.',
-    //             'content.max'=> 'Content should not exceed 255 characters.',
-    //         ]);
-
-    //         // Check if validation fails
-    //         if ($validator->fails()) {
-    //             return response()->json(['error' => $validator->errors()], 400);
-    //         }
-
-    //         $c_id = $row['id'];
-    //         $t_id = $row['tid'];
-    //         $subtitle = $row['subtitle'];
-    //         $c_sequence = $row['csequence'];
-    //         $content = $row['content'];
-    //         // $d_image = $row['d_image'];
-
-    //         // Check if the record exists
-    //         $existingContent = Content::find($c_id);
-
-    //         if ($existingContent) {
-    //             // Update the existing record
-    //             $existingContent->update([
-    //                 'subtitle_name' => $subtitle,
-    //                 'content_name' => $content,
-    //                 'c_sequence' => $c_sequence,
-    //             ]);
-    //         } else {
-
-    //             $contentCount = Content::where('title_id', $titleId)->count();
-
-    //             $newDocument = Content::create([
-    //                 'title_id' => $titleId,
-    //                 'subtitle_name' => $subtitle,
-    //                 'content_name' => $content,
-    //                 'c_sequence' => $contentCount + 1,
-    //             ]);
-    //         }
-
-    //         // if ($request->hasFile('d_image')) {
-
-    //         //     $file = $request->file('d_image');
-    //         //     $extension = $file->getClientOriginalExtension();
-    //         //     $fileName = 't'. $t_id . 'd' . $d_id . '_d_image.' . time() . '.' . $extension;
-    //         //     $file->move('storage/documentations/', $fileName);
-
-    //         //     DocumentationImage::create([
-    //         //         'documentation_id' => $d_id,
-    //         //         'image_name' => $fileName,
-    //         //     ]);
-    //         // }
-
-    //     }
-
-    //     return response()->json(['message' => 'Title updated successfully']);
-    // }
-
     public function editContent($id)
     {
         $content = Content::with('subtitle')
@@ -1999,12 +1809,39 @@ class AdminController extends Controller
         return view('admin.supportTool', compact('projects'));
     }
 
+    public function supportCategory()
+    {
+        $supportCategories = SupportCategory::all();
+
+        return view('admin.category', compact('supportCategories'));
+    }
+
 
     public function supportCategorySumm(Project $project)
     {
-        $supportCategories = SupportCategory::where('project_id', $project->id)->get();
+        // Fetch the support subcategories associated with the project
+        $supportSubCategories = SupportSubCategory::where('project_id', $project->id)->get();
 
-        return view('admin.supportCategorySumm', compact('supportCategories'));
+        // Extract the unique category IDs from the support subcategories
+        $categoryIds = $supportSubCategories->pluck('category_id')->unique();
+
+        // Fetch the support categories based on the extracted category IDs
+        $supportCategories = SupportCategory::whereIn('id', $categoryIds)->get();
+
+        // Initialize an array to store support subcategories for each category
+        $supportSubCategoriesByCategory = [];
+
+        // Retrieve support subcategories for each category
+        foreach ($supportCategories as $category) {
+            $sub = SupportSubCategory::where('project_id', $project->id)
+                                    ->where('category_id', $category->id)
+                                    ->get();
+
+            // Store support subcategories for the current category
+            $supportSubCategoriesByCategory[$category->id] = $sub;
+        }
+
+        return view('admin.supportCategorySumm', compact('supportCategories', 'project', 'supportSubCategoriesByCategory'));
     }
 
     public function createCategory()
@@ -2036,7 +1873,7 @@ class AdminController extends Controller
             'category_name' => $request->input('category_name')
         ]);
 
-        return redirect()->route('supportCategorySumm')->with('success', 'New category created successfully.');
+        return redirect()->route('supportCategory',)->with('success', 'New category created successfully.');
     }
 
     public function editCategory($id)
@@ -2072,7 +1909,7 @@ class AdminController extends Controller
             'category_name' => $request->input('category_name')
         ]);
 
-        return redirect()->route('supportCategorySumm')->with('success', 'Category updated successfully.');
+        return redirect()->route('supportCategory')->with('success', 'Category updated successfully.');
     }
 
     public function deleteCategory($id)
@@ -2088,71 +1925,18 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Category and associated subcategory deleted successfully.');
     }
 
-    // public function updateCategory(Request $request)
-    // {
-    //     $data = $request->input('data');
-
-    //     // Get the list of IDs in the request
-    //     $requestCategoryIds = collect($data)->pluck('id')->toArray();
-
-    //     $categoriesToDelete = SupportCategory::whereNotIn('id', $requestCategoryIds)->get();
-
-    //     foreach ($categoriesToDelete as $categoryToDelete) {
-    //         $categoryToDelete->supportSubCategories()->delete();
-
-    //         $categoryToDelete->delete();
-    //     }
-
-    //     foreach ($data as $row) {
-    //         // Validate each row of data
-    //         // $validator = Validator::make($row, [
-    //         //     'category_name' => 'required|max:255',
-    //         // ], [
-    //         //     'category_name.max' => 'Category name should not exceed 255 characters.',
-    //         // ]);
-
-    //         // // Check if validation fails
-    //         // if ($validator->fails()) {
-    //         //     return response()->json(['error' => $validator->errors()], 400);
-    //         // }
-
-    //         $id = $row['id'];
-    //         $category_name = $row['categoryname'];
-
-    //         // Check if the record exists
-    //         $existingCategory = SupportCategory::find($id);
-
-    //         if ($existingCategory) {
-    //             // Update the existing record
-    //             $existingCategory->update([
-    //                 'category_name' => $category_name,
-    //             ]);
-    //         } else {
-
-    //             // Create a new record
-    //             $newCategory = SupportCategory::create([
-    //                 'category_name' => $category_name,
-    //             ]);
-    //         }
-    //     }
-
-    //     return response()->json(['message' => 'Category updated successfully']);
-    // }
-
-    public function supportSubSumm(SupportCategory $supportCategory)
+    public function supportSubSumm(SupportCategory $supportCategory, Project $project)
     {
-        // $supportCategory->load([
-        //     'supportSubCategories',
-        //     'supportSubCategories.contents',
-        //     'supportSubCategories.contents.subtitle',
-        //     'supportSubCategories.contents.subtitle.title',
-        //     'supportSubCategories.contents.subtitle.title.projects'
-        // ]);
+       $supportSubCategories = SupportSubCategory::with('supportCategories')
+                                                    ->with('projects')
+                                                    ->where('category_id', $supportCategory->id)
+                                                    ->where('project_id', $project->id)
+                                                    ->get();
 
-        return view('admin.supportSubSumm', compact('supportCategory'));
+        return view('admin.supportSubSumm', compact('supportSubCategories', 'project'));
     }
 
-    public function createSub(SupportCategory $supportCategory)
+    public function createSub(SupportCategory $supportCategory, Project $project)
     {
         // $contents = Content::with('subtitle.title')->get();
 
@@ -2163,7 +1947,9 @@ class AdminController extends Controller
 
         $supportCategories = SupportCategory::all();
 
-        return view('admin.createSub', compact('supportCategory', 'contents', 'supportCategories'));
+        $projects = Project::all();
+
+        return view('admin.createSub', compact('supportCategory', 'contents', 'supportCategories', 'projects', 'project'));
     }
 
     public function addSub(Request $request, SupportCategory $supportCategory)
@@ -2171,7 +1957,7 @@ class AdminController extends Controller
         $rules = [
             'sub_name' => 'required|max:255',
             'sub_description' => 'required|max:255',
-            // 'content_id' => 'required',
+            'project_id' => 'required',
             'category_id' => 'required'
         ];
 
@@ -2180,7 +1966,7 @@ class AdminController extends Controller
             'sub_name.max' => 'The Subcategory Name field should not exceed 255 characters.',
             'sub_description.required' => 'The Description field is required.',
             'sub_description.max' => 'The Description should not exceed 255 characters.',
-            // 'content_id.required' => 'Related Topic is required.',
+            'project_id.required' => 'Related project is required.',
             'category_id.required' => 'Category Name is required.',
         ];
 
@@ -2193,14 +1979,16 @@ class AdminController extends Controller
                 ->withInput();
         }
 
+        $projectId = $request->input('project_id');
+
         $createSub = SupportSubCategory::create([
             'category_id' => $request->input('category_id'),
             'sub_name' => $request->input('sub_name'),
             'sub_description' => $request->input('sub_description'),
-            // 'content_id' => $request->input('content_id')
+            'project_id' => $projectId
         ]);
 
-        return redirect()->route('supportSubSumm', ['supportCategory' => $supportCategory->id])->with('success', 'New subcategory created successfully.');
+        return redirect()->route('supportSubSumm', ['supportCategory' => $supportCategory->id, 'project' => $projectId])->with('success', 'New subcategory created successfully.');
     }
 
     public function editSub($id)
@@ -2211,7 +1999,9 @@ class AdminController extends Controller
         //                     ->get();
         $supportCategories = SupportCategory::all();
 
-        return view('admin.editSub', compact('supportSubCategories', 'contents', 'supportCategories'));
+        $projects = Project::all();
+
+        return view('admin.editSub', compact('supportSubCategories', 'supportCategories', 'projects'));
     }
 
     public function updateSub(Request $request, $id)
@@ -2219,7 +2009,7 @@ class AdminController extends Controller
         $rules = [
             'sub_name' => 'required|max:255',
             'sub_description' => 'required|max:255',
-            // 'content_id' => 'required',
+            'project_id' => 'required',
             'category_id' => 'required'
         ];
 
@@ -2228,7 +2018,7 @@ class AdminController extends Controller
             'sub_name.max' => 'The Subcategory Name should not exceed 255 characters.',
             'sub_description.required' => 'The Description field is required.',
             'sub_description.max' => 'Description should not exceed 255 characters.',
-            // 'content_id.required' => 'Related Topic is required.',
+            'project_id.required' => 'Related Project is required.',
             'category_id.required' => 'Category Name is required.',
         ];
 
@@ -2245,13 +2035,15 @@ class AdminController extends Controller
 
         $categoryId = $updateSubCat->category_id;
 
+        $projectId = $request->input('project_id');
+
         $updateSubCat->update([
             'sub_name' => $request->input('sub_name'),
             'sub_description' => $request->input('sub_description'),
-            // 'content_id' => $request->input('content_id')
+            'project_id' => $projectId
         ]);
 
-        return redirect()->route('supportSubSumm', ['supportCategory' => $categoryId]);
+        return redirect()->route('supportSubSumm', ['supportCategory' => $categoryId, 'project' => $projectId]);
     }
 
     public function deleteSub($id)
@@ -2262,63 +2054,6 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Support SubCategories deleted successfully.');
     }
-
-    // public function updateSub(Request $request)
-    // {
-    //     $data = $request->input('data');
-
-    //     $firstCatId = isset($data[0]['catid']) ? $data[0]['catid'] : null;
-
-    //     // Get the list of IDs in the request
-    //     $requestSubCategoryIds = collect($data)->pluck('id')->toArray();
-
-    //     $subCategoriesToDelete = SupportSubCategory::whereNotIn('id', $requestSubCategoryIds)->get();
-
-    //     foreach ($subCategoriesToDelete as $subCategoryToDelete) {
-    //         $subCategoryToDelete->delete();
-    //     }
-
-    //     foreach ($data as $row) {
-    //         // Validate each row of data
-    //         // $validator = Validator::make($row, [
-    //         //     'category_name' => 'required|max:255',
-    //         // ], [
-    //         //     'category_name.max' => 'Category name should not exceed 255 characters.',
-    //         // ]);
-
-    //         // // Check if validation fails
-    //         // if ($validator->fails()) {
-    //         //     return response()->json(['error' => $validator->errors()], 400);
-    //         // }
-
-    //         $catId = $row['catid'];
-    //         $subId = $row['subid'];
-    //         $subName = $row['subname'];
-    //         $subDesc = $row['subdesc'];
-
-    //         // Check if the record exists
-    //         $existingSubcategory = SupportSubCategory::find($subId);
-
-    //         if ($existingSubcategory) {
-    //             // Update the existing record
-    //             $existingSubcategory->update([
-    //                 'sub_name' => $subName,
-    //                 'sub_description' => $subDesc
-    //             ]);
-    //         } else {
-
-    //             // Create a new record
-    //             $newSubcategory = SupportSubCategory::create([
-    //                 'category_id' => $firstCatId,
-    //                 'sub_name' => $subName,
-    //                 'sub_description' => $subDesc,
-    //             ]);
-    //         }
-    //     }
-
-    //     return response()->json(['message' => 'Category updated successfully']);
-    // }
-
 
     public function ticketStatus()
     {
@@ -2403,55 +2138,6 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Ticket Status deleted successfully.');
     }
-
-    // public function updateTicketStatus(Request $request)
-    // {
-    //     $data = $request->input('data');
-
-    //     // Get the list of IDs in the request
-    //     $requestStatusIds = collect($data)->pluck('id')->toArray();
-
-    //     $statusesToDelete = TicketStatus::whereNotIn('id', $requestStatusIds)->get();
-
-    //     foreach ($statusesToDelete as $statusToDelete) {
-    //         $statusToDelete->delete();
-    //     }
-
-    //     foreach ($data as $row) {
-    //         // Validate each row of data
-    //         // $validator = Validator::make($row, [
-    //         //     'category_name' => 'required|max:255',
-    //         // ], [
-    //         //     'category_name.max' => 'Category name should not exceed 255 characters.',
-    //         // ]);
-
-    //         // // Check if validation fails
-    //         // if ($validator->fails()) {
-    //         //     return response()->json(['error' => $validator->errors()], 400);
-    //         // }
-
-    //         $ticket_status_id = $row['id'];
-    //         $status = $row['status'];
-
-    //         // Check if the record exists
-    //         $existingTicketStatus = TicketStatus::find($ticket_status_id);
-
-    //         if ($existingTicketStatus) {
-    //             // Update the existing record
-    //             $existingTicketStatus->update([
-    //                 'status' => $status,
-    //             ]);
-    //         } else {
-
-    //             // Create a new record
-    //             $newTicketStatus = TicketStatus::create([
-    //                 'status' => $status,
-    //             ]);
-    //         }
-    //     }
-
-    //     return response()->json(['message' => 'Ticket status updated successfully']);
-    // }
 
     public function adminSumm()
     {

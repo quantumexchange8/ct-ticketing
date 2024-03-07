@@ -44,21 +44,16 @@
                                         </select>
                                     </div>
 
-                                    {{-- <div class="form-group">
-                                        <label for="content_id">Related Topic</label>
-                                        <select class="form-control" name="content_id">
-                                            <option>Select Related Topic</option>
-                                            @foreach ($contents as $content)
-                                                <option value="{{ $content->id }}" {{ old('content_id') == $content->id ? 'selected' : '' }}>
-                                                    {{ $content->title_name }} - {{ $content->subtitle_name }}
+                                    <div class="form-group">
+                                        <label for="content_id">Project</label>
+                                        <select class="form-control" name="project_id">
+                                            @foreach ($projects as $projectSelected)
+                                                <option value="{{ $projectSelected->id }}" {{ $projectSelected->id == $project->id ? 'selected' : '' }}>
+                                                    {{ $projectSelected->project_name }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('content_id')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div> --}}
-                                    
+                                    </div>
                                 </div>
 
                                 <div class="col-lg-6">

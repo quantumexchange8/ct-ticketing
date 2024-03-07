@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('priority')->nullable();
             $table->string('status_id')->nullable();
             $table->string('pic_id')->nullable();
+            $table->string('project_id')->nullable();
+            $table->string('p_name')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

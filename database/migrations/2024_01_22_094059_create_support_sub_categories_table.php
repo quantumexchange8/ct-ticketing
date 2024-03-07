@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('category_id')->nullable();
             $table->string('sub_name')->nullable();
             $table->longText('sub_description')->nullable();
-            // $table->string('content_id')->nullable();
+            $table->string('project_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

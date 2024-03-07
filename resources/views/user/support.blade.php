@@ -45,26 +45,25 @@
                 @foreach ($supportCategories as $supportCategory)
                     <div class="row">
                         <div class="col-sm-12">
-                            <div class="card" >
+                            <div class="card">
                                 <div class="card-header" style="background-color: {{ $colors[$colorIndex] }}">
-                                {{-- <div class="card-header"> --}}
-                                    <h4 class="card-title">{!! $supportCategory->category_name !!}</h4>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <h4 class="card-title">{!! $supportCategory->category_name !!}</h4>
+                                    </div>
                                 </div><!--end card-header-->
                             </div><!--end card-->
                         </div><!--end col-->
                     </div>
 
                     <div class="row">
-
-                        @foreach ($supportCategory->supportSubCategories as $subcategory)
+                        @foreach ($supportSubCategoriesByCategory[$supportCategory->id] as $subcategory)
                             <div class="col-sm-3">
                                 <div class="card">
-                                    <div class="card-header" id="{{ $subcategory->sub_category_id }}">
+                                    <div class="card-header" id="{{ $subcategory->id }}">
                                         <h4 class="card-title">{{ $subcategory->sub_name }}</h4>
                                     </div><!--end card-header-->
                                     <div class="card-body">
                                         <p class="card-text text-muted">{{ $subcategory->sub_description }}</p>
-                                        <a href="{{ route('documentation', ['title' => $subcategory->title_id]) }}" class="btn btn-primary btn-sm">Go somewhere</a>
                                     </div><!--end card-body-->
                                 </div><!--end card-->
                             </div><!--end col-->

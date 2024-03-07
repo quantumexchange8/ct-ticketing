@@ -17,7 +17,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="username">Full Name</label>
+                                        <label for="sender_name">Full Name</label>
                                         <input type="text" class="form-control" id="username" name="sender_name" autocomplete="off" value="{{ old('sender_name') }}" required>
                                         @error('sender_name')
                                             <span class="text-danger">{{ $message }}</span>
@@ -26,7 +26,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="useremail">Email Address</label>
+                                        <label for="sender_email">Email Address</label>
                                         <input type="email" class="form-control" id="useremail" name="sender_email" autocomplete="off" value="{{ old('sender_email') }}" required>
                                         @error('sender_email')
                                             <span class="text-danger">{{ $message }}</span>
@@ -38,16 +38,22 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="subject">Subject</label>
-                                        <input type="text" class="form-control" id="subject" name="subject" autocomplete="off" value="{{ old('subject') }}" required>
-                                        @error('subject')
+                                        <label for="project_id">Project</label>
+                                        <select class="form-control" name="project_id" required>
+                                            @foreach($projects as $projectSelected)
+                                                <option value="{{ $projectSelected->id }}" {{ $projectSelected->id == $project->id ? 'selected' : '' }}>
+                                                    {!! $projectSelected->project_name !!}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('project_id')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="username">Category</label>
+                                        <label for="category_id">Category</label>
                                         <select class="form-control" name="category_id" required>
                                             <option value="">Select Category</option>
                                             @foreach($supportCategories as $supportCategory)
@@ -59,9 +65,22 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+
+                            </div>
+                            <div class="row">
+
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="useremail">Priority</label>
+                                        <label for="subject">Subject</label>
+                                        <input type="text" class="form-control" id="subject" name="subject" autocomplete="off" value="{{ old('subject') }}" required>
+                                        @error('subject')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="priority">Priority</label>
                                         <select class="form-control" name="priority" required>
                                             <option value="">Select Priority</option>
                                             <option value="Low" {{ old('priority') == 'Low' ? 'selected' : '' }}>Low</option>

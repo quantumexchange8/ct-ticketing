@@ -10,14 +10,14 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title">Support Tool</h4>
+                            <h4 class="page-title">FAQ</h4>
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
             </div><!--end col-->
         </div><!--end row-->
         <!-- end page title end breadcrumb -->
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
@@ -36,7 +36,7 @@
                                         <td class="text-center">
                                             <div style="display: flex; justify-content: center; gap: 10px;">
                                                 @if (Auth::user()->manage_support_subcategory == 1)
-                                                    <a href="{{ route('supportSubSumm', ['supportCategory' => $supportCategory->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
+                                                    <a href="{{ route('supportSubSumm', ['supportCategory' => $supportCategory->id, 'project' => $project->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
                                                         <i class="dripicons-preview"></i>
                                                     </a>
                                                 @endif
@@ -63,17 +63,56 @@
                                 </tbody>
                             </table>
                         </div>
-                        <span class="float-right">
-                            {{-- <button id="but_add" class="btn btn-danger">Add New Category</button>
-                            <button class="btn  btn-primary" id="submit_data" data-endpoint="update-category" >Submit</button> --}}
-                            <a href="{{ route('createCategory') }}">
-                                <button class="btn btn-danger mt-2">Add New Category</button>
-                            </a>
-                        </span><!--end table-->
                     </div><!--end card-body-->
                 </div><!--end card-->
             </div> <!-- end col -->
-        </div> <!-- end row -->
+        </div> <!-- end row --> --}}
+
+        @php
+            $colors = ['#bed3fe', '#e3e6f0', '#b8f4db', '#bde6fa', '#ffebc1', '#99a1b7', '#b2bfc2'];
+            $colorIndex = 0;
+        @endphp
+
+
+        @foreach ($supportCategories as $supportCategory)
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header" style="background-color: {{ $colors[$colorIndex] }}">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <h4 class="card-title">{!! $supportCategory->category_name !!}</h4>
+                                <a href="{{ route('supportSubSumm', ['supportCategory' => $supportCategory->id, 'project' => $project->id]) }}">
+                                    <i data-feather="edit-3" class="align-self-center menu-icon"></i>
+                                </a>
+                            </div>
+                        </div><!--end card-header-->
+                    </div><!--end card-->
+                </div><!--end col-->
+            </div>
+
+            <div class="row">
+                @foreach ($supportSubCategoriesByCategory[$supportCategory->id] as $subcategory)
+                    <div class="col-sm-3">
+                        <div class="card">
+                            <div class="card-header" id="{{ $subcategory->id }}">
+                                <h4 class="card-title">{{ $subcategory->sub_name }}</h4>
+                            </div><!--end card-header-->
+                            <div class="card-body">
+                                <p class="card-text text-muted">{{ $subcategory->sub_description }}</p>
+                            </div><!--end card-body-->
+                        </div><!--end card-->
+                    </div><!--end col-->
+                @endforeach
+            </div><!--end row-->
+
+            @php
+                $colorIndex = ($colorIndex + 1) % count($colors); // Cycle through colors
+            @endphp
+        @endforeach
+
+
+
+
     </div><!-- container -->
 </div>
 <!-- end page content -->

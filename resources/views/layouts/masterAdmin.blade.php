@@ -124,7 +124,11 @@
                     <li class="menu-label my-2">Project</li>
 
                     <li>
-                        <a href="{{ route('projectSumm') }}"><i data-feather="pocket" class="align-self-center menu-icon"></i><span>Project</span></a>
+                        <a href="{{ route('projectSumm') }}"><i data-feather="pocket" class="align-self-center menu-icon"></i><span>Project List</span></a>
+                    </li>
+
+                    <li>
+                        <a href="{{ route('supportTool') }}"><i data-feather="tool" class="align-self-center menu-icon"></i><span>Support Tools</span></a>
                     </li>
 
                     <hr class="hr-dashed hr-menu">
@@ -134,7 +138,6 @@
                             <a href="{{ route('titleSumm', $project) }}"><i data-feather="zap" class="align-self-center menu-icon"></i><span>{{ $project->project_name }}</span></a>
                         </li>
                     @endforeach
-
 
                     <hr class="hr-dashed hr-menu">
                     <li class="menu-label my-2">Administration</li>
@@ -177,15 +180,14 @@
                             </ul>
                         </li>
                     @endif --}}
-                    <li>
-                        <a href="{{ route('supportTool') }}"><i data-feather="tool" class="align-self-center menu-icon"></i><span>Support Tools</span></a>
-                    </li>
 
-                    {{-- @if (Auth::user()->manage_support_category == 1)
+
+                    @if (Auth::user()->manage_support_category == 1)
                         <li>
-                            <a href="{{ route('supportCategorySumm') }}"><i data-feather="tool" class="align-self-center menu-icon"></i><span>Support Tool</span></a>
+                            <a href="{{ route('supportCategory') }}"><i data-feather="file-text" class="align-self-center menu-icon"></i><span>Support Category</span></a>
                         </li>
-                    @endif --}}
+
+                    @endif
 
                     @if (Auth::user()->manage_status == 1)
                         <li>
@@ -199,30 +201,6 @@
                             <a href="{{ route('adminSumm') }}"> <i data-feather="user" class="align-self-center menu-icon"></i><span>Admin</span></a>
                         </li>
                     @endif
-
-
-                    <hr class="hr-dashed hr-menu">
-                    <li class="menu-label my-2">Preview Documentation</li>
-
-                    @foreach ($titles as $title)
-                        <li>
-                            <a href="{{ route('viewContent', $title) }}">
-                                <i data-feather="paperclip" class="align-self-center menu-icon"></i>
-                                <span>{{ $title->title_name }}</span>
-                                {{-- <span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span> --}}
-                            </a>
-                            {{-- <ul class="nav-second-level" aria-expanded="false">
-                                @foreach ($title->contents()->orderBy('c_sequence')->get() as $content)
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('viewContent', $title) }}">
-                                            <i class="ti-control-record"></i>{{ $content->subtitle_name }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul> --}}
-                        </li>
-                    @endforeach
-
                 </ul>
 
             </div>
