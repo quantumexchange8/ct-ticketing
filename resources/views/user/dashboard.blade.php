@@ -101,10 +101,9 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="card my-4">
-                                {{-- <div class="card-header">
-                                    <h4 class="card-title">Support</h4>
-                                    <p class="text-muted mb-0">Open Ticket</p>
-                                </div><!--end card-header--> --}}
+                                <div class="card-header">
+                                    <h4 class="card-title">Submit Ticket</h4>
+                                </div><!--end card-header-->
                                 <div class="card-body">
                                     <form action="{{route('submitTicket')}}" method="POST" enctype="multipart/form-data">
                                         @csrf

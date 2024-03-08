@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use RealRashid\SweetAlert\Facades\Alert;
+use App\Mail\SubmitTicket;
 use App\Models\Ticket;
 use App\Models\Content;
 use App\Models\Title;
@@ -14,13 +16,10 @@ use App\Models\SupportCategory;
 use App\Models\SupportSubCategory;
 use App\Models\TicketImage;
 use App\Models\Project;
-use App\Mail\SubmitTicket;
-use Illuminate\Support\Facades\Session;
+use App\Models\TicketLog;
 
 class MemberController extends Controller
 {
-
-
 
     // public function dashboard()
     // {
@@ -45,7 +44,7 @@ class MemberController extends Controller
     {
         $projects = Project::where('show', 1)->get();
         $supportCategories = SupportCategory::all();
-        
+
         return view('user.dashboard', compact('projects', 'supportCategories'));
     }
     public function selectProject($projectId)
@@ -263,5 +262,22 @@ class MemberController extends Controller
 
         return redirect()->back()->with('success', 'Ticket submitted successfully');
     }
+
+    public function releaseNote()
+    {
+        // Retrieve all ticket logs from the database
+        $ticketLogs = TicketLog::with('tickets')->get();
+
+        // Group the ticket logs by date
+        $groupedTicketLogs = $ticketLogs->groupBy(function ($ticketLog) {
+            // Convert the created_at timestamp to a formatted date string
+            return $ticketLog->created_at->formatLocalized('%d %B %Y'); // %d: day, %B: full month name, %Y: year
+        });
+
+        // dd($groupedTicketLogs);
+
+        return view('user.releaseNote', compact('groupedTicketLogs'));
+    }
+
 
 }

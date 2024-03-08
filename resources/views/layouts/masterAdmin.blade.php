@@ -142,51 +142,14 @@
                     <hr class="hr-dashed hr-menu">
                     <li class="menu-label my-2">Administration</li>
 
-                    {{-- @if (Auth::user()->manage_title == 1)
-                        <li>
-                            <a href="{{ route('titleSumm') }}"> <i data-feather="slack" class="align-self-center menu-icon"></i><span>Title</span></a>
-                        </li>
-                    @endif --}}
-
-                    {{-- @if (Auth::user()->manage_subtitle == 1)
-                        <li>
-                            <a href="javascript: void(0);"><i data-feather="wind" class="align-self-center menu-icon"></i><span>Subtitle</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
-                            <ul class="nav-second-level" aria-expanded="false">
-                                @foreach ($titles as $title)
-                                    <li class="nav-item"><a class="nav-link" href="{{ route('subtitleSumm', $title) }}"><i class="ti-control-record"></i>{{ $title->title_name }}</a></li>
-                                @endforeach
-                            </ul>
-                        </li>
-                    @endif
-
-                    @if (Auth::user()->manage_content == 1)
-                        <li>
-                            <a href="javascript: void(0);"><i data-feather="file-text" class="align-self-center menu-icon"></i><span>Content</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
-                            <ul class="nav-second-level" aria-expanded="false">
-                                @foreach ($titles as $title)
-                                <li class="nav-item">
-                                    <a class="nav-link" href="javascript: void(0);"><i class="ti-control-record"></i><span>{{ $title->title_name }}</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
-                                    <ul class="nav-second-level" aria-expanded="false">
-                                        @foreach ($title->subtitles as $subtitle)
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('contentSumm', $subtitle) }}">
-                                                <i class="ti-control-record"></i>{{ $subtitle->subtitle_name }}
-                                            </a>
-                                        </li>
-                                        @endforeach
-                                    </ul>
-                                </li>
-                                @endforeach
-                            </ul>
-                        </li>
-                    @endif --}}
-
+                    <li>
+                        <a href="{{ route('enhancementSumm') }}"><i data-feather="file-text" class="align-self-center menu-icon"></i><span>Enhancement</span></a>
+                    </li>
 
                     @if (Auth::user()->manage_support_category == 1)
                         <li>
                             <a href="{{ route('supportCategory') }}"><i data-feather="file-text" class="align-self-center menu-icon"></i><span>Support Category</span></a>
                         </li>
-
                     @endif
 
                     @if (Auth::user()->manage_status == 1)

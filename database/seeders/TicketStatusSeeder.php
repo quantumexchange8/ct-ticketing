@@ -25,8 +25,5 @@ class TicketStatusSeeder extends Seeder
             'status' => 'Solved',
         ]);
 
-        TicketStatus::create([
-            'status' => 'Closed',
-        ]);
     }
 }

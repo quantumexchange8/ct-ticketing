@@ -25,6 +25,8 @@ use App\Models\Role;
 use App\Models\Note;
 use App\Models\EmailSignature;
 use App\Models\Project;
+use App\Models\TicketLog;
+use App\Models\Enhancement;
 class AdminController extends Controller
 {
 
@@ -242,8 +244,7 @@ class AdminController extends Controller
 
     public function adminDashboard(Request $request)
     {
-        $ticketStatuses = TicketStatus::where('status', '!=', 'Closed')
-                                        ->where('status', '!=', 'Solved')
+        $ticketStatuses = TicketStatus::where('status', '!=', 'Solved')
                                         ->get();
         $ticketCounts = [];
         $currentYear = now()->year;
@@ -594,6 +595,20 @@ class AdminController extends Controller
         $ticket = Ticket::findOrFail($ticketId);
         $ticket->status_id = $newStatusId;
         $ticket->save();
+
+        // Check if a record exists in the TicketLog table for the given ticketId
+        $ticketLog = TicketLog::where('ticket_id', $ticketId)->first();
+
+        if (!$ticketLog) {
+            // If no record exists, create a new one
+            $ticketLog = new TicketLog();
+            $ticketLog->ticket_id = $ticketId;
+            $ticketLog->ticket_no = $ticket->ticket_no;
+            $ticketLog->save();
+        } else {
+            // If a record exists, update the created_at timestamp
+            $ticketLog->touch();
+        }
 
         // Return a response indicating success
         return response()->json(['message' => 'Ticket status updated successfully'], 200);
@@ -1275,22 +1290,18 @@ class AdminController extends Controller
         return view('admin.projectSumm', compact('projects'));
     }
 
-    public function createProject()
-    {
-        return view('admin.createProject');
-    }
 
     public function addProject(Request $request)
     {
         $rules = [
             'project_name' => 'required|max:255',
-            'description' => 'required|max:255',
+            'description' => 'nullable|max:255',
         ];
 
         $messages = [
             'project_name.required' => 'The Project Name field is required.',
             'project_name.max' => 'The Project Name should not exceed 255 characters.',
-            'description.required' => 'The Description field is required.',
+            // 'description.required' => 'The Description field is required.',
             'description.max' => 'The Description should not exceed 255 characters.',
         ];
 
@@ -1316,7 +1327,14 @@ class AdminController extends Controller
     {
         $project = Project::find($id);
 
-        return view('admin.editProject', compact('project'));
+        // dd($project);
+        // return view('admin.editProject', compact('project'));
+
+        $response = [
+            'project' => $project,
+        ];
+
+        return response()->json($response);
     }
 
     public function updateProject(Request $request, $id)
@@ -1369,22 +1387,6 @@ class AdminController extends Controller
         return view('admin.titleSumm', compact('titles', 'project'));
     }
 
-    public function viewMoreSubtitle($id)
-    {
-        $subtitles = Subtitle::where('title_id', $id)->orderBy('s_sequence')->get();
-
-        $title = Title::find($id);
-
-        $project = Project::where('id', $title->project_id)->first();
-
-        return view('admin.viewMoreSubtitle', compact('subtitles', 'title', 'project'));
-    }
-
-    public function createTitle(Project $project)
-    {
-        return view('admin.createTitle', compact('project'));
-    }
-
     public function addTitle(Request $request, Project $project)
     {
         $rules = [
@@ -1424,7 +1426,14 @@ class AdminController extends Controller
 
         $project = Project::where('id', $title->project_id)->first();
 
-        return view('admin.editTitle', compact('title', 'project'));
+        // return view('admin.editTitle', compact('title', 'project'));
+
+        $response = [
+            'project' => $project,
+            'title' => $title,
+        ];
+
+        return response()->json($response);
     }
 
     public function updateTitle(Request $request, $id)
@@ -1478,38 +1487,17 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Title and associated contents deleted successfully.');
     }
 
-    public function subtitleSumm(Title $title)
+    public function viewMoreSubtitle($id)
     {
-        $title->load([
-            'subtitles' => function ($query) {
-                $query->orderBy('s_sequence');
-            }
-        ]);
+        $subtitles = Subtitle::where('title_id', $id)->orderBy('s_sequence')->get();
 
-        return view('admin.subtitleSumm', compact('title'));
-    }
-
-    public function viewMoreContent($id)
-    {
-        $contents = Content::where('subtitle_id', $id)->orderBy('c_sequence')->get();
-
-        $subtitles = Subtitle::join('titles', 'titles.id', 'subtitles.title_id')
-                            ->where('subtitles.id', $id)
-                            ->first();
-
-        $title = Title::where('id', $subtitles->id)->first();
+        $title = Title::find($id);
 
         $project = Project::where('id', $title->project_id)->first();
 
-        return view('admin.viewMoreContent', compact('contents', 'subtitles', 'title', 'project'));
+        return view('admin.viewMoreSubtitle', compact('subtitles', 'title', 'project'));
     }
 
-    public function createSubtitle(Title $title)
-    {
-        $project = $title->projects;
-
-        return view('admin.createSubtitle', compact('title', 'project'));
-    }
 
     public function addSubtitle(Request $request, Title $title)
     {
@@ -1542,18 +1530,26 @@ class AdminController extends Controller
             'title_id' => $title->id
         ]);
 
-        return redirect()->route('subtitleSumm', ['title' => $title->id])->with('success', 'New subtitle created successfully.');
+        return redirect()->back()->with('success', 'New subtitle created successfully.');
     }
 
     public function editSubtitle($id)
     {
-        $subtitle = Subtitle::find($id);
+        $subtitle = Subtitle::where('id', $id)->first();
 
-        $title = Title::where('id', $subtitle->id)->first();
+        $title = Title::where('id', $subtitle->title_id)->first();
 
-        $project = Project::where('id', $title->id)->first();
+        $project = Project::where('id', $title->project_id)->first();
 
-        return view('admin.editSubtitle', compact('subtitle', 'title', 'project'));
+        // return view('admin.editSubtitle', compact('subtitle', 'title', 'project'));
+
+        $response = [
+            'project' => $project,
+            'title' => $title,
+            'subtitle' => $subtitle
+        ];
+
+        return response()->json($response);
     }
 
     public function updateSubtitle(Request $request, $id)
@@ -1587,7 +1583,7 @@ class AdminController extends Controller
             's_sequence' => $request->input('s_sequence')
         ]);
 
-        return redirect()->route('subtitleSumm', ['title' => $titleId])->with('success', 'Subtitle updated successfully.');
+        return redirect()->back()->with('success', 'Subtitle updated successfully.');
     }
 
     public function deleteSubtitle($id)
@@ -1603,18 +1599,19 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Subtitle and associated contents deleted successfully.');
     }
 
-    public function contentSumm(Subtitle $subtitle)
+    public function viewMoreContent($id)
     {
-        $subtitle->load([
-            'contents' => function ($query) {
-                $query->orderBy('c_sequence');
-            },
-            'contents.documentationImages'
-        ]);
+        $contents = Content::where('subtitle_id', $id)->orderBy('c_sequence')->get();
 
-        // $content = Content::where('subtitle_id', $subtitle->id)->orderBy('c_sequence')->get();
+        $subtitles = Subtitle::join('titles', 'titles.id', 'subtitles.title_id')
+                            ->where('subtitles.id', $id)
+                            ->first();
 
-        return view('admin.contentSumm', compact('subtitle'));
+        $title = Title::where('id', $subtitles->id)->first();
+
+        $project = Project::where('id', $title->project_id)->first();
+
+        return view('admin.viewMoreContent', compact('contents', 'subtitles', 'title', 'project'));
     }
 
     public function createContent()
@@ -1816,7 +1813,6 @@ class AdminController extends Controller
         return view('admin.category', compact('supportCategories'));
     }
 
-
     public function supportCategorySumm(Project $project)
     {
         // Fetch the support subcategories associated with the project
@@ -1844,10 +1840,6 @@ class AdminController extends Controller
         return view('admin.supportCategorySumm', compact('supportCategories', 'project', 'supportSubCategoriesByCategory'));
     }
 
-    public function createCategory()
-    {
-        return view('admin.createCategory');
-    }
 
     public function addCategory(Request $request)
     {
@@ -1880,7 +1872,13 @@ class AdminController extends Controller
     {
         $category = SupportCategory::find($id);
 
-        return view('admin.editCategory', compact('category'));
+        // return view('admin.editCategory', compact('category'));
+
+        $response = [
+            'category' => $category,
+        ];
+
+        return response()->json($response);
     }
 
     public function updateCategory(Request $request, $id)
@@ -1952,7 +1950,7 @@ class AdminController extends Controller
         return view('admin.createSub', compact('supportCategory', 'contents', 'supportCategories', 'projects', 'project'));
     }
 
-    public function addSub(Request $request, SupportCategory $supportCategory)
+    public function addSub(Request $request, Project $project)
     {
         $rules = [
             'sub_name' => 'required|max:255',
@@ -1980,15 +1978,16 @@ class AdminController extends Controller
         }
 
         $projectId = $request->input('project_id');
+        $categoryId = $request->input('category_id');
 
         $createSub = SupportSubCategory::create([
-            'category_id' => $request->input('category_id'),
+            'category_id' => $categoryId,
             'sub_name' => $request->input('sub_name'),
             'sub_description' => $request->input('sub_description'),
             'project_id' => $projectId
         ]);
 
-        return redirect()->route('supportSubSumm', ['supportCategory' => $supportCategory->id, 'project' => $projectId])->with('success', 'New subcategory created successfully.');
+        return redirect()->route('supportCategorySumm', ['project' => $projectId])->with('success', 'New subcategory created successfully.');
     }
 
     public function editSub($id)
@@ -2049,7 +2048,6 @@ class AdminController extends Controller
     public function deleteSub($id)
     {
         $deleteSub = SupportSubCategory::find($id);
-
         $deleteSub->delete();
 
         return redirect()->back()->with('success', 'Support SubCategories deleted successfully.');
@@ -2060,11 +2058,6 @@ class AdminController extends Controller
         $ticketStatuses = TicketStatus::all();
 
         return view('admin.ticketStatus', compact('ticketStatuses'));
-    }
-
-    public function createTicketStatus()
-    {
-        return view('admin.createTicketStatus');
     }
 
     public function addTicketStatus(Request $request)
@@ -2098,10 +2091,16 @@ class AdminController extends Controller
     {
         $ticketStatus = TicketStatus::find($id);
 
-        return view('admin.editTicketStatus', compact('ticketStatus'));
+        // return view('admin.editTicketStatus', compact('ticketStatus'));
+
+        $response = [
+            'ticketStatus' => $ticketStatus,
+        ];
+
+        return response()->json($response);
     }
 
-    public function updateTicketStatus(Request $request, $id)
+    public function updateTicketStatus(Request $request)
     {
         $rules = [
             'status' => 'required|max:255',
@@ -2121,7 +2120,7 @@ class AdminController extends Controller
                     ->withInput();
         }
 
-        $updateTicketStatus = TicketStatus::find($id);
+        $updateTicketStatus = TicketStatus::find($request->id);
 
         $updateTicketStatus->update([
             'status' => $request->input('status'),
@@ -2370,5 +2369,145 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Admin deleted successfully.');
     }
 
+    public function enhancementSumm()
+    {
+        $enhancements = Enhancement::all();
 
+        return view('admin.enhancementSumm', compact('enhancements'));
+    }
+
+    public function createEnhancement()
+    {
+        return view('admin.createEnhancement');
+    }
+
+    public function addEnhancement(Request $request)
+    {
+        $rules = [
+            'enhancement_title' => 'required|max:255',
+            'enhancement_description' => 'required|max:255',
+        ];
+
+        $messages = [
+            'enhancement_title.required' => 'The Name field is required.',
+            'enhancement_description.required' => 'The Username field is required.',
+            'enhancement_title.max' => 'The Name should not exceed 255 characters.',
+            'enhancement_description.max' => 'The Username should not exceed 255 characters.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+
+        // Get the latest enhancement version
+        $latestEnhancement = Enhancement::latest()->first();
+
+        // Set initial version components
+        $month = date('m');
+        $year = date('y');
+        $majorUpdate = '01';
+        $tableMigrate = '001';
+        $minorUpdate = '001';
+
+        // If there are existing enhancements, extract the components of the latest version number
+        if ($latestEnhancement) {
+            $versionParts = explode('.', $latestEnhancement->version);
+            $month = $versionParts[0];
+            $year = $versionParts[1];
+            $majorUpdate = $versionParts[2];
+            $tableMigrate = $versionParts[3];
+            $minorUpdate = $versionParts[4];
+        }
+
+        // Update version components based on checkbox values
+        if ($request->has('major_update')) {
+            $majorUpdate = str_pad(intval($majorUpdate) + 1, 2, '0', STR_PAD_LEFT);
+        }
+
+        if ($request->has('table_migrate')) {
+            $tableMigrate = str_pad(intval($tableMigrate) + 1, 3, '0', STR_PAD_LEFT);
+        }
+
+        if ($request->has('minor_update')) {
+            $minorUpdate = str_pad(intval($minorUpdate) + 1, 3, '0', STR_PAD_LEFT);
+        }
+
+        // If no checkbox was ticked and there are no existing enhancements, set the initial version
+        if (!$request->hasAny(['major_update', 'table_migrate', 'minor_update']) && !$latestEnhancement) {
+            $version = '0324.01.001.001';
+        } else {
+            // Construct the new version number
+            $version = $month . $year . '.' . $majorUpdate . '.' . $tableMigrate . '.' . $minorUpdate;
+        }
+
+        // Create the new enhancement
+        $enhancement = Enhancement::create([
+            'enhancement_title' => $request->input('enhancement_title'),
+            'enhancement_description' => $request->input('enhancement_description'),
+            'version' => $version,
+        ]);
+
+        return redirect()->back()->with('success', 'New enhancement created successfully');
+    }
+
+
+    public function editEnhancement($id)
+    {
+        $enhancement = Enhancement::find($id);
+
+        // return view('admin.editTicketStatus', compact('ticketStatus'));
+
+        $response = [
+            'enhancement' => $enhancement,
+        ];
+
+        return response()->json($response);
+    }
+
+    public function updateEnhancement(Request $request, $id)
+    {
+        $rules = [
+            'enhancement_title' => 'required|max:255',
+            'enhancement_description' => 'required|max:255',
+        ];
+
+        $messages = [
+            'enhancement_title.required' => 'The Name field is required.',
+            'enhancement_description.required' => 'The Username field is required.',
+            'enhancement_title.max' => 'The Name should not exceed 255 characters.',
+            'enhancement_description.max' => 'The Username should not exceed 255 characters.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+
+        $updateEnhancement = Enhancement::find($request->id);
+
+        $updateEnhancement->update([
+            'enhancement_title' => $request->input('enhancement_title'),
+            'enhancement_description' => $request->input('enhancement_description'),
+        ]);
+
+        return redirect()->route('enhancementSumm')->with('success', 'Ticket Status updated successfully.');
+    }
+
+    public function deleteEnhancement($id)
+    {
+        $enhancement = Enhancement::find($id);
+
+        $enhancement->delete();
+
+        return redirect()->back()->with('success', 'Data deleted successfully.');
+    }
 }

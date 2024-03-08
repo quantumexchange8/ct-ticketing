@@ -24,7 +24,7 @@
         background: #f1f5fa;
         /* box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25); */
 
-        padding: 12px;
+        padding: 25px;
         margin-top: 15px;
         margin-bottom: 15px;
         border-radius: 4px;
@@ -32,11 +32,6 @@
         min-height: 120px;
 
         flex-shrink: 0;
-    }
-    .custom-popup-class {
-        background-color: #f0f0f0; /* Change background color */
-        width: 400px; /* Change width */
-        height: 200px; /* Change height */
     }
 
     .search-add {
@@ -55,7 +50,7 @@
 
     @media screen and (min-width: 1600px) {
         .swim-lane {
-            width: 350px;
+            width: 430px;
         }
     }
 </style>
@@ -405,17 +400,6 @@
                             newStatus: newStatus
                         },
                         success: function(response) {
-
-                            // Swal.fire({
-                            //     icon: 'success',
-                            //     title: 'Success',
-                            //     showConfirmButton: false,
-                            //     timer: 1000,
-                            //     customClass: {
-                            //         popup: 'custom-popup-class'
-                            //     }
-                            // });
-
                             fetchAndDisplayTickets();
                         },
                         error: function(xhr, status, error) {

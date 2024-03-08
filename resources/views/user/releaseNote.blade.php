@@ -1,10 +1,10 @@
-@extends('layouts.masterAdmin')
+@extends('layouts.masterMember')
 @section('content')
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <!-- Support start -->
-<section class="section-sm">
+<section class="section-sm" id="Support">
     <div class="page-content">
         <div class="container-fluid">
             <div class="row">
@@ -12,7 +12,7 @@
                     {{-- <div class="page-title-box"> --}}
                         <div class="row" style="padding:10px;">
                             <div class="col">
-                                <h4 class="page-title mt-2">Support Tools</h4>
+                                <h4 class="page-title mt-2">Release Notes</h4>
                             </div><!--end col-->
                             <div class="col-auto align-self-center">
                                 <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-toggle="dropdown" href="#" role="button"
@@ -36,24 +36,59 @@
                     {{-- </div><!--end page-title-box--> --}}
                 </div><!--end col-->
             </div><!--end row-->
+            @php
+                $colors = ['#bed3fe', '#e3e6f0', '#b8f4db', '#bde6fa', '#ffebc1', '#99a1b7', '#b2bfc2'];
+                $colorIndex = 0;
+            @endphp
 
-            <div class="row">
-                @foreach ($projects as $project)
-                    <div class="col-sm-3">
+            @foreach ($groupedTicketLogs as $date => $ticketLogs)
+                <div class="row">
+                    <div class="col-sm-12">
                         <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">{{ $project->project_name }}</h4>
-                            </div><!--end card-header-->
-                            <div class="card-body">
-                                <div style="display: flex; justify-content: flex-end;">
-                                    <a href="{{ route('supportCategorySumm', ['project' => $project->id]) }}" class="btn btn-primary btn-sm">Go somewhere</a>
+                            <div class="card-header" style="background-color: {{ $colors[$colorIndex] }}">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <h4 class="card-title">Date: {{ $date }}</h4>
                                 </div>
-                            </div><!--end card-body-->
+                            </div><!--end card-header-->
                         </div><!--end card-->
                     </div><!--end col-->
-                @endforeach
-            </div><!--end row-->
+                </div>
 
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Ticket ID</th>
+                                                <th>Ticket No.</th>
+                                                <th>Subject</th>
+                                                <th>Message</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($ticketLogs as $ticketLog)
+                                                <tr>
+                                                    <td>{{ $ticketLog->ticket_id }}</td>
+                                                    <td>{{ $ticketLog->ticket_no }}</td>
+                                                    <td>{{ $ticketLog->tickets->subject }}</td>
+                                                    <td>{{ $ticketLog->tickets->message }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table><!--end /table-->
+                                </div><!--end /tableresponsive-->
+                            </div><!--end card-body-->
+                        </div><!--end card-->
+                    </div> <!-- end col -->
+                </div> <!-- end row -->
+
+                @php
+                    $colorIndex = ($colorIndex + 1) % count($colors); // Cycle through colors
+                @endphp
+            @endforeach
         </div>
     </div>
     <!-- end page content -->

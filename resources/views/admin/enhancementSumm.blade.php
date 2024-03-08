@@ -12,7 +12,7 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title">Project</h4>
+                            <h4 class="page-title">Enhancement</h4>
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -22,37 +22,41 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Title</h4>
+                    </div><!--end card-header-->
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>Project Name</th>
+                                        <th>Title</th>
                                         <th>Description</th>
-                                        <th>Show</th>
+                                        <th>Version</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($projects as $project)
+                                    @foreach ($enhancements as $enhancement)
                                     <tr>
-                                        <td>{{ $project->project_name }}</td>
-                                        <td>{{ $project->description }}</td>
-                                        <td>{{ $project->show == 1 ? 'Yes' : 'No' }}</td>
+                                        <td>{{ $enhancement->enhancement_title }}</td>
+                                        <td>{{ $enhancement->enhancement_description ?? null }}</td>
+                                        <td>{{ $enhancement->version ?? null }}</td>
                                         <td class="text-center">
                                             <div style="display: flex; justify-content: center; gap: 10px;">
-                                                <button class="btn btn-sm btn-soft-success btn-circle edit-project" data-project-id="{{ $project->id }}">
-                                                    <i class="dripicons-pencil"></i>
-                                                </button>
+                                                {{-- <a href="{{ route('editEnhancement', ['id' => $enhancement->id]) }}" class="btn btn-sm btn-soft-success btn-circle"> --}}
+                                                    <button class="btn btn-sm btn-soft-success btn-circle edit-enhancement" data-enhancement-id="{{ $enhancement->id }}">
+                                                        <i class="dripicons-pencil"></i>
+                                                    </button>
+                                                {{-- </a> --}}
 
-                                                <form action="{{ route('deleteProject', ['id' => $project->id]) }}" method="POST" id="deleteForm{{ $project->id }}" data-project-id="{{ $project->id }}">
+                                                <form action="{{ route('deleteEnhancement', ['id' => $enhancement->id]) }}" method="POST" id="deleteForm{{ $enhancement->id }}" data-enhancement-id="{{ $enhancement->id }}">
                                                     @method('DELETE')
                                                     @csrf
-                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $project->id }}')">
+                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $enhancement->id }}')">
                                                         <i class="dripicons-trash"></i>
                                                     </button>
                                                 </form>
-
                                             </div>
                                         </td>
                                     </tr>
@@ -61,7 +65,11 @@
                             </table>
                         </div>
                         <span class="float-right">
-                            <button class="btn btn-danger mt-2" id="addProject">Add New Project</button>
+                            {{-- <button id="but_add" class="btn btn-danger">Add New Title</button>
+                            <button class="btn  btn-primary" id="submit_data" data-endpoint="update-title" >Submit</button> --}}
+                            {{-- <a href="{{ route('createEnhancement') }}"> --}}
+                                <button class="btn btn-danger mt-2" id="addEnhancement">Add New Enhancement</button>
+                            {{-- </a> --}}
                         </span><!--end table-->
                     </div><!--end card-body-->
                 </div><!--end card-->
@@ -71,58 +79,66 @@
 </div>
 <!-- end page content -->
 
-{{-- Add Project --}}
-<div id="addProjectModal" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true" >
+{{-- Add Enhancement --}}
+<div id="addEnhancementModal" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true" >
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="imageModalLabel">Create New Project</h5>
+          <h5 class="modal-title" id="imageModalLabel">Create New Enhancement</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-            <form action="{{ route('addProject') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('addEnhancement') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-lg-6">
                         <div class="form-group">
-                            <label for="project_name">Project Name</label>
-                            <input type="text" class="form-control" name="project_name" placeholder="Enter Project Name" autocomplete="off" value="{{ old('project_name') }}">
-                            @error('project_name')
+                            <label for="enhancement_title">Title</label>
+                            <input type="text" class="form-control" name="enhancement_title" placeholder="Enter Title" autocomplete="off" value="{{ old('enhancement_title') }}">
+                            @error('enhancement_title')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label for="enhancement_description">Description</label>
+                            <input type="text" class="form-control" name="enhancement_description" placeholder="Enter Description" autocomplete="off" value="{{  old('enhancement_description') }}">
+                            @error('enhancement_description')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
-                    <div class="col-lg-12">
-                        <div class="form-group">
-                            <label for="show">Show?</label>
-                            <select class="form-control" name="show">
-                                <option value="1" {{ old('show') == '1' ? 'selected' : '' }}>Yes</option>
-                                <option value="0" {{ old('show') == '0' ? 'selected' : '' }}>No</option>
-                            </select>
-                            @error('category_id')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
+                    <div class="col-xl-4">
+                        <div class="checkbox checkbox-primary">
+                            <input id="major_update" name="major_update" type="checkbox" value="1">
+                            <label for="major_update">
+                                Major Update, Structure Update
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-xl-4">
+                        <div class="checkbox checkbox-primary">
+                            <input id="table_migrate" name="table_migrate" type="checkbox" value="1">
+                            <label for="table_migrate">
+                                Table Migrate
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-xl-4">
+                        <div class="checkbox checkbox-primary">
+                            <input id="minor_update" name="minor_update" type="checkbox" value="1">
+                            <label for="minor_update">
+                                Minor Update
+                            </label>
                         </div>
                     </div>
                 </div>
-
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <input type="text" class="form-control" name="description" placeholder="Enter Description" autocomplete="off" value="{{ old('description') }}">
-                            @error('description')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-
                 <div class="col-12 text-right">
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
@@ -132,25 +148,25 @@
     </div>
 </div>
 
-{{-- Edit Project --}}
-<div id="editProjectModal" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true" >
+{{-- Edit Enhancement --}}
+<div id="editEnhancementModal" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true" >
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="imageModalLabel">Edit Project</h5>
+          <h5 class="modal-title" id="imageModalLabel">Edit Enhancement</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-            <form action="{{ route('updateProject', $project->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ isset($enhancement) ? route('updateEnhancement', $enhancement->id) : '#' }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="form-group">
-                            <label for="project_name">Project Name</label>
-                            <input type="text" class="form-control" name="project_name" id="project_name" placeholder="Enter Project Name" autocomplete="off" value="{{ $project->project_name }}">
-                            @error('project_name')
+                            <label for="enhancement_title">Title</label>
+                            <input type="text" class="form-control" id="enhancement_title" name="enhancement_title" placeholder="Enter Title" autocomplete="off" value="{{ isset($enhancement) ? $enhancement->enhancement_title : '' }}">
+                            @error('enhancement_title')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
@@ -158,24 +174,9 @@
 
                     <div class="col-lg-6">
                         <div class="form-group">
-                            <label for="show">Show?</label>
-                            <select class="form-control" name="show" id="show">
-                                <option value="1" {{ $project->show  === '1' ? 'selected' : '' }}>Yes</option>
-                                <option value="0" {{ $project->show  === '0' ? 'selected' : '' }}>No</option>
-                            </select>
-                            @error('message')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <input type="text" class="form-control" name="description" id="description" placeholder="Enter Description" autocomplete="off" value="{{ $project->description }}">
-                            @error('description')
+                            <label for="enhancement_description">Description</label>
+                            <input type="text" class="form-control" id="enhancement_description" name="enhancement_description" placeholder="Enter Description" autocomplete="off" value="{{ isset($enhancement) ? $enhancement->enhancement_description : '' }}">
+                            @error('enhancement_description')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
@@ -194,47 +195,43 @@
 <script>
     $(document).ready(function() {
         // Get the modal
-        var addProjectModal = document.getElementById("addProjectModal");
+        var addEnhancementModal = document.getElementById("addEnhancementModal");
 
         // Get the export button
-        var addProject = document.getElementById("addProject");
+        var addEnhancement = document.getElementById("addEnhancement");
 
         // When the user clicks the export button, display the modal
-        addProject.addEventListener("click", function() {
-            $('#addProjectModal').modal('show');
+        addEnhancement.addEventListener("click", function() {
+            $('#addEnhancementModal').modal('show');
         });
 
         // When the user clicks anywhere outside of the modal, close it
         $(document).on('click', function(event) {
             if ($(event.target).closest('.modal').length === 0) {
-                $('#addProjectModal').modal('hide');
+                $('#addEnhancementModal').modal('hide');
             }
         });
 
         // When the user clicks the edit button, fetch the title data and display it in the modal
-        $('.edit-project').click(function() {
-            var projectId = $(this).data('project-id');
+        $('.edit-enhancement').click(function() {
+            var enhancementId = $(this).data('enhancement-id');
 
             // Fetch the title data via AJAX
             $.ajax({
-                url: '/edit-project/' + projectId,
+                url: '/edit-enhancement/' + enhancementId,
                 type: 'GET',
-                data: { id: projectId },
+                data: { id: enhancementId },
                 success: function(response) {
-
                     // Update the modal content with the fetched title data
-                    $('#project_name').val(response.project.project_name);
-                    $('#description').val(response.project.description);
-                    $('#show').val(response.project.show);
+                    $('#enhancement_title').val(response.enhancement.enhancement_title);
+                    $('#enhancement_description').val(response.enhancement.enhancement_description);
 
                     // Show the modal
-                    $('#editProjectModal').modal('show');
+                    $('#editEnhancementModal').modal('show');
                 }
             });
         });
     });
-
-
 </script>
 
 <!-- Sweet-Alert  -->
@@ -255,12 +252,12 @@
 
 <script>
     function confirmDelete(formId) {
-        var projectId = document.getElementById(formId).getAttribute('data-project-id');
+        var enhancementId = document.getElementById(formId).getAttribute('data-enhancement-id');
         // console.log('Title ID:', titleId);
 
         Swal.fire({
             title: 'Are you sure?',
-            text: 'This action will delete the project and associated documentations.',
+            text: 'This action will delete the data.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',

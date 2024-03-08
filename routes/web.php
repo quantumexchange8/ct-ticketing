@@ -31,6 +31,8 @@ Route::get('/support/{project}', [MemberController::class, 'support'])->name('su
 Route::get('/open-ticket/{project}', [MemberController::class, 'openTicket'])->name('openTicket');
 Route::post('/submit-ticket', [MemberController::class, 'submitTicket'])->name('submitTicket');
 
+Route::get('/release-note/{project}', [MemberController::class, 'releaseNote'])->name('releaseNote');
+
 Route::get('/search-support-tools', [SearchController::class, 'searchSupportTools'])->name('searchSupportTools');
 Route::get('/search-documentation', [SearchController::class, 'searchDocumentation'])->name('searchDocumentation');
 
@@ -99,22 +101,29 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/update-title/{id}', [AdminController::class, 'updateTitle'])->name('updateTitle');
     Route::delete('/delete-title/{id}', [AdminController::class, 'deleteTitle'])->name('deleteTitle');
 
-    Route::get('/subtitle-summary/{title}', [AdminController::class, 'subtitleSumm'])->name('subtitleSumm');
     Route::get('/view-more-content/{id}', [AdminController::class, 'viewMoreContent'])->name('viewMoreContent');
-    Route::get('/create-subtitle/{title}', [AdminController::class, 'createSubtitle'])->name('createSubtitle');
     Route::post('/add-subtitle/{title}', [AdminController::class, 'addSubtitle'])->name('addSubtitle');
     Route::get('/edit-subtitle/{id}', [AdminController::class, 'editSubtitle'])->name('editSubtitle');
     Route::post('/update-subtitle/{id}', [AdminController::class, 'updateSubtitle'])->name('updateSubtitle');
     Route::delete('/delete-subtitle/{id}', [AdminController::class, 'deleteSubtitle'])->name('deleteSubtitle');
 
-    Route::get('/content-summary/{subtitle}', [AdminController::class, 'contentSumm'])->name('contentSumm');
-    Route::get('/create-content', [AdminController::class, 'createContent'])->name('createContent');
     Route::post('/add-content', [AdminController::class, 'addContent'])->name('addContent');
     Route::get('/edit-content/{id}', [AdminController::class, 'editContent'])->name('editContent');
     Route::post('/update-content/{id}', [AdminController::class, 'updateContent'])->name('updateContent');
     Route::delete('/delete-content/{id}', [AdminController::class, 'deleteContent'])->name('deleteContent');
 
     Route::get('/support-tool', [AdminController::class, 'supportTool'])->name('supportTool');
+
+    Route::get('/enhancement', [AdminController::class, 'enhancementSumm'])->name('enhancementSumm');
+
+
+    Route::get('/create-enhancement', [AdminController::class, 'createEnhancement'])->name('createEnhancement');
+
+    
+    Route::post('/add-enhancement', [AdminController::class, 'addEnhancement'])->name('addEnhancement');
+    Route::get('/edit-enhancement/{id}', [AdminController::class, 'editEnhancement'])->name('editEnhancement');
+    Route::post('/update-enhancement/{id}', [AdminController::class, 'updateEnhancement'])->name('updateEnhancement');
+    Route::delete('/delete-enhancement/{id}', [AdminController::class, 'deleteEnhancement'])->name('deleteEnhancement');
 
     Route::get('/support-category', [AdminController::class, 'supportCategory'])->name('supportCategory');
 
@@ -126,8 +135,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::delete('/delete-category/{id}', [AdminController::class, 'deleteCategory'])->name('deleteCategory');
 
     Route::get('/support-sub-summary/{supportCategory}/{project}', [AdminController::class, 'supportSubSumm'])->name('supportSubSumm');
-    Route::get('/create-sub/{supportCategory}/{project}', [AdminController::class, 'createSub'])->name('createSub');
-    Route::post('/add-sub/{supportCategory}', [AdminController::class, 'addSub'])->name('addSub');
+    // Route::get('/create-sub/{supportCategory}/{project}', [AdminController::class, 'createSub'])->name('createSub');
+    Route::get('/create-sub/{project}', [AdminController::class, 'createSub'])->name('createSub');
+    Route::post('/add-sub/{project}', [AdminController::class, 'addSub'])->name('addSub');
     Route::get('/edit-sub/{id}', [AdminController::class, 'editSub'])->name('editSub');
     Route::post('/update-sub/{id}', [AdminController::class, 'updateSub'])->name('updateSub');
     Route::delete('/delete-sub/{id}', [AdminController::class, 'deleteSub'])->name('deleteSub');

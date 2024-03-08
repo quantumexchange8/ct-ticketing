@@ -84,6 +84,10 @@
                         <a href="{{ route('openTicket', ['project' => $selectedProjectId]) }}"> <i data-feather="send" class="align-self-center menu-icon"></i><span>Submit a Ticket</span></a>
                     </li>
 
+                    <li>
+                        <a href="{{ route('releaseNote', ['project' => $selectedProjectId]) }}"> <i data-feather="check-circle" class="align-self-center menu-icon"></i><span>Release Note</span></a>
+                    </li>
+
                 </ul>
 
             </div>

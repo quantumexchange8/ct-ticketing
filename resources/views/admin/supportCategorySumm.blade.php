@@ -8,10 +8,15 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="page-title-box">
-                    <div class="row">
-                        <div class="col">
+                    <div class="row" style="display: flex; align-items: center;">
+                        <div class="col-8">
                             <h4 class="page-title">FAQ</h4>
                         </div><!--end col-->
+                        <div class="col-4" style="display: flex; justify-content: flex-end;">
+                            <a href="{{route('createSub', ['project' => $project])}}">
+                                <button type="button" class="btn btn-soft-primary waves-effect waves-light">Add FAQ</button>
+                            </a>
+                        </div>
                     </div><!--end row-->
                 </div><!--end page-title-box-->
             </div><!--end col-->
@@ -73,7 +78,6 @@
             $colorIndex = 0;
         @endphp
 
-
         @foreach ($supportCategories as $supportCategory)
             <div class="row">
                 <div class="col-sm-12">
@@ -109,13 +113,10 @@
                 $colorIndex = ($colorIndex + 1) % count($colors); // Cycle through colors
             @endphp
         @endforeach
-
-
-
-
     </div><!-- container -->
 </div>
 <!-- end page content -->
+
 
 <!-- Sweet-Alert  -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>

@@ -41,4 +41,9 @@ class Ticket extends Model
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
+
+    public function ticketLogs()
+    {
+        return $this->hasMany(TicketLog::class, 'ticket_id', 'id');
+    }
 }
