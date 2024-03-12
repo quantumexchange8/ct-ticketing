@@ -143,6 +143,10 @@
                         <a href="{{ route('enhancement') }}"><i data-feather="file-text" class="align-self-center menu-icon"></i><span>Enhancement</span></a>
                     </li>
 
+                    <li>
+                        <a href="{{ route('invoice') }}"><i data-feather="shopping-bag" class="align-self-center menu-icon"></i><span>Invoice</span></a>
+                    </li>
+
 
                     @if (Auth::user()->role_id == 1 || (Auth::user()->role_id !== 1 && Auth::user()->manage_documentation == 1))
                         <hr class="hr-dashed hr-menu">

@@ -13,8 +13,9 @@
                     <div class="row">
                         <div class="col">
                             <h4 class="page-title">
+                                {{$project->project_name}} -
                                 <a href="{{ route('enhancement') }}">Enhancement</a>
-                                - {{$project->project_name}}</h4>
+                            </h4>
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->

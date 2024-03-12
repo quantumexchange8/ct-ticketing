@@ -39,7 +39,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="project_id">Project</label>
-                                        <select class="form-control" name="project_id" required>
+                                        <select class="form-control" name="project_id" disabled>
                                             @foreach($projects as $projectSelected)
                                                 <option value="{{ $projectSelected->id }}" {{ $projectSelected->id == $project->id ? 'selected' : '' }}>
                                                     {!! $projectSelected->project_name !!}

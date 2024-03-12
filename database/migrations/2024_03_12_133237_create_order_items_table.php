@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('projects', function (Blueprint $table) {
+        Schema::create('order_items', function (Blueprint $table) {
             $table->id();
-            $table->string('project_name')->nullable();
-            $table->longText('description')->nullable();
-            $table->string('project_owner')->nullable();
-            $table->string('project_telno')->nullable();
-            $table->string('show')->nullable();
+            $table->string('order_description')->nullable();
+            $table->string('order_quantity')->nullable();
+            $table->string('unit_price')->nullable();
+            $table->string('total_price')->nullable();
+            $table->string('project_id')->nullable();
+            $table->string('order_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('projects');
+        Schema::dropIfExists('order_items');
     }
 };

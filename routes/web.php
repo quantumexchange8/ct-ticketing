@@ -86,15 +86,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/get-email-signature', [AdminController::class, 'getEmailSignature'])->name('getEmailSignature');
     Route::post('/update-email-signature', [AdminController::class, 'updateEmailSignature'])->name('updateEmailSignature');
 
-    // Project
-    Route::get('/project-summary', [AdminController::class, 'projectSumm'])->name('projectSumm');
-    Route::get('/create-project', [AdminController::class, 'createProject'])->name('createProject');
-    Route::post('/add-project', [AdminController::class, 'addProject'])->name('addProject');
-    Route::get('/edit-project/{id}', [AdminController::class, 'editProject'])->name('editProject');
-    Route::post('/update-project/{id}', [AdminController::class, 'updateProject'])->name('updateProject');
-    Route::delete('/delete-project/{id}', [AdminController::class, 'deleteProject'])->name('deleteProject');
-
-    // Administration
     Route::get('/title-summary/{project}', [AdminController::class, 'titleSumm'])->name('titleSumm');
     Route::get('/view-more-subtitle/{id}', [AdminController::class, 'viewMoreSubtitle'])->name('viewMoreSubtitle');
     Route::get('/create-title/{project}', [AdminController::class, 'createTitle'])->name('createTitle');
@@ -115,20 +106,16 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/update-content/{id}', [AdminController::class, 'updateContent'])->name('updateContent');
     Route::delete('/delete-content/{id}', [AdminController::class, 'deleteContent'])->name('deleteContent');
 
-    Route::get('/support-tool', [AdminController::class, 'supportTool'])->name('supportTool');
-
     Route::get('/enhancement', [AdminController::class, 'enhancement'])->name('enhancement');
     Route::get('/enhancement-summary/{project}', [AdminController::class, 'enhancementSumm'])->name('enhancementSumm');
-
     Route::get('/create-enhancement', [AdminController::class, 'createEnhancement'])->name('createEnhancement');
-
     Route::post('/add-enhancement/{project}', [AdminController::class, 'addEnhancement'])->name('addEnhancement');
     Route::get('/edit-enhancement/{id}', [AdminController::class, 'editEnhancement'])->name('editEnhancement');
     Route::post('/update-enhancement/{id}', [AdminController::class, 'updateEnhancement'])->name('updateEnhancement');
     Route::delete('/delete-enhancement/{id}', [AdminController::class, 'deleteEnhancement'])->name('deleteEnhancement');
 
+    Route::get('/support-tool', [AdminController::class, 'supportTool'])->name('supportTool');
     Route::get('/support-category', [AdminController::class, 'supportCategory'])->name('supportCategory');
-
     Route::get('/support-category-summary/{project}', [AdminController::class, 'supportCategorySumm'])->name('supportCategorySumm');
     Route::get('/create-category', [AdminController::class, 'createCategory'])->name('createCategory');
     Route::post('/add-category', [AdminController::class, 'addCategory'])->name('addCategory');
@@ -137,12 +124,18 @@ Route::group(['middleware' => 'auth'], function () {
     Route::delete('/delete-category/{id}', [AdminController::class, 'deleteCategory'])->name('deleteCategory');
 
     Route::get('/support-sub-summary/{supportCategory}/{project}', [AdminController::class, 'supportSubSumm'])->name('supportSubSumm');
-    // Route::get('/create-sub/{supportCategory}/{project}', [AdminController::class, 'createSub'])->name('createSub');
     Route::get('/create-sub/{project}', [AdminController::class, 'createSub'])->name('createSub');
     Route::post('/add-sub/{project}', [AdminController::class, 'addSub'])->name('addSub');
     Route::get('/edit-sub/{id}', [AdminController::class, 'editSub'])->name('editSub');
     Route::post('/update-sub/{id}', [AdminController::class, 'updateSub'])->name('updateSub');
     Route::delete('/delete-sub/{id}', [AdminController::class, 'deleteSub'])->name('deleteSub');
+
+    Route::get('/project-summary', [AdminController::class, 'projectSumm'])->name('projectSumm');
+    Route::get('/create-project', [AdminController::class, 'createProject'])->name('createProject');
+    Route::post('/add-project', [AdminController::class, 'addProject'])->name('addProject');
+    Route::get('/edit-project/{id}', [AdminController::class, 'editProject'])->name('editProject');
+    Route::post('/update-project/{id}', [AdminController::class, 'updateProject'])->name('updateProject');
+    Route::delete('/delete-project/{id}', [AdminController::class, 'deleteProject'])->name('deleteProject');
 
     Route::get('/ticket-status', [AdminController::class, 'ticketStatus'])->name('ticketStatus');
     Route::get('/create-ticket-status', [AdminController::class, 'createTicketStatus'])->name('createTicketStatus');
@@ -157,6 +150,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/edit-admin/{id}', [AdminController::class, 'editAdmin'])->name('editAdmin');
     Route::post('/update-admin/{id}', [AdminController::class, 'updateAdmin'])->name('updateAdmin');
     Route::delete('/delete-admin/{id}', [AdminController::class, 'deleteAdmin'])->name('deleteAdmin');
+
+    Route::get('/invoice', [AdminController::class, 'invoice'])->name('invoice');
+    Route::get('/invoice-summary/{project}', [AdminController::class, 'invoiceSumm'])->name('invoiceSumm');
+    Route::get('/invoice-test/{project}', [AdminController::class, 'invoiceTest'])->name('invoiceTest');
+    Route::get('/create-order/{project}', [AdminController::class, 'createOrder'])->name('createOrder');
+    Route::post('/add-order/{project}', [AdminController::class, 'addOrder'])->name('addOrder');
+    Route::get('/edit-order/{id}', [AdminController::class, 'editOrder'])->name('editOrder');
+    Route::post('/update-order/{id}', [AdminController::class, 'updateOrder'])->name('updateOrder');
+    Route::delete('/delete-order/{id}', [AdminController::class, 'deleteOrder'])->name('deleteOrder');
+
+    Route::get('/get-order/{id}', [AdminController::class, 'getOrderItem'])->name('getOrderItem');
 
 });
 

@@ -10,7 +10,7 @@
                 <div class="page-title-box">
                     <div class="row" style="display: flex; align-items: center;">
                         <div class="col-8">
-                            <h4 class="page-title">FAQ</h4>
+                            <h4 class="page-title">{{ $project->project_name }} - FAQ</h4>
                         </div><!--end col-->
                         <div class="col-4" style="display: flex; justify-content: flex-end;">
                             <a href="{{route('createSub', ['project' => $project])}}">

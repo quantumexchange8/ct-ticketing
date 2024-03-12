@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
             'name' => 'Super Admin',
             'username' => 'Admin123',
             'email' => 'admin@gmail.com',
+            'phone_number' => '017-3988683',
             'password' => Hash::make('Test1234.'),
             'role_id' => 1,
             'category_id' => 0,

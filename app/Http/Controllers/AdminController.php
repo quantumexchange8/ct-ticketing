@@ -27,6 +27,7 @@ use App\Models\EmailSignature;
 use App\Models\Project;
 use App\Models\TicketLog;
 use App\Models\Enhancement;
+use App\Models\OrderItem;
 class AdminController extends Controller
 {
 
@@ -2474,8 +2475,6 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'New enhancement created successfully');
     }
 
-
-
     public function editEnhancement($id)
     {
         $enhancement = Enhancement::find($id);
@@ -2530,4 +2529,162 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Data deleted successfully.');
     }
+
+    public function invoice()
+    {
+        $projects = Project::all();
+
+        return view('admin.invoice', compact('projects'));
+    }
+
+    public function invoiceSumm(Project $project)
+    {
+        $user = auth()->user();
+        $emailSignature = EmailSignature::where('user_id', $user->id)->first();
+        $orderItems = OrderItem::where('project_id', $project->id)->get();
+
+        return view('admin.invoiceSumm', compact('orderItems', 'project', 'user', 'emailSignature'));
+    }
+
+    public function createOrder(Project $project)
+    {
+        return view('admin.createOrder', compact('project'));
+    }
+
+    public function addOrder(Request $request, Project $project)
+    {
+        // Define validation rules
+        $rules = [
+            'car.*.order_quantity' => 'required|numeric|min:1', // Quantity must be numeric and at least 1
+            'car.*.order_description' => 'required|string|max:255', // Description must be a string and max 255 characters
+            'car.*.unit_price' => 'required|min:1', // Unit price must be numeric and at least 0
+        ];
+
+        // Define custom validation messages
+        $messages = [
+            'car.*.order_quantity.required' => 'The Quantity field is required.',
+            'car.*.order_quantity.numeric' => 'The Quantity must be a number.',
+            'car.*.order_quantity.min' => 'The Quantity must be at least 1.',
+            'car.*.order_description.required' => 'The Description field is required.',
+            'car.*.order_description.string' => 'The Description must be a string.',
+            'car.*.order_description.max' => 'The Description may not be greater than :max characters.',
+            'car.*.unit_price.required' => 'The Unit price field is required.',
+            // 'car.*.unit_price.numeric' => 'The Unit price must be a number.',
+            'car.*.unit_price.min' => 'The Unit price must be at least 1.',
+        ];
+
+
+        // Validate the request data
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        // If validation fails, redirect back with errors and input data
+        if ($validator->fails()) {
+            return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+
+        $carInputs = $request->input('car', []);
+
+        foreach ($carInputs as $carInput) {
+
+            $newOrderItem = new OrderItem();
+            $newOrderItem->order_description = $carInput['order_description'];
+            $newOrderItem->order_quantity = $carInput['order_quantity'];
+            $newOrderItem->unit_price = $carInput['unit_price'];
+            $newOrderItem->total_price = $carInput['total_price'];
+            $newOrderItem->project_id = $project->id;
+            $newOrderItem->save();
+        }
+
+        return redirect()->route('invoiceSumm', ['project' => $project->id])->with('success', 'New order created successfully');
+    }
+
+    public function editOrder($id)
+    {
+        $orderItem = OrderItem::find($id);
+
+        $response = [
+            'orderItem' => $orderItem,
+        ];
+
+        return response()->json($response);
+    }
+
+    public function updateOrder(Request $request, $id)
+    {
+        $rules = [
+            'order_quantity' => 'required|numeric|min:1', // Quantity must be numeric and at least 1
+            'order_description' => 'required|string|max:255', // Description must be a string and max 255 characters
+            'unit_price' => 'required|min:1', // Unit price must be numeric and at least 0
+        ];
+
+        $messages = [
+            'order_quantity.required' => 'The Quantity field is required.',
+            'order_quantity.numeric' => 'The Quantity must be a number.',
+            'order_quantity.min' => 'The Quantity must be at least 1.',
+            'order_description.required' => 'The Description field is required.',
+            'order_description.string' => 'The Description must be a string.',
+            'order_description.max' => 'The Description may not be greater than :max characters.',
+            'unit_price.required' => 'The Unit price field is required.',
+            // 'unit_price.numeric' => 'The Unit price must be a number.',
+            'unit_price.min' => 'The Unit price must be at least 1.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $orderItem = OrderItem::find($request->input('id'));
+
+        $unitPrice = $request->input('unit_price');
+        $orderQuantity = $request->input('order_quantity');
+        $totalPrice = $unitPrice * $orderQuantity;
+
+        $orderItem->update([
+            'order_description' => $request->input('order_description'),
+            'order_quantity' => $orderQuantity,
+            'unit_price' => $unitPrice,
+            'total_price' => $totalPrice
+        ]);
+
+        // dd($orderItem);
+
+        return redirect()->route('invoiceSumm', ['project' => $orderItem->project_id])->with('success', 'Order updated successfully.');
+    }
+
+    public function deleteOrder($id)
+    {
+        $order = OrderItem::find($id);
+
+        $order->delete();
+
+        return redirect()->back()->with('success', 'Data deleted successfully.');
+    }
+
+    public function getOrderItem($id)
+    {
+        $orderItem = OrderItem::find($id);
+        if (!$orderItem) {
+            return response()->json(['error' => 'Order item not found'], 404);
+        }
+
+        return response()->json($orderItem);
+    }
+
+    public function invoiceTest(Project $project)
+    {
+        $user = auth()->user();
+        $emailSignature = EmailSignature::where('user_id', $user->id)->first();
+        $orderItems = OrderItem::where('project_id', $project->id)->get();
+
+        return view('admin.invoiceTest', compact('orderItems', 'project', 'user', 'emailSignature'));
+    }
+
 }
