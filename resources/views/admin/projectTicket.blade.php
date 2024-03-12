@@ -12,10 +12,9 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title mt-2">Ticket - {{ $status->status }}</h4>
+                            <h4 class="page-title mt-2">Ticket - {{ $project->project_name }}</h4>
                         </div><!--end col-->
                         <div class="col-2" style="display: flex; justify-content: flex-end; align-items: flex-end;">
-
                             <button type="button" class="btn" id="exportButton">
                                 <i data-feather="download"></i>
                             </button>
@@ -29,35 +28,28 @@
             <div class="col-12">
                 <div class="card">
                     {{-- <div class="card-header">
-                        <h4 class="card-title">{{ $status->status }}</h4>
+                        <h4 class="card-title">{{ $supportCategory->category_name }}</h4>
                     </div><!--end card-header--> --}}
                     <div class="card-body">
                         <div class="table-responsive">
                             <table id="datatable2" class="table table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
-                                        {{-- <th>
-                                            <!-- Custom Checkbox -->
-                                            <label class="custom-checkbox">
-                                                <input type="checkbox">
-                                                <span class="checkmark"></span>
-                                            </label>
-                                        </th> --}}
                                         <th>Date</th>
                                         <th>Ticket No.</th>
                                         <th>Name</th>
                                         <th>Email</th>
                                         {{-- <th>Subject</th>
                                         <th>Message</th> --}}
-                                        <th>Category</th>
+                                        <th>Status</th>
                                         <th>Priority</th>
                                         <th>PIC</th>
-                                        <th>Remarks</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($status->tickets as $ticket)
+                                    @foreach($tickets as $ticket)
+
                                     @php
                                         $createdAt = Carbon\Carbon::parse($ticket->created_at);
 
@@ -75,12 +67,6 @@
                                             $tooltipMessage = 'The ticket has been unsolved for 24 hours.';
                                         }
                                     @endphp
-
-                                    {{-- @php
-                                        $createdAt = Carbon\Carbon::parse($ticket->created_at);
-                                        $isPendingMoreThanSevenDays = $ticket->ticketStatus->status === 'Pending' && $createdAt->diffInDays(now()) > 7;
-                                        $isPendingMoreThanThreeDays = $ticket->ticketStatus->status === 'Pending' && $createdAt->diffInDays(now()) > 3;
-                                    @endphp --}}
                                     <tr>
 
                                         <td style="{{ $priorityStyle }}"
@@ -89,44 +75,32 @@
                                             @endif>
                                             {{ $createdAt->format('d M Y') }}
                                         </td>
-                                        {{-- <td style="{{ $isPendingMoreThanSevenDays ? 'color: red; font-weight: bold;' : ($isPendingMoreThanThreeDays ? 'color: #EDAE49; font-weight: bold;' : '') }}"
-                                            @if ($isPendingMoreThanSevenDays || $isPendingMoreThanThreeDays)
-                                                title="{{ $isPendingMoreThanSevenDays ? 'Ticket is pending for more than 7 days.' : 'Ticket is pending for more than 3 days.' }}"
-                                            @endif>
-                                            {{ $createdAt->format('d M Y') }}
-                                        </td> --}}
                                         <td>{{ $ticket->ticket_no }}</td>
                                         <td>{{ $ticket->sender_name }}</td>
                                         <td>{{ $ticket->sender_email }}</td>
                                         {{-- <td>{{ $ticket->subject }}</td>
                                         <td>{{ $ticket->message }}</td> --}}
-                                        <td>{!! $ticket->supportCategories->category_name !!}</td>
+                                        <td>{!! $ticket->ticketStatus->status !!}</td>
                                         <td style ="{{ $ticket->priority === 'Medium' ? 'color: orange; font-weight: bold;' : ($ticket->priority === 'Low' ? 'color: #84f542; font-weight: bold;' : 'color: red; font-weight: bold;') }}">
                                             {{ $ticket->priority }}
                                         </td>
                                         <td>{{ $ticket->users->name ?? null}}</td>
-                                        <td>{{ $ticket->remarks }}</td>
-
                                         <td class="text-center" style="display: flex; justify-content: center; gap: 10px;">
                                             <a href="{{ route('viewTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
                                                 <i class="dripicons-preview"></i>
                                             </a>
 
-                                            {{-- @can('update', $ticket) --}}
-                                                <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                    <i class="dripicons-pencil"></i>
-                                                </a>
-                                            {{-- @endcan --}}
+                                            <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
+                                                <i class="dripicons-pencil"></i>
+                                            </a>
 
-                                            {{-- @can('delete', $ticket) --}}
-                                                <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
-                                                    @method('DELETE')
-                                                    @csrf
-                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
-                                                        <i class="dripicons-trash"></i>
-                                                    </button>
-                                                </form>
-                                            {{-- @endcan --}}
+                                            <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
+                                                @method('DELETE')
+                                                @csrf
+                                                <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
+                                                    <i class="dripicons-trash"></i>
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -157,8 +131,8 @@
                 title: 'Done',
                 text: '{{ session('success') }}',
                 icon: 'success',
-                timer: 1000, // 3000 milliseconds (3 seconds)
-                showConfirmButton: false, // Hide the "OK" button
+                timer: 1000,
+                showConfirmButton: false,
             });
         @endif
     });
@@ -167,7 +141,6 @@
 <script>
     function confirmDelete(formId) {
         var ticketId = document.getElementById(formId).getAttribute('data-ticket-id');
-        // console.log('Ticket ID:', ticketId);
 
         Swal.fire({
             title: 'Are you sure?',
@@ -186,8 +159,6 @@
 
     $('#exportButton').click(function() {
         var status = $('.page-title').text().trim();
-
-        // console.log(status);
         exportToExcel(status);
     });
 
@@ -202,9 +173,10 @@
             "Email",
             "Subject",
             "Message",
-            "Category",
+            "Status",
             "Priority",
             "PIC",
+
         ];
         tableData.push(headers);
 
@@ -238,22 +210,5 @@
         XLSX.writeFile(wb, filename);
     }
 </script>
-
-{{-- <script>
-    // Get the checkbox in the table header
-    const headerCheckbox = document.querySelector('thead input[type="checkbox"]');
-
-    // Get all checkboxes in the table body
-    const bodyCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
-
-    // Add event listener to the header checkbox
-    headerCheckbox.addEventListener('change', function() {
-        // Loop through all checkboxes in the table body
-        bodyCheckboxes.forEach(function(checkbox) {
-            // Set the checked state of each checkbox to match the header checkbox
-            checkbox.checked = headerCheckbox.checked;
-        });
-    });
-</script> --}}
 @endsection
 

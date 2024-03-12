@@ -40,23 +40,19 @@
                                         <td>{!! $category->category_name !!}</td>
                                         <td class="text-center">
                                             <div style="display: flex; justify-content: center; gap: 10px;">
-                                                @if (Auth::user()->manage_support_category == 1)
-                                                    {{-- <a href="{{ route('editCategory', ['id' => $category->id]) }}" class="btn btn-sm btn-soft-success btn-circle"> --}}
-                                                        <button class="btn btn-sm btn-soft-success btn-circle edit-category" data-category-id="{{ $category->id }}">
-                                                            <i class="dripicons-pencil"></i>
-                                                        </button>
-                                                    {{-- </a> --}}
-                                                @endif
+                                                {{-- <a href="{{ route('editCategory', ['id' => $category->id]) }}" class="btn btn-sm btn-soft-success btn-circle"> --}}
+                                                    <button class="btn btn-sm btn-soft-success btn-circle edit-category" data-category-id="{{ $category->id }}">
+                                                        <i class="dripicons-pencil"></i>
+                                                    </button>
+                                                {{-- </a> --}}
 
-                                                @if (Auth::user()->manage_support_category == 1)
-                                                    <form action="{{ route('deleteCategory', ['id' => $category->id]) }}" method="POST" id="deleteForm{{ $category->id }}" data-category-id="{{ $category->id }}">
-                                                        @method('DELETE')
-                                                        @csrf
-                                                        <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $category->id }}')">
-                                                            <i class="dripicons-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                @endif
+                                                <form action="{{ route('deleteCategory', ['id' => $category->id]) }}" method="POST" id="deleteForm{{ $category->id }}" data-category-id="{{ $category->id }}">
+                                                    @method('DELETE')
+                                                    @csrf
+                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $category->id }}')">
+                                                        <i class="dripicons-trash"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>
@@ -195,6 +191,14 @@
                 title: 'Done',
                 text: '{{ session('success') }}',
                 icon: 'success',
+                timer: 1000,
+                showConfirmButton: false,
+            });
+        @elseif(session('error'))
+            Swal.fire({
+                title: 'Error',
+                text: '{{ session('error') }}',
+                icon: 'error',
                 timer: 1000,
                 showConfirmButton: false,
             });

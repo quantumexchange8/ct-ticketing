@@ -41,10 +41,10 @@
                                         <th>Email</th>
                                         {{-- <th>Subject</th>
                                         <th>Message</th> --}}
+                                        <th>Project</th>
                                         <th>Status</th>
                                         <th>Priority</th>
                                         <th>PIC</th>
-                                        <th>Remarks</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -90,12 +90,12 @@
                                         <td>{{ $ticket->sender_email }}</td>
                                         {{-- <td>{{ $ticket->subject }}</td>
                                         <td>{{ $ticket->message }}</td> --}}
+                                        <td>{{ $ticket->projects->project_name }}</td>
                                         <td>{!! $ticket->ticketStatus->status !!}</td>
                                         <td style ="{{ $ticket->priority === 'Medium' ? 'color: orange; font-weight: bold;' : ($ticket->priority === 'Low' ? 'color: #84f542; font-weight: bold;' : 'color: red; font-weight: bold;') }}">
                                             {{ $ticket->priority }}
                                         </td>
                                         <td>{{ $ticket->users->name ?? null}}</td>
-                                        <td>{{ $ticket->remarks }}</td>
                                         <td class="text-center" style="display: flex; justify-content: center; gap: 10px;">
                                             <a href="{{ route('viewTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
                                                 <i class="dripicons-preview"></i>
@@ -145,6 +145,14 @@
                 timer: 1000,
                 showConfirmButton: false,
             });
+        @elseif(session('error'))
+            Swal.fire({
+                title: 'Error',
+                text: '{{ session('error') }}',
+                icon: 'error',
+                timer: 1000,
+                showConfirmButton: false,
+            });
         @endif
     });
 </script>
@@ -187,7 +195,6 @@
             "Status",
             "Priority",
             "PIC",
-            "Remarks"
         ];
         tableData.push(headers);
 
@@ -203,7 +210,6 @@
                 "{!! $ticket->supportCategories->category_name !!}",
                 "{{ $ticket->priority }}",
                 "{{ $ticket->pic_id }}",
-                "{{ $ticket->remarks }}"
             ];
             tableData.push(rowData);
         @endforeach

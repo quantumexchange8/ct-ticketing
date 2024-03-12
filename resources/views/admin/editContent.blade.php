@@ -24,7 +24,6 @@
                         <form action="{{ route('updateContent', $content->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
-
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label for="c_sequence">Content Sequence</label>
@@ -34,7 +33,6 @@
                                         @enderror
                                     </div>
                                 </div>
-
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label for="subtitle_id">Subtitle</label>
@@ -63,7 +61,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="card-body text-center">
@@ -73,14 +70,12 @@
                                             <input type="file" id="input-file-now" name="d_image" class="dropify"/>
                                         @endif
                                     </div><!--end card-body-->
-
                                 </div>
                             </div>
 
                             <div class="col-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
-
                         </form>
                     </div><!--end card-body-->
                 </div><!--end card-->

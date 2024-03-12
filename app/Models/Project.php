@@ -26,4 +26,9 @@ class Project extends Model
     {
         return $this->hasMany(Ticket::class, 'pic_id', 'id');
     }
+
+    public function enhancements()
+    {
+        return $this->hasMany(Enhancement::class, 'project_id', 'id');
+    }
 }

@@ -98,9 +98,16 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="remarks">Remarks</label>
-                                        <input type="text" class="form-control" name="remarks" placeholder="Enter Remarks" autocomplete="off" value="{{ old('remarks') }}">
-                                        @error('remarks')
+                                        <label for="remarks">Project</label>
+                                        <select class="form-control" name="project_id">
+                                            <option value="">Select Project</option>
+                                            @foreach($projects as $project)
+                                                <option value="{{ $project->id }}" {{ old('project_id') == $project->id ? 'selected' : '' }}>
+                                                    {!! $project->project_name !!}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('project_id')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>

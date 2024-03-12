@@ -19,7 +19,7 @@
     .swim-lane {
         display: flex;
         flex-direction: column;
-        gap: 5px;
+        gap: 2px;
         position: static;
         background: #f1f5fa;
         /* box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25); */
@@ -28,7 +28,7 @@
         margin-top: 15px;
         margin-bottom: 15px;
         border-radius: 4px;
-        min-width: 225px;
+        min-width: 275px;
         min-height: 120px;
 
         flex-shrink: 0;
@@ -50,7 +50,7 @@
 
     @media screen and (min-width: 1600px) {
         .swim-lane {
-            width: 430px;
+            min-width: 430px;
         }
     }
 </style>
@@ -201,7 +201,6 @@
                     .append('<a href="' + ticketSummRoute + '">' + '<h4 class="card-title mt-0 mb-3">' + statuses.status.status +  ' (' + statuses.ticket_count + ')' + '</h4>' + '</a>');
 
 
-
                 // Append kanban box title to kanban main card
                 kanbanMainCard.append(kanbanBoxTitle);
 
@@ -218,6 +217,7 @@
                     var ticketId = ticket.id;
                     var picId = ticket.pic_id;
                     var picName = (ticket.name) ? ticket.name : '';
+                    var projectName = (ticket.project_name) ? ticket.project_name : '';
 
                     var viewRoute = "/view-ticket/" + ticketId;
                     var editRoute = "/edit-ticket/" + ticketId;
@@ -277,39 +277,6 @@
                         tooltipMessage = 'The ticket has been unsolved for 24 hours.';
                     }
 
-                    // if (picId == null) {
-                    //     cardStyle = 'background: #edf3ff';
-                    //     tooltipMessage = 'Please assign PIC to the ticket.';
-                    // } else if (ticket.priority === 'High' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 2 * 60 * 60 * 1000) {
-                    //     cardStyle = 'background: #f4cccc';
-                    //     tooltipMessage = 'Ticket must solve in 2 hours';
-                    // } else if (ticket.priority === 'Medium' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 12 * 60 * 60 * 1000) {
-                    //     cardStyle = 'background: #fff9ee';
-                    //     tooltipMessage = 'Ticket must solve in 12 hours';
-                    // } else if (ticket.priority === 'Low' && ticket.status !== 'Solved' && ticket.status !== 'Closed' && createdAt && currentTime - createdAt > 24 * 60 * 60 * 1000) {
-                    //     cardStyle = 'background: #d9ead3';
-                    //     tooltipMessage = 'Ticket must solve in 24 hours';
-                    // }
-
-                    // var threeDaysAgo = new Date();
-                    // var sevenDaysAgo = new Date();
-
-                    // threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-                    // sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-                    // if (picId == null) {
-                    //     cardStyle = 'background: #edf3ff';
-                    //     tooltipMessage = 'Please assign PIC to the ticket.';
-                    // } else if (picId !== null && ticket.status == 'Pending' && createdAt < sevenDaysAgo) {
-                    //     cardStyle = 'background: #fcc0cf';
-                    //     tooltipMessage = 'Ticket is pending for more than 7 days';
-                    // } else if (picId !== null && ticket.status == 'Pending' && createdAt < threeDaysAgo) {
-                    //     cardStyle = 'background: #fff9ee';
-                    //     tooltipMessage = 'Ticket is pending for more than 3 days';
-                    // }
-
-
-
                     var task = $('<div class="task" id="' + ticketId + '" style="cursor: move;" draggable="true">');
                     var card = $('<div class="card ' + priorityIconClass + '" style="' + cardStyle + '" title="' + (cardStyle ? tooltipMessage : '') + '">');
                     var cardBody = $('<div class="card-body">');
@@ -329,9 +296,10 @@
                             $('<i>').addClass(priorityIconClass),
                             $('<div style="margin-left: 10px; font-weight: bold;">').addClass('my-1 font-14').text(formattedDate)
                         ),
-                        '<p class="text mt-3 m-0" style="font-weight: bold;">' + ticket.category_name + '</p>',
-                        '<p class="text m-0" style="font-weight: bold;">' + picName + '</p>',
-                        '<p class="text mt-2 m-0 ">' + ticket.ticket_no + '</p>',
+                        '<p class="text mt-3 m-0" style="font-weight: bold;">' + projectName + '</p>',
+                        '<p class="text m-0" style="font-weight: bold;">' + ticket.category_name + '</p>',
+                        '<p class="text mt-2 m-0">' + picName + '</p>',
+                        '<p class="text m-0 ">' + ticket.ticket_no + '</p>',
                         '<p class="text m-0">' + ticket.sender_name + '</p>',
                         '<p class="text mb-2">' + ticket.sender_email + '</p>'
                     );

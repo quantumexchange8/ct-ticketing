@@ -11,4 +11,9 @@ class Enhancement extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
+
+    public function projects()
+    {
+        return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
 }

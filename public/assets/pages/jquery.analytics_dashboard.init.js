@@ -72,7 +72,7 @@ $(function() {
             width: 1,
             colors: ['transparent']
         },
-        colors: ['#2B193D', '#484D6D', '#C5979D', '#2C365E', '#4B8F8C',],
+        colors: ['#033F63', '#165369', '#28666E', '#527F7A', '#7C9885', '#99A784', '#B5B682', '#DAC98D', '#FEDC97'],
         series: series,
         xaxis: {
             categories: categories,

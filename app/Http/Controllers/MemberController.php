@@ -17,6 +17,7 @@ use App\Models\SupportSubCategory;
 use App\Models\TicketImage;
 use App\Models\Project;
 use App\Models\TicketLog;
+use App\Models\Enhancement;
 
 class MemberController extends Controller
 {
@@ -263,10 +264,20 @@ class MemberController extends Controller
         return redirect()->back()->with('success', 'Ticket submitted successfully');
     }
 
-    public function releaseNote()
+    public function releaseNote(Project $project)
     {
         // Retrieve all ticket logs from the database
-        $ticketLogs = TicketLog::with('tickets')->get();
+        // $ticketLogs = TicketLog::with('tickets')->get();
+
+        $ticketLogs = TicketLog::with('tickets')
+        ->whereHas('tickets', function ($query) use ($project) {
+            $query->where('project_id', $project->id)->orderByDesc('created_at');
+        })
+        ->get();
+
+        $enhancements = Enhancement::with('projects')->where('project_id', $project->id)->orderByDesc('created_at')->get();
+
+        $latestEnhancement = Enhancement::where('project_id', $project->id)->latest()->first();
 
         // Group the ticket logs by date
         $groupedTicketLogs = $ticketLogs->groupBy(function ($ticketLog) {
@@ -274,9 +285,15 @@ class MemberController extends Controller
             return $ticketLog->created_at->formatLocalized('%d %B %Y'); // %d: day, %B: full month name, %Y: year
         });
 
+        // Group the enhancement by date
+        $groupedEnhancements = $enhancements->groupBy(function ($enhancements) {
+            // Convert the created_at timestamp to a formatted date string
+            return $enhancements->created_at->formatLocalized('%d %B %Y'); // %d: day, %B: full month name, %Y: year
+        });
+
         // dd($groupedTicketLogs);
 
-        return view('user.releaseNote', compact('groupedTicketLogs'));
+        return view('user.releaseNote', compact('groupedTicketLogs', 'groupedEnhancements', 'latestEnhancement'));
     }
 
 

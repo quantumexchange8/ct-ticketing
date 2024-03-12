@@ -23,7 +23,6 @@
                     <div class="card-body">
                         <form action="{{ route('addEnhancement') }}" method="POST" enctype="multipart/form-data">
                             @csrf
-
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
@@ -45,7 +44,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </form>
                     </div><!--end card-body-->
                 </div><!--end card-->

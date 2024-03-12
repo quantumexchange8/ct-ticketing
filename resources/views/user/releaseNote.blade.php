@@ -14,7 +14,7 @@
                             <div class="col">
                                 <h4 class="page-title mt-2">Release Notes</h4>
                             </div><!--end col-->
-                            <div class="col-auto align-self-center">
+                            {{-- <div class="col-auto align-self-center">
                                 <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-toggle="dropdown" href="#" role="button"
                                     aria-haspopup="false" aria-expanded="false">
                                     <i data-feather="search" class="topbar-icon"></i>
@@ -23,15 +23,13 @@
                                 <div class="dropdown-menu dropdown-menu-right dropdown-lg p-0">
                                     <!-- Top Search Bar -->
                                     <div class="app-search-topbar">
-                                        {{-- <form action="{{ route('searchSupportTools') }}" method="get"> --}}
-                                            <div>
-                                                <input type="search" name="search" id="searchInput" class="from-control top-search mb-0" autocomplete="off" placeholder="Type text...">
-                                                <button id="search-button" type="button"><i class="ti-search"></i></button>
-                                            </div>
-                                        {{-- </form> --}}
+                                        <div>
+                                            <input type="search" name="search" id="searchInput" class="from-control top-search mb-0" autocomplete="off" placeholder="Type text...">
+                                            <button id="search-button" type="button"><i class="ti-search"></i></button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div><!--end col-->
+                            </div><!--end col--> --}}
                         </div><!--end row-->
                     {{-- </div><!--end page-title-box--> --}}
                 </div><!--end col-->
@@ -47,12 +45,24 @@
                         <div class="card">
                             <div class="card-header" style="background-color: {{ $colors[$colorIndex] }}">
                                 <div style="display: flex; align-items: center; gap: 10px;">
-                                    <h4 class="card-title">Date: {{ $date }}</h4>
+                                    <h4 class="card-title">{{ $date }} - {{ $latestEnhancement->version ?? null}}</h4>
                                 </div>
                             </div><!--end card-header-->
                         </div><!--end card-->
                     </div><!--end col-->
                 </div>
+
+                {{-- <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                @foreach ($ticketLogs as $ticketLog)
+                                    {{ $ticketLog->ticket_no }} -> {{ $ticketLog->tickets->subject }} -> {{ $ticketLog->tickets->message }}
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div> --}}
 
                 <div class="row">
                     <div class="col-12">
@@ -62,19 +72,21 @@
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Ticket ID</th>
+                                                <th>No.</th>
                                                 <th>Ticket No.</th>
                                                 <th>Subject</th>
                                                 <th>Message</th>
+                                                <th>Category</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach ($ticketLogs as $ticketLog)
                                                 <tr>
-                                                    <td>{{ $ticketLog->ticket_id }}</td>
+                                                    <td>{{ $loop->index + 1 }}</td>
                                                     <td>{{ $ticketLog->ticket_no }}</td>
                                                     <td>{{ $ticketLog->tickets->subject }}</td>
                                                     <td>{{ $ticketLog->tickets->message }}</td>
+                                                    <td>{{ $ticketLog->tickets->supportCategories->category_name }}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -85,10 +97,43 @@
                     </div> <!-- end col -->
                 </div> <!-- end row -->
 
+                <!-- Display enhancements for this date -->
+                @if ($groupedEnhancements->has($date))
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>No.</th>
+                                                    <th>Enhancement Title</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($groupedEnhancements[$date] as $enhancement)
+                                                    <tr>
+                                                        <td>{{ $loop->index + 1 }}</td>
+                                                        <td>{{ $enhancement->enhancement_title }}</td>
+                                                        <td>{{ $enhancement->enhancement_description }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table><!--end /table-->
+                                    </div><!--end /tableresponsive-->
+                                </div><!--end card-body-->
+                            </div><!--end card-->
+                        </div> <!-- end col -->
+                    </div> <!-- end row -->
+                @endif
+
                 @php
                     $colorIndex = ($colorIndex + 1) % count($colors); // Cycle through colors
                 @endphp
             @endforeach
+
         </div>
     </div>
     <!-- end page content -->

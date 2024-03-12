@@ -80,7 +80,6 @@
                             <a href="#SubmitTicket">
                                 <button type="button" class="btn btn-primary waves-effect waves-light">Submit Ticket</button>
                             </a>
-
                         </div>
 
                     </div>

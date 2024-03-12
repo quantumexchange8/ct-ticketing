@@ -10,7 +10,7 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title">Create Subcategory</h4>
+                            <h4 class="page-title">Create FAQ</h4>
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -73,7 +73,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>

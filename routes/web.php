@@ -72,6 +72,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/category-summary/{supportCategory}', [AdminController::class, 'categorySumm'])->name('categorySumm');
 
+    Route::get('/project-ticket/{project}', [AdminController::class, 'projectTicket'])->name('projectTicket');
+
     Route::get('/performance', [AdminController::class, 'performance'])->name('performance');
     Route::get('/get-performance', [AdminController::class, 'getPerformance'])->name('getPerformance');
     Route::get('/view-performance/{id}', [AdminController::class, 'viewPerformance'])->name('viewPerformance');
@@ -107,6 +109,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/update-subtitle/{id}', [AdminController::class, 'updateSubtitle'])->name('updateSubtitle');
     Route::delete('/delete-subtitle/{id}', [AdminController::class, 'deleteSubtitle'])->name('deleteSubtitle');
 
+    Route::get('/create-content', [AdminController::class, 'createContent'])->name('createContent');
     Route::post('/add-content', [AdminController::class, 'addContent'])->name('addContent');
     Route::get('/edit-content/{id}', [AdminController::class, 'editContent'])->name('editContent');
     Route::post('/update-content/{id}', [AdminController::class, 'updateContent'])->name('updateContent');
@@ -114,13 +117,12 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/support-tool', [AdminController::class, 'supportTool'])->name('supportTool');
 
-    Route::get('/enhancement', [AdminController::class, 'enhancementSumm'])->name('enhancementSumm');
-
+    Route::get('/enhancement', [AdminController::class, 'enhancement'])->name('enhancement');
+    Route::get('/enhancement-summary/{project}', [AdminController::class, 'enhancementSumm'])->name('enhancementSumm');
 
     Route::get('/create-enhancement', [AdminController::class, 'createEnhancement'])->name('createEnhancement');
 
-    
-    Route::post('/add-enhancement', [AdminController::class, 'addEnhancement'])->name('addEnhancement');
+    Route::post('/add-enhancement/{project}', [AdminController::class, 'addEnhancement'])->name('addEnhancement');
     Route::get('/edit-enhancement/{id}', [AdminController::class, 'editEnhancement'])->name('editEnhancement');
     Route::post('/update-enhancement/{id}', [AdminController::class, 'updateEnhancement'])->name('updateEnhancement');
     Route::delete('/delete-enhancement/{id}', [AdminController::class, 'deleteEnhancement'])->name('deleteEnhancement');

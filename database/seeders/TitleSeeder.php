@@ -15,17 +15,20 @@ class TitleSeeder extends Seeder
     {
         Title::create([
             'title_name' => 'Introduction',
-            't_sequence' => '1'
+            't_sequence' => '1',
+            'project_id' => '1'
         ]);
 
         Title::create([
             'title_name' => 'Methodology',
-            't_sequence' => '2'
+            't_sequence' => '2',
+            'project_id' => '1'
         ]);
 
         Title::create([
             'title_name' => 'Conclusion',
-            't_sequence' => '3'
+            't_sequence' => '1',
+            'project_id' => '2'
         ]);
     }
 }

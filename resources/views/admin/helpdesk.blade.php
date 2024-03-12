@@ -23,7 +23,6 @@
                                 <i data-feather="filter"></i>
                             </button>
                         </div>
-
                     </div><!--end row-->
                 </div><!--end page-title-box-->
             </div><!--end col-->
@@ -61,6 +60,21 @@
                         </select>
                     </div>
                 </div>
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <label for="remarks">Project</label>
+                        <select class="form-control" name="project_id" id="project">
+                            <option value="">Project</option>
+                            @foreach($projects as $project)
+                                <option value="{{ $project->id }}" {{ old('project_id') == $project->id ? 'selected' : '' }}>
+                                    {!! $project->project_name !!}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
                 <div class="col-md-3">
                     <button type="button" class="btn btn-info waves-effect waves-light" id="reset">Reset</button>
                 </div><!--end col-->
@@ -107,6 +121,7 @@
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Category</th>
+                                        <th>Project</th>
                                         <th>Priority</th>
                                         <th>Status</th>
                                         <th>PIC</th>
@@ -147,9 +162,7 @@
                 </div><!--end card-->
             </div> <!-- end col -->
         </div> <!-- end row -->
-
     </div><!-- container -->
-
 </div>
 <!-- end page content -->
 
@@ -167,8 +180,9 @@
                 $('#category').val('');
                 $('#priority').val('');
                 $('#datepick').val('');
+                $('#project').val('');
                 // Trigger change event to ensure the loadTickets function is called with the updated filter values
-                $('#category, #priority, #datepick').trigger('change');
+                $('#category, #priority, #datepick, #project').trigger('change');
             }
         });
 
@@ -178,6 +192,7 @@
             $('#category').val('');
             $('#priority').val('');
             $('#datepick').val('');
+            $('#project').val('');
 
              // Reload tickets with default values
             currentPage = 1;
@@ -185,16 +200,17 @@
         });
 
         // Event listener for changes in select options
-        $('#category, #priority, #datepick').on('change input', function(e) {
+        $('#category, #priority, #datepick, #project').on('change input', function(e) {
             e.preventDefault();
             currentPage = 1; // Reset to first page when changing select options
             clearInputValue();
             var categoryId = $('#category').val();
             var priority = $('#priority').val();
             var datepick = $('#datepick').val();
+            var projectId = $('#project').val();
 
             // console.log(datepick);
-            loadTickets(currentPage, perPage, categoryId, priority, datepick);
+            loadTickets(currentPage, perPage, categoryId, priority, datepick, projectId);
         });
 
         // Event listener for input field
@@ -206,7 +222,8 @@
             var categoryId = $('#category').val();
             var priority = $('#priority').val();
             var datepick = $('#datepick').val();
-            loadTickets(currentPage, perPage, categoryId, priority, datepick, searchTerm,);
+            var projectId = $('#project').val();
+            loadTickets(currentPage, perPage, categoryId, priority, datepick, projectId, searchTerm,);
         });
 
         // Function to clear select options
@@ -214,6 +231,7 @@
             $('#category').val('');
             $('#priority').val('');
             $('#datepick').val('');
+            $('#project').val('');
         }
 
         // Function to clear input value
@@ -226,7 +244,7 @@
         var currentEntries;
         var totalEntries;
 
-        function loadTickets(page, perPage, categoryId, priority, datepick, searchTerm) {
+        function loadTickets(page, perPage, categoryId, priority, datepick, projectId, searchTerm) {
 
             $.ajax({
                 url: '/get-ticket',
@@ -237,6 +255,7 @@
                     category_id: categoryId,
                     priority: priority,
                     filter_date: datepick,
+                    project_id: projectId,
                     searchTerm: searchTerm
                 },
                 success: function(response) {
@@ -278,6 +297,7 @@
                         var ticketId = (ticket.ticket_id) ? ticket.ticket_id : '';
                         var picId = (typeof ticket.pic_id !== 'undefined') ? ticket.pic_id : '';
                         var catId = (ticket.category_id) ? ticket.category_id : '';
+                        var projectName = (ticket.project_name) ? ticket.project_name : '';
 
                         var viewRoute = "/view-ticket/" + ticketId;
                         var editRoute = "/edit-ticket/" + ticketId;
@@ -370,11 +390,6 @@
                         var dateStyle = '';
                         var tooltipMessage = '';
 
-
-                        // if (picId == null) {
-                        //     dateStyle = 'background: #edf3ff';
-                        //     tooltipMessage = 'Please assign PIC to the ticket.';
-                        // } else
                         if (ticket.priority === 'High' && ticket.status == 'Pending' && currentTime - createdAt > 2 * 60 * 60 * 1000) {
                             dateStyle = 'color: red';
                             tooltipMessage = 'The ticket has been unsolved for 2 hours.';
@@ -386,27 +401,13 @@
                             tooltipMessage = 'The ticket has been unsolved for 24 hours.';
                         }
 
-                        // var threeDaysAgo = new Date();
-                        // var sevenDaysAgo = new Date();
-                        // var tooltipMessage = '';
-
-                        // threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-                        // sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-                        // if (ticket.status == 'Pending' && createdAt < sevenDaysAgo) {
-                        //     dateStyle = 'color: red; font-weight: bold;';
-                        //     tooltipMessage = 'Ticket is pending for more than 7 days';
-                        // } else if (ticket.status == 'Pending' && createdAt < threeDaysAgo) {
-                        //     dateStyle = 'color: #EDAE49; font-weight: bold;';
-                        //     tooltipMessage = 'Ticket is pending for more than 3 days';
-                        // }
-
                         var row = '<tr id="' + ticketId + '">' +
                                     '<td style="' + dateStyle + '" title="' + (dateStyle ? tooltipMessage : '') + '">' + formattedDate + '</td>' +
                                     '<td>' + ticket.ticket_no + '</td>' +
                                     '<td>' + ticket.sender_name + '</td>' +
                                     '<td>' + ticket.sender_email + '</td>' +
                                     '<td>' + categoryName + '</td>' +
+                                    '<td>' + projectName + '</td>' +
                                     '<td style="' + priorityStyle + '">' + ticket.priority + '</td>' +
                                     '<td>' + '<span class="' + statusClass + '">' + ticket.status + '</span>' + '</td>' +
                                     '<td>' + picName + '</td>' +
@@ -573,7 +574,7 @@
 
         function exportDataToExcel(data) {
             // Convert data to Excel format
-            var headers = ['Date', 'Ticket No', 'Sender Name', 'Sender Email', 'Subject', 'Message','Category', 'Priority', 'Status', 'PIC', 'Remarks'];
+            var headers = ['Date', 'Ticket No', 'Sender Name', 'Sender Email', 'Subject', 'Message','Category', 'Project', 'Priority', 'Status', 'PIC'];
             var excelData = [headers];
 
             data.forEach(function(ticket) {
@@ -585,10 +586,10 @@
                     ticket.subject || '',
                     ticket.message || '',
                     ticket.category_name || '',
+                    ticket.project_name || '',
                     ticket.priority || '',
                     ticket.status || '',
                     ticket.name || '',
-                    ticket.remarks || ''
                 ];
                 excelData.push(row);
             });

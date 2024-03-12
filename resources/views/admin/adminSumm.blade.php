@@ -43,7 +43,6 @@
                                         <td>{{ $user->supportCategories->category_name ?? 'All' }}</td>
                                         <td class="text-center">
                                             <div style="display: flex; justify-content: center; gap: 10px;">
-
                                                 <a href="{{ route('editAdmin', ['id' => $user->user_id]) }}" class="btn btn-sm btn-soft-success btn-circle">
                                                     <i class="dripicons-pencil"></i>
                                                 </a>
@@ -55,7 +54,6 @@
                                                         <i class="dripicons-trash"></i>
                                                     </button>
                                                 </form>
-
                                             </div>
                                         </td>
                                     </tr>

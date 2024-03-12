@@ -213,30 +213,30 @@
 
                                 <div class="row">
                                     <div class="col mb-2" >
-                                        <h4 class="card-title">Privileges - Administration</h4>
+                                        <h4 class="card-title">Privileges - Project</h4>
                                     </div>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-xl-4">
                                         <div class="checkbox checkbox-primary">
-                                            <input id="manage-title" name="manage_title" class="privilege-checkbox" type="checkbox" value="1">
-                                            <label for="manage-title">
-                                                Able to manage title
+                                            <input id="manage_documentation" name="manage_documentation" class="privilege-checkbox" type="checkbox" value="1">
+                                            <label for="manage_documentation">
+                                                Able to manage documentation
                                             </label>
                                         </div>
                                     </div>
                                     <div class="col-xl-4">
                                         <div class="checkbox checkbox-primary">
-                                            <input id="manage-category" name="manage_support_category" class="privilege-checkbox" type="checkbox" value="1">
-                                            <label for="manage-category">
-                                                Able to manage support category
+                                            <input id="manage_support_tool" name="manage_support_tool" class="privilege-checkbox" type="checkbox" value="1">
+                                            <label for="manage_support_tool">
+                                                Able to manage support tool
                                             </label>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="col-xl-4">
                                         <div class="checkbox checkbox-primary">
                                             <input id="manage-subtitle" name="manage_subtitle" class="privilege-checkbox" type="checkbox" value="1">
@@ -245,7 +245,6 @@
                                             </label>
                                         </div>
                                     </div>
-
                                     <div class="col-xl-4">
                                         <div class="checkbox checkbox-primary">
                                             <input id="manage-subcategory" name="manage_support_subcategory" class="privilege-checkbox" type="checkbox" value="1">
@@ -254,7 +253,6 @@
                                             </label>
                                         </div>
                                     </div>
-
                                 </div>
 
                                 <div class="row">
@@ -274,7 +272,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
 
                             <div class="col-12 text-right">
@@ -288,33 +286,6 @@
     </div>
 </div>
 <!-- end page content -->
-
-{{-- Super admin with fixed privileges --}}
-{{-- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var roleSelect = document.getElementById('role');
-        var privilegeCheckboxes = document.querySelectorAll('.privilege-checkbox');
-
-        roleSelect.addEventListener('change', function() {
-            // Check all privilege checkboxes when role with id 1 is selected
-            var roleId = roleSelect.value;
-            var disableCheckboxes = roleId === '1';
-
-            privilegeCheckboxes.forEach(function(checkbox) {
-                checkbox.checked = disableCheckboxes;
-                checkbox.disabled = disableCheckboxes;
-            });
-        });
-
-        privilegeCheckboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                if (roleSelect.value === '1') {
-                    checkbox.checked = true; // Ensure checkbox remains checked
-                }
-            });
-        });
-    });
-</script> --}}
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -364,28 +335,5 @@
         });
     });
 </script>
-
-
-
-
-{{-- Super admin but able to change privileges --}}
-
-{{-- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var roleSelect = document.getElementById('role');
-        var privilegeCheckboxes = document.querySelectorAll('.privilege-checkbox');
-
-        roleSelect.addEventListener('change', function() {
-            // Disable privilege checkboxes when role with id 1 is selected
-            var roleId = roleSelect.value;
-            var disableCheckboxes = roleId === '1';
-
-            privilegeCheckboxes.forEach(function(checkbox) {
-                checkbox.disabled = disableCheckboxes;
-                checkbox.checked = disableCheckboxes; // Check the checkboxes if disabled
-            });
-        });
-    });
-</script> --}}
 
 @endsection

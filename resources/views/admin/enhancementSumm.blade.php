@@ -12,7 +12,9 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title">Enhancement</h4>
+                            <h4 class="page-title">
+                                <a href="{{ route('enhancement') }}">Enhancement</a>
+                                - {{$project->project_name}}</h4>
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -90,7 +92,7 @@
           </button>
         </div>
         <div class="modal-body">
-            <form action="{{ route('addEnhancement') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('addEnhancement', ['project' => $project]) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
                     <div class="col-lg-6">
@@ -113,6 +115,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col-xl-4">
                         <div class="checkbox checkbox-primary">

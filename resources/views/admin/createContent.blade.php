@@ -142,7 +142,6 @@
         });
 
         $('input[type="radio"][name="subtitle_type"]:checked').trigger('change');
-
     });
 </script>
 

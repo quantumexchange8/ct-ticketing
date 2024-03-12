@@ -50,6 +50,7 @@
                                         {{-- <th>Subject</th>
                                         <th>Message</th> --}}
                                         <th>Category</th>
+                                        <th>Project</th>
                                         <th>Priority</th>
                                         <th>Status</th>
                                         <th>Remarks</th>
@@ -102,6 +103,7 @@
                                         {{-- <td>{{ $ticket->subject }}</td>
                                         <td>{{ $ticket->message }}</td> --}}
                                         <td>{!! $ticket->supportCategories->category_name !!}</td>
+                                        <td>{{ $ticket->projects->project_name }}</td>
                                         <td style ="{{ $ticket->priority === 'Medium' ? 'color: orange; font-weight: bold;' : ($ticket->priority === 'Low' ? 'color: #84f542; font-weight: bold;' : 'color: red; font-weight: bold;') }}">
                                             {{ $ticket->priority }}
                                         </td>

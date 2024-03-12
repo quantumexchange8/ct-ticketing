@@ -106,6 +106,16 @@
                                 @endforeach
                             </ul>
                         </li>
+
+                        <li>
+                            <a href="javascript: void(0);"><i data-feather="dollar-sign" class="align-self-center menu-icon"></i><span>Project</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
+                            <ul class="nav-second-level" aria-expanded="false">
+                                @foreach ($projects as $project)
+                                    <li class="nav-item"><a class="nav-link" href="{{ route('projectTicket', $project)}}"><i class="ti-control-record"></i>{!! $project->project_name !!}</a></li>
+                                @endforeach
+                            </ul>
+                        </li>
+
                     @endif
 
                     {{-- @if (Auth::user()->role_id == 1) --}}
@@ -123,43 +133,45 @@
                     <hr class="hr-dashed hr-menu">
                     <li class="menu-label my-2">Project</li>
 
-                    <li>
-                        <a href="{{ route('projectSumm') }}"><i data-feather="pocket" class="align-self-center menu-icon"></i><span>Project List</span></a>
-                    </li>
-
-                    <li>
-                        <a href="{{ route('supportTool') }}"><i data-feather="tool" class="align-self-center menu-icon"></i><span>Support Tools</span></a>
-                    </li>
-
-                    <hr class="hr-dashed hr-menu">
-                    <li class="menu-label my-2">Documentation</li>
-                    @foreach ($projects as $project)
+                    @if (Auth::user()->role_id == 1 || (Auth::user()->role_id !== 1 && Auth::user()->manage_support_tool == 1))
                         <li>
-                            <a href="{{ route('titleSumm', $project) }}"><i data-feather="zap" class="align-self-center menu-icon"></i><span>{{ $project->project_name }}</span></a>
+                            <a href="{{ route('supportTool') }}"><i data-feather="tool" class="align-self-center menu-icon"></i><span>Support Tools</span></a>
                         </li>
-                    @endforeach
-
-                    <hr class="hr-dashed hr-menu">
-                    <li class="menu-label my-2">Administration</li>
+                    @endif
 
                     <li>
-                        <a href="{{ route('enhancementSumm') }}"><i data-feather="file-text" class="align-self-center menu-icon"></i><span>Enhancement</span></a>
+                        <a href="{{ route('enhancement') }}"><i data-feather="file-text" class="align-self-center menu-icon"></i><span>Enhancement</span></a>
                     </li>
 
-                    @if (Auth::user()->manage_support_category == 1)
+
+                    @if (Auth::user()->role_id == 1 || (Auth::user()->role_id !== 1 && Auth::user()->manage_documentation == 1))
+                        <hr class="hr-dashed hr-menu">
+                        <li class="menu-label my-2">Documentation</li>
+                        @foreach ($projects as $project)
+                            <li>
+                                <a href="{{ route('titleSumm', $project) }}"><i data-feather="zap" class="align-self-center menu-icon"></i><span>{{ $project->project_name }}</span></a>
+                            </li>
+                        @endforeach
+                    @endif
+
+                    @if (Auth::user()->role_id == 1)
+                        <hr class="hr-dashed hr-menu">
+                        <li class="menu-label my-2">Administration</li>
+
+                        <li>
+                            <a href="{{ route('projectSumm') }}"><i data-feather="pocket" class="align-self-center menu-icon"></i><span>Project List</span></a>
+                        </li>
+
                         <li>
                             <a href="{{ route('supportCategory') }}"><i data-feather="file-text" class="align-self-center menu-icon"></i><span>Support Category</span></a>
                         </li>
-                    @endif
 
-                    @if (Auth::user()->manage_status == 1)
                         <li>
                             <a href="{{ route('ticketStatus') }}"> <i data-feather="layers" class="align-self-center menu-icon"></i><span>Status</span></a>
                         </li>
-                    @endif
 
 
-                    @if (Auth::user()->role_id == 1)
+
                         <li>
                             <a href="{{ route('adminSumm') }}"> <i data-feather="user" class="align-self-center menu-icon"></i><span>Admin</span></a>
                         </li>

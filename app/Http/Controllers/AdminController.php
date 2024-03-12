@@ -246,6 +246,9 @@ class AdminController extends Controller
     {
         $ticketStatuses = TicketStatus::where('status', '!=', 'Solved')
                                         ->get();
+
+        // $ticketStatuses = TicketStatus::all();
+
         $ticketCounts = [];
         $currentYear = now()->year;
         $authUser = User::where('id', '=', Auth::user()->id)->first();
@@ -356,19 +359,34 @@ class AdminController extends Controller
             $selectedYearCategory = $currentYear;
         }
 
+        // $ticketsByStatus = Ticket::select(
+        //                 DB::raw('MONTH(tickets.created_at) AS month'),
+        //                 'ticket_statuses.status',
+        //                 DB::raw('COUNT(*) AS ticket_count')
+        //             )
+        //             ->join('ticket_statuses', 'tickets.status_id', '=', 'ticket_statuses.id')
+        //             ->join(DB::raw('(SELECT DISTINCT status_id FROM tickets) AS distinct_statuses'), function ($join) {
+        //                 $join->on('tickets.status_id', '=', 'distinct_statuses.status_id');
+        //             })
+        //             ->whereYear('tickets.created_at', $selectedYearStatus)
+        //             ->groupBy('month', 'ticket_statuses.status')
+        //             ->orderBy('month')
+        //             ->orderBy('ticket_statuses.status')
+        //             ->get();
+
         $ticketsByStatus = Ticket::select(
                         DB::raw('MONTH(tickets.created_at) AS month'),
-                        'ticket_statuses.status',
+                        'projects.project_name',
                         DB::raw('COUNT(*) AS ticket_count')
                     )
-                    ->join('ticket_statuses', 'tickets.status_id', '=', 'ticket_statuses.id')
-                    ->join(DB::raw('(SELECT DISTINCT status_id FROM tickets) AS distinct_statuses'), function ($join) {
-                        $join->on('tickets.status_id', '=', 'distinct_statuses.status_id');
+                    ->join('projects', 'tickets.project_id', '=', 'projects.id')
+                    ->join(DB::raw('(SELECT DISTINCT project_id FROM tickets) AS distinct_projects'), function ($join) {
+                        $join->on('tickets.project_id', '=', 'distinct_projects.project_id');
                     })
                     ->whereYear('tickets.created_at', $selectedYearStatus)
-                    ->groupBy('month', 'ticket_statuses.status')
+                    ->groupBy('month', 'projects.project_name')
                     ->orderBy('month')
-                    ->orderBy('ticket_statuses.status')
+                    ->orderBy('projects.project_name')
                     ->get();
 
         $ticketsByCategory = Ticket::select(
@@ -393,8 +411,9 @@ class AdminController extends Controller
     {
         $tickets = Ticket::with('supportCategories', 'ticketImages')->get();
         $categories = SupportCategory::all();
+        $projects = Project::all();
 
-        return view('admin.helpdesk', compact('tickets','categories'));
+        return view('admin.helpdesk', compact('tickets','categories', 'projects'));
     }
 
     public function getTicket(Request $request)
@@ -402,6 +421,7 @@ class AdminController extends Controller
         $category_id = $request->input('category_id');
         $priority = $request->input('priority');
         $date = $request->input('filter_date');
+        $project_id = $request->input('project_id');
         $searchTerm = $request->input('searchTerm');
 
         // Get the page and per_page values from the request, default to 1 and 10 if not provided
@@ -446,7 +466,8 @@ class AdminController extends Controller
         $query = Ticket::join('support_categories', 'support_categories.id', 'tickets.category_id')
         ->join('ticket_statuses', 'tickets.status_id', 'ticket_statuses.id')
         ->leftJoin('users', 'tickets.pic_id', 'users.id')
-        ->select('tickets.*', 'support_categories.*', 'ticket_statuses.*', 'users.*','users.id as pic_id','tickets.id as ticket_id', 'tickets.created_at as t_created_at', 'tickets.category_id')
+        ->leftJoin('projects', 'projects.id', 'tickets.project_id')
+        ->select('tickets.*', 'support_categories.*', 'ticket_statuses.*', 'users.*','users.id as pic_id','tickets.id as ticket_id', 'tickets.created_at as t_created_at', 'tickets.category_id', 'projects.*', 'projects.id as project_id')
         ->orderByDesc('ticket_id')
         ->whereNull('tickets.deleted_at');
 
@@ -463,6 +484,10 @@ class AdminController extends Controller
             $query->where('tickets.priority', $priority);
         }
 
+        if (isset($project_id) && !empty($project_id)) {
+            $query->where('tickets.project_id', $project_id);
+        }
+
         if (isset($searchTerm) && !empty($searchTerm)) {
             $query->where(function ($query) use ($searchTerm) {
                 $query->where('tickets.ticket_no', 'LIKE', "%$searchTerm%")
@@ -472,10 +497,10 @@ class AdminController extends Controller
                     ->orWhere('tickets.message', 'LIKE', "%$searchTerm%")
                     ->orWhere('tickets.priority', 'LIKE', "%$searchTerm%")
                     ->orWhere('support_categories.category_name', 'LIKE', "%$searchTerm%")
-                    ->orWhere('tickets.remarks', 'LIKE', "%$searchTerm%")
                     ->orWhere('ticket_statuses.status', 'LIKE', "%$searchTerm%")
                     ->orWhere('tickets.pic_id', 'LIKE', "%$searchTerm%")
-                    ->orWhere('users.name', 'LIKE', "%$searchTerm%");
+                    ->orWhere('users.name', 'LIKE', "%$searchTerm%")
+                    ->orWhere('projects.project_name', 'LIKE', "%$searchTerm%");
             });
         }
 
@@ -539,7 +564,8 @@ class AdminController extends Controller
         $query = Ticket::join('support_categories', 'tickets.category_id', 'support_categories.id')
         ->join('ticket_statuses', 'ticket_statuses.id', 'tickets.status_id')
         ->leftJoin('users', 'tickets.pic_id', 'users.id')
-        ->select('tickets.*', 'support_categories.category_name', 'users.name', 'ticket_statuses.status')
+        ->leftJoin('projects', 'tickets.project_id', 'projects.id')
+        ->select('tickets.*', 'support_categories.category_name', 'users.name', 'ticket_statuses.status', 'projects.project_name')
         ->orderByDesc('tickets.created_at')
         ->whereNull('tickets.deleted_at');
 
@@ -625,6 +651,15 @@ class AdminController extends Controller
         return view('admin.categorySumm', compact('supportCategory', 'tickets'));
     }
 
+    public function projectTicket(Project $project)
+    {
+        $tickets = Ticket::with('ticketStatus', 'users')
+            ->where('project_id', $project->id)
+            ->get();
+
+        return view('admin.projectTicket', compact('project', 'tickets'));
+    }
+
     public function ticketSumm(TicketStatus $status)
     {
         $authUser = User::where('id', '=', Auth::user()->id)->first();
@@ -691,6 +726,9 @@ class AdminController extends Controller
         $ticketStatuses = TicketStatus::all();
         $ticketImages = TicketImage::where('ticket_id', $id)
                                 ->get();
+
+        $projects = Project::all();
+
         $users = User::select('users.id', 'users.name', 'support_categories.category_name')
                     ->join('roles', 'users.role_id', '=', 'roles.id')
                     ->join('support_categories', 'users.category_id', '=', 'support_categories.id')
@@ -701,7 +739,7 @@ class AdminController extends Controller
                     ->orderByDesc('created_at')
                     ->get();
 
-        return view('admin.viewTicket', compact('ticket', 'supportCategories', 'ticketStatuses', 'ticketImages', 'users', 'notes'));
+        return view('admin.viewTicket', compact('ticket', 'supportCategories', 'ticketStatuses', 'ticketImages', 'users', 'notes', 'projects'));
     }
 
     public function createTicket()
@@ -713,8 +751,9 @@ class AdminController extends Controller
                     ->join('support_categories', 'users.category_id', '=', 'support_categories.id')
                     ->where('roles.role_name', '!=', 'Super Admin')
                     ->get();
+        $projects = Project::all();
 
-        return view('admin.createTicket', compact('supportCategories', 'ticketStatuses', 'users'));
+        return view('admin.createTicket', compact('supportCategories', 'ticketStatuses', 'users', 'projects'));
     }
 
     public function addTicket(Request $request)
@@ -792,7 +831,8 @@ class AdminController extends Controller
             'category_id' => $request->input('category_id'),
             'pic_id' => $picId,
             'priority' => $request->input('priority'),
-            'status_id' => 1
+            'status_id' => 2,
+            'project_id' => $request->input('project_id')
         ]);
 
         $ticketId = $ticket->id;
@@ -863,7 +903,7 @@ class AdminController extends Controller
         $ticketStatuses = TicketStatus::all();
         $ticketImages = TicketImage::where('ticket_id', $id)
                                     ->get();
-
+        $projects = Project::all();
         $users = User::select('users.id', 'users.name', 'support_categories.category_name')
                     ->join('roles', 'users.role_id', '=', 'roles.id')
                     ->join('support_categories', 'users.category_id', '=', 'support_categories.id')
@@ -874,7 +914,7 @@ class AdminController extends Controller
                     ->orderByDesc('created_at')
                     ->get();
 
-        return view('admin.editTicket', compact('ticket', 'supportCategories', 'ticketStatuses', 'ticketImages', 'users', 'notes'));
+        return view('admin.editTicket', compact('ticket', 'supportCategories', 'ticketStatuses', 'ticketImages', 'users', 'notes', 'projects'));
     }
 
     public function updateTicket(Request $request, $id)
@@ -943,7 +983,8 @@ class AdminController extends Controller
             'category_id' => $request->input('category_id'),
             'priority' => $request->input('priority'),
             'status_id' => $status_id, // Update status_id with input value
-            'pic_id' => $picId
+            'pic_id' => $picId,
+            'project_id' => $request->input('project_id')
         ];
 
         // If status_id is 1, update it to 2
@@ -953,7 +994,8 @@ class AdminController extends Controller
 
         $updateTicket->update($updateData);
 
-        return redirect()->route('ticketSumm', ['status' => $status_id])->with('success', 'Ticket updated successfully.');
+        // return redirect()->route('ticketSumm', ['status' => $status_id])->with('success', 'Ticket updated successfully.');
+        return redirect()->route('helpdesk')->with('success', 'Ticket updated successfully.');
     }
 
     public function deleteTicket($id)
@@ -1277,8 +1319,9 @@ class AdminController extends Controller
 
     public function viewPerformance($id)
     {
-        $tickets = Ticket::where('pic_id', $id)->get();
+        $tickets = Ticket::with('projects')->where('pic_id', $id)->get();
         $users = User::find($id);
+
 
         return view('admin.viewPerformance', compact('tickets', 'users'));
     }
@@ -2050,7 +2093,7 @@ class AdminController extends Controller
         $deleteSub = SupportSubCategory::find($id);
         $deleteSub->delete();
 
-        return redirect()->back()->with('success', 'Support SubCategories deleted successfully.');
+        return redirect()->back()->with('success', 'Data deleted successfully.');
     }
 
     public function ticketStatus()
@@ -2213,12 +2256,8 @@ class AdminController extends Controller
             'category_id' => $request->input('category_id'),
             'manage_ticket_in_category' => $request->has('manage_ticket_in_category') ? 1 : 0,
             'manage_own_ticket' => $request->has('manage_own_ticket') ? 1 : 0,
-            'manage_title' => $request->has('manage_title') ? 1 : 0,
-            'manage_subtitle' => $request->has('manage_subtitle') ? 1 : 0,
-            'manage_content' => $request->has('manage_content') ? 1 : 0,
-            'manage_support_category' => $request->has('manage_support_category') ? 1 : 0,
-            'manage_support_subcategory' => $request->has('manage_support_subcategory') ? 1 : 0,
-            'manage_status' => $request->has('manage_status') ? 1 : 0,
+            'manage_documentation' => $request->has('manage_documentation') ? 1 : 0,
+            'manage_support_tool' => $request->has('manage_support_tool') ? 1 : 0,
         ]);
 
         $newUserId = $admin->id;
@@ -2313,41 +2352,8 @@ class AdminController extends Controller
         $updateAdmin->category_id = $request->input('category_id');
         $updateAdmin->manage_ticket_in_category = $request->has('manage_ticket_in_category') ? 1 : 0;
         $updateAdmin->manage_own_ticket = $request->has('manage_own_ticket') ? 1 : 0;
-        $updateAdmin->manage_title = $request->has('manage_title') ? 1 : 0;
-        $updateAdmin->manage_subtitle = $request->has('manage_subtitle') ? 1 : 0;
-        $updateAdmin->manage_content = $request->has('manage_content') ? 1 : 0;
-        $updateAdmin->manage_support_category = $request->has('manage_support_category') ? 1 : 0;
-        $updateAdmin->manage_support_subcategory = $request->has('manage_support_subcategory') ? 1 : 0;
-        $updateAdmin->manage_status = $request->has('manage_status') ? 1 : 0;
-
-        // if ($roleId == 1) {
-        //     $updateAdmin->category_id = 0;
-        // }
-
-        // if ($roleId != 1 &&
-        //     $request->has('manage_title') &&
-        //     $request->has('manage_subtitle') &&
-        //     $request->has('manage_content') &&
-        //     $request->has('manage_support_category') &&
-        //     $request->has('manage_support_subcategory') &&
-        //     $request->has('manage_status')) {
-
-        //     // Set role_id to 1
-        //     $updateAdmin->role_id = 1;
-        // }
-
-        // if ($roleId !== null) {
-        //     $user = User::find($id);
-
-        //     // Check if the user is found and the category_id matches
-        //     if ($user && $roleId !== 0) {
-        //         $validator->errors()->add('category_id', 'The selected category should not be "All" when role is not Super Admin.');
-        //         return redirect()
-        //             ->back()
-        //             ->withErrors($validator)
-        //             ->withInput();
-        //     }
-        // }
+        $updateAdmin->manage_documentation = $request->has('manage_documentation') ? 1 : 0;
+        $updateAdmin->manage_support_tool = $request->has('manage_support_tool') ? 1 : 0;
 
         $updateAdmin->save();
 
@@ -2369,11 +2375,18 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Admin deleted successfully.');
     }
 
-    public function enhancementSumm()
+    public function enhancement()
     {
-        $enhancements = Enhancement::all();
+        $projects = Project::all();
 
-        return view('admin.enhancementSumm', compact('enhancements'));
+        return view('admin.enhancement', compact('projects'));
+    }
+
+    public function enhancementSumm(Project $project)
+    {
+        $enhancements = Enhancement::where('project_id', $project->id)->get();
+
+        return view('admin.enhancementSumm', compact('enhancements', 'project'));
     }
 
     public function createEnhancement()
@@ -2381,7 +2394,7 @@ class AdminController extends Controller
         return view('admin.createEnhancement');
     }
 
-    public function addEnhancement(Request $request)
+    public function addEnhancement(Request $request, Project $project)
     {
         $rules = [
             'enhancement_title' => 'required|max:255',
@@ -2405,23 +2418,27 @@ class AdminController extends Controller
         }
 
         // Get the latest enhancement version
-        $latestEnhancement = Enhancement::latest()->first();
+        $latestEnhancement = Enhancement::where('project_id', $project->id)->latest()->first();
 
-        // Set initial version components
-        $month = date('m');
-        $year = date('y');
-        $majorUpdate = '01';
-        $tableMigrate = '001';
-        $minorUpdate = '001';
-
-        // If there are existing enhancements, extract the components of the latest version number
+        // Extract the components of the latest version number or set initial values
         if ($latestEnhancement) {
             $versionParts = explode('.', $latestEnhancement->version);
-            $month = $versionParts[0];
-            $year = $versionParts[1];
-            $majorUpdate = $versionParts[2];
-            $tableMigrate = $versionParts[3];
-            $minorUpdate = $versionParts[4];
+
+            // $month = $versionParts[0];
+            // $year = $versionParts[1];
+            $month = date('m');
+            $year = date('y');
+            $majorUpdate = $versionParts[1];
+            $tableMigrate = $versionParts[2];
+            $minorUpdate = $versionParts[3];
+
+        } else {
+            // If no existing enhancements, set initial version components
+            $month = date('m');
+            $year = date('y');
+            $majorUpdate = '01';
+            $tableMigrate = '001';
+            $minorUpdate = '001';
         }
 
         // Update version components based on checkbox values
@@ -2437,23 +2454,26 @@ class AdminController extends Controller
             $minorUpdate = str_pad(intval($minorUpdate) + 1, 3, '0', STR_PAD_LEFT);
         }
 
-        // If no checkbox was ticked and there are no existing enhancements, set the initial version
-        if (!$request->hasAny(['major_update', 'table_migrate', 'minor_update']) && !$latestEnhancement) {
-            $version = '0324.01.001.001';
+        // If no checkbox was ticked, reuse the latest version
+        if (!$request->hasAny(['major_update', 'table_migrate', 'minor_update']) && $latestEnhancement) {
+            $version = $latestEnhancement->version;
         } else {
             // Construct the new version number
             $version = $month . $year . '.' . $majorUpdate . '.' . $tableMigrate . '.' . $minorUpdate;
         }
+
 
         // Create the new enhancement
         $enhancement = Enhancement::create([
             'enhancement_title' => $request->input('enhancement_title'),
             'enhancement_description' => $request->input('enhancement_description'),
             'version' => $version,
+            'project_id' => $project->id
         ]);
 
         return redirect()->back()->with('success', 'New enhancement created successfully');
     }
+
 
 
     public function editEnhancement($id)

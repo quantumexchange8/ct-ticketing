@@ -12,7 +12,7 @@
                     {{-- <div class="page-title-box"> --}}
                         <div class="row" style="padding:10px;">
                             <div class="col">
-                                <h4 class="page-title mt-2">Support Tools</h4>
+                                <h4 class="page-title mt-2">Enhancement</h4>
                             </div><!--end col-->
                             {{-- <div class="col-auto align-self-center">
                                 <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-toggle="dropdown" href="#" role="button"
@@ -44,14 +44,13 @@
                             </div><!--end card-header-->
                             <div class="card-body">
                                 <div style="display: flex; justify-content: flex-end;">
-                                    <a href="{{ route('supportCategorySumm', ['project' => $project->id]) }}" class="btn btn-primary btn-sm">Go somewhere</a>
+                                    <a href="{{ route('enhancementSumm', ['project' => $project->id]) }}" class="btn btn-primary btn-sm">Go somewhere</a>
                                 </div>
                             </div><!--end card-body-->
                         </div><!--end card-->
                     </div><!--end col-->
                 @endforeach
             </div><!--end row-->
-
         </div>
     </div>
     <!-- end page content -->
@@ -125,8 +124,6 @@
                     console.error('Error:', error);
                 }
             });
-
-
         });
     });
 </script>

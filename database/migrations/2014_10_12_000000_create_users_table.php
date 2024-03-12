@@ -25,12 +25,8 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->string('role_id')->nullable();
             $table->string('category_id')->nullable();
-            $table->string('manage_title')->nullable();
-            $table->string('manage_subtitle')->nullable();
-            $table->string('manage_content')->nullable();
-            $table->string('manage_support_category')->nullable();
-            $table->string('manage_support_subcategory')->nullable();
-            $table->string('manage_status')->nullable();
+            $table->string('manage_documentation')->nullable();
+            $table->string('manage_support_tool')->nullable();
             $table->string('manage_all_ticket')->nullable();
             $table->string('manage_ticket_in_category')->nullable();
             $table->string('manage_own_ticket')->nullable();

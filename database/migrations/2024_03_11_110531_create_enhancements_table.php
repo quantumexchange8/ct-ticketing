@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('enhancement_title')->nullable();
             $table->string('enhancement_description')->nullable();
             $table->string('version')->nullable();
+            $table->string('project_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

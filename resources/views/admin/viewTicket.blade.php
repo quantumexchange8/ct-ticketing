@@ -111,6 +111,35 @@
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="form-group">
+                                    <label for="message">Project</label>
+                                    <select class="form-control" name="project_id" disabled>
+                                        <option value="">Select Project</option>
+                                        @foreach($projects as $project)
+                                            <option value="{{ $project->id }}" {{ $ticket->projects->id == $project->id ? 'selected' : '' }}>
+                                                {!! $project->project_name !!}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('project_id')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group" >
+                                    <label for="message">Project Name Input By User</label>
+                                    <input type="text" class="form-control" name="p_name" value="{{ $ticket->p_name }}" readonly>
+                                    @error('p_name')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
                                     <label for="message">Category</label>
                                     <select class="form-control" name="category_id" disabled>
                                         <option value="">Select Category</option>

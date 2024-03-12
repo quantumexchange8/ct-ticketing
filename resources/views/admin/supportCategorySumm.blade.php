@@ -85,9 +85,9 @@
                         <div class="card-header" style="background-color: {{ $colors[$colorIndex] }}">
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <h4 class="card-title">{!! $supportCategory->category_name !!}</h4>
-                                <a href="{{ route('supportSubSumm', ['supportCategory' => $supportCategory->id, 'project' => $project->id]) }}">
+                                {{-- <a href="{{ route('supportSubSumm', ['supportCategory' => $supportCategory->id, 'project' => $project->id]) }}">
                                     <i data-feather="edit-3" class="align-self-center menu-icon"></i>
-                                </a>
+                                </a> --}}
                             </div>
                         </div><!--end card-header-->
                     </div><!--end card-->
@@ -99,6 +99,22 @@
                     <div class="col-sm-3">
                         <div class="card">
                             <div class="card-header" id="{{ $subcategory->id }}">
+
+                                <div class="dropdown d-inline-block float-right">
+                                    <a class="dropdown-toggle mr-n2 mt-n2" id="drop3" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                                        <i class="las la-ellipsis-v font-18 text-muted"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="drop3">
+                                        <a class="dropdown-item" href="{{ route('editSub', ['id' => $subcategory->id]) }}">Edit</a>
+
+
+                                        <form action="{{ route('deleteSub', ['id' => $subcategory->id]) }}" method="POST" id="{{ 'deleteForm' . $subcategory->id }}" data-subcategory-id="{{ $subcategory->id }}">
+                                            @method('DELETE')
+                                            @csrf
+                                            <a class="dropdown-item" href="javascript:void(0);" onclick="confirmDelete('{{ 'deleteForm' . $subcategory->id }}')">Delete</a>
+                                        </form>
+                                    </div>
+                                </div><!--end dropdown-->
                                 <h4 class="card-title">{{ $subcategory->sub_name }}</h4>
                             </div><!--end card-header-->
                             <div class="card-body">
@@ -136,8 +152,6 @@
 
 <script>
     function confirmDelete(formId) {
-        var categoryId = document.getElementById(formId).getAttribute('data-category-id');
-
         Swal.fire({
             title: 'Are you sure?',
             text: 'This action will delete the category and associated subcategories.',

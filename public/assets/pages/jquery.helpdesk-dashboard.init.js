@@ -13,18 +13,18 @@ $(function() {
     var series = [];
 
     // Get unique status names
-    var statusNames = chartData.reduce(function(acc, curr) {
-        if (!acc.includes(curr.status)) {
-            acc.push(curr.status);
+    var projectNames = chartData.reduce(function(acc, curr) {
+        if (!acc.includes(curr.project_name)) {
+            acc.push(curr.project_name);
         }
         return acc;
     }, []);
 
 
     // Loop through unique status names and generate series data
-    statusNames.forEach(function(statusName) {
+    projectNames.forEach(function(projectName) {
         var data = chartData.filter(function(data) {
-            return data.status === statusName;
+            return data.project_name === projectName;
         }).map(function(data) {
             return data.ticket_count;
         });
@@ -33,7 +33,7 @@ $(function() {
 
         // Push series object with dynamically generated data and series name
         series.push({
-            name: statusName,
+            name: projectName,
             data: data
         });
     });
@@ -60,7 +60,7 @@ $(function() {
             show: false
         },
         },
-        colors: ['#EDAE49', '#D1495B', '#00798C', '#30638E', '#003D5B'],
+        colors: ['#6E0E0A', '#A32E0A', '#D74E09', '#E58507', '#F2BB05', '#F1D667', '#B9BB84', '#819FA1', '#124E78'],
         dataLabels: {
             enabled: false
         },

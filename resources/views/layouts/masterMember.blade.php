@@ -37,7 +37,7 @@
         <div class="left-sidenav">
             <!-- LOGO -->
             <div class="brand">
-                <a href="#" class="logo">
+                <a href="{{ route('dashboard') }}" class="logo">
                     {{-- <span>
                         <img src="{{ asset('assets/images/logo-sm.png') }}" alt="logo-small" class="logo-sm">
                     </span>
@@ -55,9 +55,9 @@
                 <ul class="metismenu left-sidenav-menu">
 
                     <li class="menu-label mt-0">Main</li>
-                    <li>
+                    {{-- <li>
                         <a href="{{ route('dashboard') }}"> <i data-feather="home" class="align-self-center menu-icon"></i><span>Dashboard</span></a>
-                    </li>
+                    </li> --}}
 
                     {{-- <li>
                         <a href="{{ route('documentation') }}"><i data-feather="file-text" class="align-self-center menu-icon"></i><span>Documentation</span></a>
@@ -65,6 +65,8 @@
                     @php
                         $selectedProjectId = Session::get('selected_project_id');
                         $titles = App\Models\Title::where('project_id', $selectedProjectId)->get();
+
+                        $projects = App\Models\Project::find($selectedProjectId);
                     @endphp
 
                     <li>
@@ -85,7 +87,7 @@
                     </li>
 
                     <li>
-                        <a href="{{ route('releaseNote', ['project' => $selectedProjectId]) }}"> <i data-feather="check-circle" class="align-self-center menu-icon"></i><span>Release Note</span></a>
+                        <a href="{{ route('releaseNote', ['project' => $selectedProjectId]) }}"> <i data-feather="bookmark" class="align-self-center menu-icon"></i><span>Release Note</span></a>
                     </li>
 
                 </ul>
@@ -150,6 +152,11 @@
                                 <a class=" btn btn-sm btn-soft-primary" href="#" role="button"><i class="fas fa-plus mr-2"></i>New Task</a>
                             </div>
                         </li> --}}
+                         <li>
+                            <div class="nav-link">
+                                <div>{{ $projects->project_name }}</div>
+                            </div>
+                        </li>
                     </ul>
                 </nav>
                 <!-- end navbar-->

@@ -103,79 +103,13 @@
             </div><!-- end col-->
         </div><!--end row-->
 
-        {{-- <div class="row">
-            <div class="col-lg-12">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="row align-items-center">
-                                    <div class="col">
-                                        <h4 class="card-title">Unassigned Tickets (5 latest records)</h4>
-                                    </div><!--end col-->
-                                </div>  <!--end row-->
-                            </div><!--end card-header-->
-                            <div class="card-body">
-                                <div class="tab-content">
-                                    <div class="table-responsive">
-                                        <table class="table mb-0">
-                                            <thead class="thead-light">
-                                                <tr>
-                                                    <th class="border-top-0">Date</th>
-                                                    <th class="border-top-0">Ticket No</th>
-                                                    <th class="border-top-0">Category</th>
-                                                    <th class="border-top-0">Priority</th>
-                                                    <th class="border-top-0">Actions</th>
-                                                </tr><!--end tr-->
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($unassignedTickets as $ticket)
-                                                    <tr>
-                                                        <td>{{ Carbon\Carbon::parse($ticket->created_at)->format('d M Y') }}</td>
-                                                        <td>{{ $ticket->ticket_no}}</td>
-                                                        <td>{!! $ticket->supportCategories->category_name !!}</td>
-                                                        <td style ="{{ $ticket->priority === 'Medium' ? 'color: orange; font-weight: bold;' : ($ticket->priority === 'Low' ? 'color: #84f542; font-weight: bold;' : 'color: red; font-weight: bold;') }}">
-                                                            {{ $ticket->priority }}
-                                                        </td>
-                                                        <td class="text-center" style="display: flex; justify-content: center; gap: 10px;">
-                                                            <a href="{{ route('viewTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
-                                                                <i class="dripicons-preview"></i>
-                                                            </a>
-
-                                                            @if (Auth::user()->role_id == 1 || (Auth::user()->role_id !== 1 && Auth::user()->manage_ticket_in_category == 1 && Auth::user()->category_id == $ticket->category_id))
-                                                                <a href="{{ route('editTicket', ['id' => $ticket->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                                    <i class="dripicons-pencil"></i>
-                                                                </a>
-
-                                                                <form action="{{ route('deleteTicket', ['id' => $ticket->id]) }}" method="POST" id="deleteForm{{ $ticket->id }}" data-ticket-id="{{ $ticket->id }}">
-                                                                    @method('DELETE')
-                                                                    @csrf
-                                                                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $ticket->id }}')">
-                                                                        <i class="dripicons-trash"></i>
-                                                                    </button>
-                                                                </form>
-                                                            @endif
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table> <!--end table-->
-                                    </div><!--end /div-->
-                                </div>
-                            </div><!--end card-body-->
-                        </div><!--end card-->
-                    </div> <!--end col-->
-                </div>
-            </div>
-        </div> --}}
-
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
                         <div class="row align-items-center">
                             <div class="col">
-                                <h4 class="card-title">Tickets Group By Status</h4>
+                                <h4 class="card-title">Tickets Group By Project</h4>
                             </div><!--end col-->
                             <div class="col-auto">
                                 <div class="dropdown">
@@ -257,6 +191,14 @@
                 title: 'Done',
                 text: '{{ session('success') }}',
                 icon: 'success',
+                timer: 1000,
+                showConfirmButton: false,
+            });
+        @elseif(session('error'))
+            Swal.fire({
+                title: 'Error',
+                text: '{{ session('error') }}',
+                icon: 'error',
                 timer: 1000,
                 showConfirmButton: false,
             });

@@ -18,7 +18,7 @@ class EmailSignatureSeeder extends Seeder
             'sign_off' => 'Best regards,',
             'font_family' => 'Allura',
             'font_size' => '35',
-            'font_color' => '#fff'
+            'font_color' => '#000'
         ]);
     }
 }

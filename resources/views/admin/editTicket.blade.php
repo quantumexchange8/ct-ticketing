@@ -110,6 +110,35 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
+                                        <label for="message">Project</label>
+                                        <select class="form-control" name="project_id">
+                                            <option value="">Select Project</option>
+                                            @foreach($projects as $project)
+                                                <option value="{{ $project->id }}" {{ optional($ticket->projects)->id == $project->id ? 'selected' : '' }}>
+                                                    {!! $project->project_name !!}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('project_id')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-group" >
+                                        <label for="message">Project Name Input By User</label>
+                                        <input type="text" class="form-control" name="p_name" value="{{ $ticket->p_name }}">
+                                        @error('p_name')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
                                         <label for="category_id">Category</label>
                                         <select class="form-control" name="category_id">
                                             <option value="">Select Category</option>
@@ -123,21 +152,9 @@
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
-
-
-
-                                    {{-- <div class="form-group">
-                                        <label for="remarks">Remarks</label>
-                                        <textarea type="text" class="form-control" name="remarks" placeholder="Remarks" rows="5" >{{ $ticket->remarks }}</textarea>
-                                        @error('remarks')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div> --}}
                                 </div>
 
                                 <div class="col-lg-6">
-
-
                                     <div class="form-group">
                                         <label for="pic_id">PIC</label>
                                         <select class="form-control" name="pic_id">
@@ -154,19 +171,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            {{-- <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="form-group">
-                                        <label class="t_image">Images</label>
-                                        @foreach ($ticketImages as $ticketImage)
-                                        <div>
-                                            <a href="{{ asset('storage/tickets/' . $ticketImage->t_image) }}" class="file-modal-link">{{$ticketImage->t_image}}</a>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div> --}}
 
                             <div class="row">
                                 @foreach ($ticketImages as $ticketImage)
@@ -187,7 +191,6 @@
                             <div class="col-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
-
                         </form>
                     </div><!--end card-body-->
                 </div><!--end card-->

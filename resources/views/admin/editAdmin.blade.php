@@ -220,30 +220,30 @@
 
                                 <div class="row">
                                     <div class="col mb-2" >
-                                        <h4 class="card-title">Privileges - Administration</h4>
+                                        <h4 class="card-title">Privileges - Project</h4>
                                     </div>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-xl-4">
                                         <div class="checkbox checkbox-primary">
-                                            <input id="manage-title" name="manage_title" class="privilege-checkbox" type="checkbox" value="1" <?php if ($user->manage_title == 1) echo 'checked'; ?>>
-                                            <label for="manage-title">
-                                                Able to manage title
+                                            <input id="manage_documentation" name="manage_documentation" class="privilege-checkbox" type="checkbox" value="1" <?php if ($user->manage_documentation == 1) echo 'checked'; ?>>
+                                            <label for="manage_documentation">
+                                                Able to manage documentation
                                             </label>
                                         </div>
                                     </div>
                                     <div class="col-xl-4">
                                         <div class="checkbox checkbox-primary">
-                                            <input id="manage-category" name="manage_support_category" class="privilege-checkbox" type="checkbox" value="1" <?php if ($user->manage_support_category == 1) echo 'checked'; ?>>
-                                            <label for="manage-category">
-                                                Able to manage support category
+                                            <input id="manage_support_tool" name="manage_support_tool" class="privilege-checkbox" type="checkbox" value="1" <?php if ($user->manage_support_tool == 1) echo 'checked'; ?>>
+                                            <label for="manage_support_tool">
+                                                Able to manage support tool
                                             </label>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="col-xl-4">
                                         <div class="checkbox checkbox-primary">
                                             <input id="manage-subtitle" name="manage_subtitle" class="privilege-checkbox" type="checkbox" value="1" <?php if ($user->manage_subtitle == 1) echo 'checked'; ?>>
@@ -281,9 +281,8 @@
                                             </label>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
-
                             <div class="col-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
@@ -296,6 +295,7 @@
 </div>
 <!-- end page content -->
 
+{{-- Image Modal --}}
 <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document" style="max-width: 700px;">
         <div class="modal-content">

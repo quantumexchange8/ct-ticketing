@@ -10,7 +10,12 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title"> {{ $project->project_name }} -> {{ $subtitles->first() ? $subtitles->first()->title->title_name : '' }} -> {{$subtitles->subtitle_name ? $subtitles->subtitle_name : ''}}</h4>
+                            <h4 class="page-title">
+                                <a href="{{ route('titleSumm', ['project' => $project->id]) }}">{{ $project->project_name }}</a>
+                                -
+                                <a href="{{ route('viewMoreSubtitle', ['id' => $title->id]) }}">{{ $subtitles->first() ? $subtitles->first()->title->title_name : '' }}</a>
+                                - {{$subtitles->subtitle_name ? $subtitles->subtitle_name : ''}}
+                            </h4>
                             {{-- <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="{{ route('titleSumm') }}">Title</a></li>
                                 <li class="breadcrumb-item"><a href="{{ route('viewMoreSubtitle', ['id' => $subtitle->id]) }}">{{ $subtitle->title_name }}</a></li>
@@ -53,21 +58,17 @@
                                         </td>
                                         <td class="text-center">
                                             <div style="display: flex; justify-content: center; gap: 10px;">
-                                                @if (Auth::user()->manage_content == 1)
-                                                    <a href="{{ route('editContent', ['id' => $content->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                        <i class="dripicons-pencil"></i>
-                                                    </a>
-                                                @endif
+                                                <a href="{{ route('editContent', ['id' => $content->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
+                                                    <i class="dripicons-pencil"></i>
+                                                </a>
 
-                                                @if (Auth::user()->manage_content == 1)
-                                                    <form action="{{ route('deleteContent', ['id' => $content->id]) }}" method="POST">
-                                                        @method('DELETE')
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-sm btn-soft-danger btn-circle">
-                                                            <i class="dripicons-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                @endif
+                                                <form action="{{ route('deleteContent', ['id' => $content->id]) }}" method="POST">
+                                                    @method('DELETE')
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-soft-danger btn-circle">
+                                                        <i class="dripicons-trash"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>
