@@ -17,17 +17,24 @@
                                  - Order
                             </h4>
                         </div><!--end col-->
-                        @if ($orderItems->isNotEmpty())
-                            <div class="col-4" style="display: flex; justify-content: flex-end;">
+                            {{-- <div class="col-4" style="display: flex; justify-content: flex-end;">
                                 <button type="button" id="billButton" class="btn btn-soft-primary waves-effect waves-light">Bill</button>
+                            </div> --}}
+                        {{-- @if ($orderItems->isNotEmpty()) --}}
+                            <div class="col-4" style="display: flex; justify-content: flex-end;">
+                                <div class="col-4" style="display: flex; justify-content: flex-end;">
+                                    {{-- <button type="button" id="billButton" class="btn btn-soft-primary waves-effect waves-light" onclick="createInvoice({{ $projectId }}, '{{ $invoiceNumber }}')">Bill</button> --}}
+                                    <button type="button" id="billButton" class="btn btn-soft-primary waves-effect waves-light" onclick="createInvoice()">Bill</button>
+                                </div>
                             </div>
-                        @endif
+                        {{-- @endif --}}
 
                     </div><!--end row-->
                 </div><!--end page-title-box-->
             </div><!--end col-->
         </div><!--end row-->
         <!-- end page title end breadcrumb -->
+
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -89,7 +96,7 @@
                             </table>
                         </div>
                         <span class="float-right">
-                            <a href="{{ route('createOrder', ['project' => $project ])}}">
+                            <a href="{{ route('createOrder', ['project' => $project ]) }}">
                                 <button class="btn btn-danger mt-2">Add New Order Item</button>
                             </a>
                         </span><!--end table-->
@@ -390,6 +397,20 @@
 
 {{-- Invoice --}}
 <script>
+    // Function to handle bill button click
+    function createInvoice(projectId, invoiceNumber) {
+        // Get all checked order item IDs
+        var checkedIds = [];
+        document.querySelectorAll('.orderItemCheckbox:checked').forEach(function(checkbox) {
+            checkedIds.push(checkbox.dataset.orderitemId);
+        });
+        
+        var url = "{{ route('createInvoice') }}?orderItemIds=" + checkedIds.join(',');
+        // Construct the URL with the checked IDs, project ID, and invoice number, and navigate to createInvoice route
+        // var url = "{{ route('createInvoice') }}?projectId=" + projectId + "&orderItemIds=" + checkedIds.join('&orderItemIds=') + "&invoiceNumber=" + invoiceNumber;
+        window.location.href = url;
+    }
+
     // Function to handle checkbox change
     function handleCheckboxChange(event) {
         var isChecked = event.target.checked;
@@ -409,161 +430,6 @@
         console.log('Checked IDs:', checkedIds);
     }
 
-    // Function to generate HTML code for invoice based on checked order items
-    function generateInvoice(orderItemIds) {
-        // Construct HTML code dynamically based on checked order item IDs
-        var htmlCode = `
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-body invoice-head">
-                            <div class="row">
-                                <div class="col-md-4 align-self-center">
-                                    <img src="{{ asset('assets/images/current-tech-logo-black.png') }}" alt="logo-large" class="logo-lg logo-dark" height="100" weight="100">
-                                </div><!--end col-->
-                                <div class="col-md-8">
-
-                                    <ul class="list-inline mb-0 contact-detail float-right">
-                                        <li class="list-inline-item">
-                                            <div class="pl-3">
-                                                <i class="mdi mdi-web"></i>
-                                                <p class="text-muted mb-0">{{ $user->email }}</p>
-                                            </div>
-                                        </li>
-                                        <li class="list-inline-item">
-                                            <div class="pl-3">
-                                                <i class="mdi mdi-phone"></i>
-                                                <p class="text-muted mb-0">{{ $user->phone_number }}</p>
-                                            </div>
-                                        </li>
-                                        <li class="list-inline-item">
-                                            <div class="pl-3">
-                                                <i class="mdi mdi-map-marker"></i>
-                                                <a href="https://maps.app.goo.gl/tUstg2mg1iFnS9s39">
-                                                    <p class="text-muted mb-0">Click Here</p>
-                                                </a>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </div><!--end card-body-->
-                    <div class="card-body">
-                        <!-- Order details section -->
-                        <div class="table-responsive project-invoice">
-                            <table class="table table-bordered mb-0">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Quantity</th>
-                                        <th>Description</th>
-                                        <th>Unit Price</th>
-                                        <th>Subtotal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>`;
-
-        // Define a function to fetch order item details for each ID
-        function fetchOrderItemDetails(orderItemId) {
-            return new Promise((resolve, reject) => {
-                fetch(`/get-order/${orderItemId}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Failed to fetch order item details');
-                        }
-                        return response.json();
-                    })
-                    .then(orderItem => {
-                        resolve(orderItem);
-                    })
-                    .catch(error => {
-                        reject(error);
-                    });
-            });
-        }
-
-        var totalPrice = 0;
-        var indexCounter = 1;
-
-        // Fetch order item details for each ID and append them to the HTML code
-        Promise.all(orderItemIds.map(fetchOrderItemDetails))
-            .then(orderItems => {
-                orderItems.forEach(orderItem => {
-                    htmlCode += `
-                        <tr>
-                            <td>${indexCounter}</td>
-                            <td>${orderItem.order_quantity}</td>
-                            <td></td>
-                            <td>${orderItem.order_description}</td>
-                            <td>${orderItem.unit_price}</td>
-                            <td>${orderItem.total_price}</td>
-                        </tr>`;
-
-                    // Calculate total price
-                    totalPrice += parseFloat(orderItem.total_price);
-                    // Increment the index counter
-                    indexCounter++;
-                });
-
-                // Append total section to the HTML code
-                htmlCode += `
-                            <tr class="bg-black text-white">
-                                <th colspan="3" class="border-0"></th>
-                                <td class="border-0 font-14"><b>Total</b></td>
-                                <td class="border-0 font-14"><b>RM ${totalPrice.toFixed(2)}</b></td>
-                            </tr>
-                        </tbody>
-                    </table><!--end table-->
-                </div><!--end project-invoice-->
-                <div class="row mt-2">
-                    <div class="col-lg-4">
-                        <div style="font-size: {{ $emailSignature->font_size }}px;
-                            font-family: {{ $emailSignature->font_family }};
-                            color: {{ $emailSignature->font_color }}; ">
-                            {{ $emailSignature->sign_off }}
-                        </div>
-                        <div style="font-family: Palatino Linotype; font-size: 18px;" >{{ $user->name }}</div>
-                        <div style="font-family: Book Antiqua; font-size: 15px;">Current Tech Industries Sdn Bhd</div>
-                        <div style="font-family: Book Antiqua; font-size: 15px;">{{ $user->position }}</div>
-                        <hr>
-                        <div style="font-family: Book Antiqua; font-size: 13px;">Email: {{ $user->email }}</div>
-                        <div style="font-family: Book Antiqua; font-size: 13px;">Phone Number: {{ $user->phone_number }}</div>
-                        <div style="display:flex; flex-direction:row; gap:20px; margin-top:5px;">
-                            <a href="https://{{ $user->whatsapp_me }}"><i class="fa-brands fa-square-whatsapp fa-2xl" style="color: #16da9f;"></i></a>
-                            <a href="https://t.me/{{ $user->telegram_username }}"><i class="fa-brands fa-telegram fa-2xl" style="color: #74C0FC;"></i></a>
-                        </div>
-                    </div><!--end col-->
-                </div><!--end row-->
-                <hr>
-                <div class="row d-flex justify-content-center">
-                    <div class="col-lg-12 col-xl-4 ml-auto align-self-center">
-                        <div class="text-center"><small class="font-12">Thank you very much for doing business with us.</small></div>
-                    </div><!--end col-->
-                    <div class="col-lg-12 col-xl-4">
-                        <div class="float-right d-print-none">
-                            <a href="javascript:window.print()" class="btn btn-info"><i class="fa fa-print"></i></a>
-                            <a href="#" class="btn btn-primary">Submit</a>
-                            <a href="#" class="btn btn-danger">Cancel</a>
-                        </div>
-                    </div><!--end col-->
-                </div><!--end row-->
-                </div><!--end card-body-->
-                </div><!--end card-->
-                </div><!--end col-->
-                </div><!--end row-->`;
-
-                // Set the generated HTML code to the element with ID "invoice"
-                document.getElementById("invoice").innerHTML = htmlCode;
-            })
-            .catch(error => {
-                console.error(error.message);
-            });
-    }
-
-
-
-
-
     // Add event listener to the select all checkbox in the table head
     var selectAllCheckbox = document.getElementById('selectAllCheckbox');
     selectAllCheckbox.addEventListener('change', handleCheckboxChange);
@@ -575,18 +441,6 @@
             var orderId = event.target.dataset.orderitemId;
             console.log('Checkbox ID:', orderId, 'Checked:', isChecked);
         });
-    });
-
-    // Add event listener to the "Bill" button
-    document.getElementById('billButton').addEventListener('click', function() {
-        // Get all checked order item IDs
-        var checkedIds = [];
-        document.querySelectorAll('.orderItemCheckbox:checked').forEach(function(checkbox) {
-            checkedIds.push(checkbox.dataset.orderitemId);
-        });
-
-        // Generate invoice based on checked order items
-        generateInvoice(checkedIds);
     });
 </script>
 

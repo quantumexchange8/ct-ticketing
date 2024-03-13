@@ -36,4 +36,9 @@ class Project extends Model
     {
         return $this->hasMany(OrderItem::class, 'project_id', 'id');
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'project_id', 'id');
+    }
 }

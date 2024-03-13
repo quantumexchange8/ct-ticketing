@@ -332,14 +332,14 @@
                                             '<div style="font-size: ' + emailSignature.font_size + 'px; font-family: ' + emailSignature.font_family + '; color: ' + emailSignature.font_color + '; ">' +
                                                  emailSignature.sign_off  +
                                             '</div>' +
-                                            '<div style="font-family: Palatino Linotype; font-size: 18px;">' + user.name + '</div>' +
-                                            '<div style="font-family: Book Antiqua; font-size: 15px;"> Current Tech Industries Sdn Bhd </div>' +
-                                            '<div style="font-family: Book Antiqua; font-size: 15px;"> ' + position + '</div>' +
+                                            '<div style="font-family: Palatino Linotype; font-size: 13px;">' + user.name + '</div>' +
+                                            '<div style="font-family: Book Antiqua; font-size: 12px;"> Current Tech Industries Sdn Bhd </div>' +
+                                            '<div style="font-family: Book Antiqua; font-size: 12px;"> ' + position + '</div>' +
                                         '</div>' +
                                     '</div>' +
                                     '<hr>' +
-                                    '<div style="font-family: Book Antiqua; font-size: 15px;">Email: ' + user.email + '</div>' +
-                                    '<div style="font-family: Book Antiqua; font-size: 15px;">Phone Number: ' + phoneNumber + '</div>' +
+                                    '<div style="font-family: Book Antiqua; font-size: 12px;">Email: ' + user.email + '</div>' +
+                                    '<div style="font-family: Book Antiqua; font-size: 12px;">Phone Number: ' + phoneNumber + '</div>' +
                                     '<div style="display:flex; flex-direction:row; gap:20px; margin-top:5px;">' +
                                         '<a href="https://' + user.whatsapp_me + '">' +
                                         '<i class="fa-brands fa-square-whatsapp fa-2xl" style="color: #16da9f;"></i>' +

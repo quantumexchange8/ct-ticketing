@@ -28,6 +28,7 @@ use App\Models\Project;
 use App\Models\TicketLog;
 use App\Models\Enhancement;
 use App\Models\OrderItem;
+use App\Models\Order;
 class AdminController extends Controller
 {
 
@@ -2537,14 +2538,58 @@ class AdminController extends Controller
         return view('admin.invoice', compact('projects'));
     }
 
+    // public function invoiceSumm(Project $project)
+    // {
+    //     $user = auth()->user();
+    //     $emailSignature = EmailSignature::where('user_id', $user->id)->first();
+    //     $orderItems = OrderItem::where('project_id', $project->id)->get();
+    //     $projectId = $project->id;
+
+    //     return view('admin.invoiceSumm', compact('orderItems', 'project', 'user', 'emailSignature', 'projectId'));
+    // }
+
     public function invoiceSumm(Project $project)
     {
         $user = auth()->user();
         $emailSignature = EmailSignature::where('user_id', $user->id)->first();
         $orderItems = OrderItem::where('project_id', $project->id)->get();
+        $projectId = $project->id;
 
-        return view('admin.invoiceSumm', compact('orderItems', 'project', 'user', 'emailSignature'));
+        // Get the current month and year
+        $currentMonthYear = date('my');
+
+        // Get the project name and remove spaces
+        $projectName = str_replace(' ', '', $project->project_name);
+
+        // Generate the base invoice number format
+        $baseInvoiceNumber = $currentMonthYear . '-' . $projectName . '-';
+
+        // Check if there are existing orders for the project
+        $existingOrders = Order::where('project_id', $projectId)->count();
+
+        // If there are no existing orders, start with 00001
+        if ($existingOrders == 0) {
+            $invoiceNumber = $baseInvoiceNumber . '00001';
+        } else {
+            // Get the highest invoice number for the project
+            $latestOrder = Order::where('project_id', $projectId)->latest('order_no')->first();
+
+            // Extract the last five digits from the highest invoice number
+            $lastDigits = intval(substr($latestOrder->order_no, -5));
+
+            // Increment the last five digits by 1
+            $nextNumber = $lastDigits + 1;
+
+            // Format the next number with leading zeros
+            $nextNumberFormatted = sprintf('%05d', $nextNumber);
+
+            // Combine with the base invoice number to get the new invoice number
+            $invoiceNumber = $baseInvoiceNumber . $nextNumberFormatted;
+        }
+
+        return view('admin.invoiceSumm', compact('orderItems', 'project', 'user', 'emailSignature', 'projectId', 'invoiceNumber'));
     }
+
 
     public function createOrder(Project $project)
     {
@@ -2686,5 +2731,126 @@ class AdminController extends Controller
 
         return view('admin.invoiceTest', compact('orderItems', 'project', 'user', 'emailSignature'));
     }
+
+    public function createInvoiceTest(Request $request)
+    {
+        // Retrieve the order item IDs and project ID from the request
+        $orderItemIds = $request->query('orderItemIds');
+        $projectId = $request->query('projectId');
+        $invoiceNumber = $request->query('invoiceNumber');
+
+
+        $project = Project::find($projectId);
+
+        // Explode the string of IDs into an array
+        $orderItemIdsArray = explode(',', $orderItemIds);
+        // dd($orderItemIdsArray);
+        // Fetch order items based on the IDs
+        $orderItems = OrderItem::whereIn('id', $orderItemIdsArray)->get();
+
+        $current = now();
+
+        $user = auth()->user();
+        $emailSignature = EmailSignature::where('user_id', $user->id)->first();
+
+        return view('admin.createInvoice', compact('user', 'emailSignature', 'orderItems', 'current', 'project', 'invoiceNumber'));
+    }
+
+    public function createInvoice(Request $request)
+    {
+        // Retrieve the order item IDs and project ID from the request
+        $orderItemIds = $request->query('orderItemIds');
+
+        // Explode the string of IDs into an array
+        $orderItemIdsArray = explode(',', $orderItemIds);
+        // dd($orderItemIdsArray);
+        // Fetch order items based on the IDs
+        $orderItems = OrderItem::whereIn('id', $orderItemIdsArray)->get();
+
+        $current = now();
+
+        $user = auth()->user();
+        $emailSignature = EmailSignature::where('user_id', $user->id)->first();
+
+        return view('admin.createInvoice', compact('user', 'emailSignature', 'orderItems', 'current'));
+    }
+
+    public function addInvoice(Request $request)
+    {
+        // dd($request->all());
+
+        // Retrieve the old order items from the request
+        $oldOrderItems = $request->input('orderItems');
+
+        // Loop through the old order items
+        foreach ($oldOrderItems as $oldOrderItem) {
+            // Retrieve the order item from the database based on its ID
+            $orderItem = OrderItem::find($oldOrderItem['orderitemid']);
+
+            // Update the order item with the new data from the request
+            $orderItem->order_item = $oldOrderItem['item'];
+            $orderItem->order_description = $oldOrderItem['description'];
+            $orderItem->order_quantity = $oldOrderItem['quantity'];
+            $orderItem->unit_price = $oldOrderItem['rate'];
+
+            // Calculate the total price
+            $totalPrice = $orderItem->unit_price * $orderItem->order_quantity;
+
+            // Update the total price field
+            $orderItem->total_price = $totalPrice;
+
+            // Save the updated order item
+            $orderItem->save();
+        }
+
+        // Retrieve the items, descriptions, quantities, and unit_prices arrays from the request
+        $items = $request->input('items');
+        $descriptions = $request->input('descriptions');
+        $quantities = $request->input('quantities');
+        $unitPrices = $request->input('unit_prices');
+
+        // Initialize an empty array to store the combined data
+        $combinedData = [];
+
+        // Loop through the arrays simultaneously
+        $count = max(count($items), count($descriptions), count($quantities), count($unitPrices));
+        for ($i = 0; $i < $count; $i++) {
+            // Create an inner array representing a row of data
+            $rowData = [
+                'item' => $items[$i] ?? null,
+                'description' => $descriptions[$i] ?? null,
+                'quantity' => $quantities[$i] ?? null,
+                'unit_price' => $unitPrices[$i] ?? null,
+            ];
+
+            // Add the inner array to the combined data array
+            $combinedData[] = $rowData;
+        }
+
+        foreach ($combinedData as $data) {
+            // Create a new OrderItem instance
+            $orderItem = new OrderItem();
+
+            // Assign values from the combined data to the OrderItem instance
+            $orderItem->order_item = $data['item'];
+            $orderItem->order_description = $data['description'];
+            $orderItem->order_quantity = $data['quantity'];
+            $orderItem->unit_price = $data['unit_price'];
+
+            // Calculate the total price
+            $totalPrice = $orderItem->unit_price * $orderItem->order_quantity;
+
+            // Assign the total price to the OrderItem instance
+            $orderItem->total_price = $totalPrice;
+
+            // Save the OrderItem instance to the database
+            $orderItem->save();
+        }
+
+
+        return redirect()->back();
+    }
+
+
 
 }

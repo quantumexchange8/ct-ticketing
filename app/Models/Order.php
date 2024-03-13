@@ -14,4 +14,9 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class, 'order_id', 'id');
     }
+
+    public function projects()
+    {
+        return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
 }

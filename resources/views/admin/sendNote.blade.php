@@ -63,14 +63,14 @@
                                             color: {{ $emailSignature->font_color }}; ">
                                             {{ $emailSignature->sign_off }}
                                         </div>
-                                        <div style="font-family: Palatino Linotype; font-size: 18px;" >{{ $user->name }}</div>
-                                        <div style="font-family: Book Antiqua; font-size: 15px;">Current Tech Industries Sdn Bhd</div>
-                                        <div style="font-family: Book Antiqua; font-size: 15px;">{{ $user->position }}</div>
+                                        <div style="font-family: Palatino Linotype; font-size: 13px;" >{{ $user->name }}</div>
+                                        <div style="font-family: Book Antiqua; font-size: 12px;">Current Tech Industries Sdn Bhd</div>
+                                        <div style="font-family: Book Antiqua; font-size: 12px;">{{ $user->position }}</div>
                                     </div>
                                 </div>
                                 <hr>
-                                <div style="font-family: Book Antiqua; font-size: 13px;">Email: {{ $user->email }}</div>
-                                <div style="font-family: Book Antiqua; font-size: 13px;">Phone Number: {{ $user->phone_number }}</div>
+                                <div style="font-family: Book Antiqua; font-size: 12px;">Email: {{ $user->email }}</div>
+                                <div style="font-family: Book Antiqua; font-size: 12px;">Phone Number: {{ $user->phone_number }}</div>
                                 <div style="display:flex; flex-direction:row; gap:20px; margin-top:5px;">
                                     <a href="https://{{ $user->whatsapp_me }}"><i class="fa-brands fa-square-whatsapp fa-2xl" style="color: #16da9f;"></i></a>
                                     <a href="https://t.me/{{ $user->telegram_username }}"><i class="fa-brands fa-telegram fa-2xl" style="color: #74C0FC;"></i></a>
