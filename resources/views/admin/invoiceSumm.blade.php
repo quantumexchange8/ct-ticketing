@@ -6,6 +6,7 @@
 <!-- Page Content-->
 <div class="page-content">
     <div class="container-fluid">
+
         <!-- Page-Title -->
         <div class="row">
             <div class="col-sm-12">
@@ -23,8 +24,8 @@
                         {{-- @if ($orderItems->isNotEmpty()) --}}
                             <div class="col-4" style="display: flex; justify-content: flex-end;">
                                 <div class="col-4" style="display: flex; justify-content: flex-end;">
-                                    {{-- <button type="button" id="billButton" class="btn btn-soft-primary waves-effect waves-light" onclick="createInvoice({{ $projectId }}, '{{ $invoiceNumber }}')">Bill</button> --}}
-                                    <button type="button" id="billButton" class="btn btn-soft-primary waves-effect waves-light" onclick="createInvoice()">Bill</button>
+                                    <button type="button" id="billButton" class="btn btn-soft-primary waves-effect waves-light" onclick="createInvoice({{ $projectId }}, '{{ $invoiceNumber }}')">Bill</button>
+                                    {{-- <button type="button" id="billButton" class="btn btn-soft-primary waves-effect waves-light" onclick="createInvoice()">Bill</button> --}}
                                 </div>
                             </div>
                         {{-- @endif --}}
@@ -404,10 +405,10 @@
         document.querySelectorAll('.orderItemCheckbox:checked').forEach(function(checkbox) {
             checkedIds.push(checkbox.dataset.orderitemId);
         });
-        
-        var url = "{{ route('createInvoice') }}?orderItemIds=" + checkedIds.join(',');
+
+        // var url = "{{ route('createInvoice') }}?orderItemIds=" + checkedIds.join(',');
         // Construct the URL with the checked IDs, project ID, and invoice number, and navigate to createInvoice route
-        // var url = "{{ route('createInvoice') }}?projectId=" + projectId + "&orderItemIds=" + checkedIds.join('&orderItemIds=') + "&invoiceNumber=" + invoiceNumber;
+        var url = "{{ route('createInvoice') }}?projectId=" + projectId + "&orderItemIds=" + checkedIds.join(',') + "&invoiceNumber=" + invoiceNumber;
         window.location.href = url;
     }
 

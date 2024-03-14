@@ -2713,15 +2713,15 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Data deleted successfully.');
     }
 
-    public function getOrderItem($id)
-    {
-        $orderItem = OrderItem::find($id);
-        if (!$orderItem) {
-            return response()->json(['error' => 'Order item not found'], 404);
-        }
+    // public function getOrderItem($id)
+    // {
+    //     $orderItem = OrderItem::find($id);
+    //     if (!$orderItem) {
+    //         return response()->json(['error' => 'Order item not found'], 404);
+    //     }
 
-        return response()->json($orderItem);
-    }
+    //     return response()->json($orderItem);
+    // }
 
     public function invoiceTest(Project $project)
     {
@@ -2732,29 +2732,29 @@ class AdminController extends Controller
         return view('admin.invoiceTest', compact('orderItems', 'project', 'user', 'emailSignature'));
     }
 
-    public function createInvoiceTest(Request $request)
-    {
-        // Retrieve the order item IDs and project ID from the request
-        $orderItemIds = $request->query('orderItemIds');
-        $projectId = $request->query('projectId');
-        $invoiceNumber = $request->query('invoiceNumber');
+    // public function createInvoiceTest(Request $request)
+    // {
+    //     // Retrieve the order item IDs and project ID from the request
+    //     $orderItemIds = $request->query('orderItemIds');
+    //     $projectId = $request->query('projectId');
+    //     $invoiceNumber = $request->query('invoiceNumber');
 
 
-        $project = Project::find($projectId);
+    //     $project = Project::find($projectId);
 
-        // Explode the string of IDs into an array
-        $orderItemIdsArray = explode(',', $orderItemIds);
-        // dd($orderItemIdsArray);
-        // Fetch order items based on the IDs
-        $orderItems = OrderItem::whereIn('id', $orderItemIdsArray)->get();
+    //     // Explode the string of IDs into an array
+    //     $orderItemIdsArray = explode(',', $orderItemIds);
+    //     // dd($orderItemIdsArray);
+    //     // Fetch order items based on the IDs
+    //     $orderItems = OrderItem::whereIn('id', $orderItemIdsArray)->get();
 
-        $current = now();
+    //     $current = now();
 
-        $user = auth()->user();
-        $emailSignature = EmailSignature::where('user_id', $user->id)->first();
+    //     $user = auth()->user();
+    //     $emailSignature = EmailSignature::where('user_id', $user->id)->first();
 
-        return view('admin.createInvoice', compact('user', 'emailSignature', 'orderItems', 'current', 'project', 'invoiceNumber'));
-    }
+    //     return view('admin.createInvoiceTest', compact('user', 'emailSignature', 'orderItems', 'current', 'project', 'invoiceNumber'));
+    // }
 
     public function createInvoice(Request $request)
     {
@@ -2772,84 +2772,322 @@ class AdminController extends Controller
         $user = auth()->user();
         $emailSignature = EmailSignature::where('user_id', $user->id)->first();
 
-        return view('admin.createInvoice', compact('user', 'emailSignature', 'orderItems', 'current'));
+        $projectId = $request->query('projectId');
+        $invoiceNumber = $request->query('invoiceNumber');
+
+        $project = Project::find($projectId);
+
+        return view('admin.createInvoice', compact('user', 'emailSignature', 'orderItems', 'current', 'project', 'invoiceNumber', 'orderItemIds', 'projectId', 'invoiceNumber'));
     }
+
+    public function loadOrderItems(Request $request)
+    {
+        // Retrieve the order item IDs and project ID from the request
+        $orderItemIds = $request->query('orderItemIds');
+
+        // Explode the string of IDs into an array
+        $orderItemIdsArray = explode(',', $orderItemIds);
+        // dd($orderItemIdsArray);
+        // Fetch order items based on the IDs
+        $orderItems = OrderItem::whereIn('id', $orderItemIdsArray)->get();
+
+
+        $current = now();
+
+        $user = auth()->user();
+        $emailSignature = EmailSignature::where('user_id', $user->id)->first();
+
+        $projectId = $request->query('projectId');
+        $invoiceNumber = $request->query('invoiceNumber');
+
+        $project = Project::find($projectId);
+
+        return response()->json($orderItems);
+    }
+  // Retrieve the order item from the database based on its ID
+            // $orderItem = OrderItem::find($oldOrderItem['orderitemid']);
+    // public function addInvoice(Request $request)
+    // {
+    //     // dd($request->all());
+
+    //     // Retrieve the old order items from the request
+    //     $oldOrderItems = $request->input('orderItems');
+
+
+    //         // Loop through the old order items
+    //         // foreach ($oldOrderItems as $oldOrderItem) {
+
+    //         //     $orderItem = OrderItem::where('id', $oldOrderItem['orderitemid'])->first();
+
+    //         //     // Calculate the total price
+    //         //     $totalPrice = $oldOrderItem['rate'] * $oldOrderItem['quantity'];
+
+    //         //     // Update the order item with the new data
+    //         //     $orderItem->update([
+    //         //         'order_item' => $oldOrderItem['item'],
+    //         //         'order_description' => $oldOrderItem['description'],
+    //         //         'order_quantity' => $oldOrderItem['quantity'],
+    //         //         'unit_price' => $oldOrderItem['rate'],
+    //         //         'total_price' => $totalPrice
+    //         //     ]);
+    //         // }
+
+    //         $items = $request->input('items');
+    //         $descriptions = $request->input('descriptions');
+    //         $quantities = $request->input('quantities');
+    //         $unitPrices = $request->input('unit_prices');
+
+    //         // Check if all arrays have values
+    //         if ($items && $descriptions && $quantities && $unitPrices) {
+    //             // Initialize an empty array to store the combined data
+    //             $combinedData = [];
+
+    //             // Loop through the arrays simultaneously
+    //             $count = max(count($items), count($descriptions), count($quantities), count($unitPrices));
+    //             for ($i = 0; $i < $count; $i++) {
+    //                 // Create an inner array representing a row of data
+    //                 $rowData = [
+    //                     'item' => $items[$i] ?? null,
+    //                     'description' => $descriptions[$i] ?? null,
+    //                     'quantity' => $quantities[$i] ?? null,
+    //                     'unit_price' => $unitPrices[$i] ?? null,
+    //                 ];
+
+    //                 // Add the inner array to the combined data array
+    //                 $combinedData[] = $rowData;
+    //             }
+
+    //             foreach ($combinedData as $data) {
+    //                 // Create a new OrderItem instance
+    //                 $orderItem = new OrderItem();
+
+    //                 // Assign values from the combined data to the OrderItem instance
+    //                 $orderItem->order_item = $data['item'];
+    //                 $orderItem->order_description = $data['description'];
+    //                 $orderItem->order_quantity = $data['quantity'];
+    //                 $orderItem->unit_price = $data['unit_price'];
+
+    //                 // Calculate the total price
+    //                 $totalPrice = $orderItem->unit_price * $orderItem->order_quantity;
+
+    //                 // Assign the total price to the OrderItem instance
+    //                 $orderItem->total_price = $totalPrice;
+
+    //                 // Save the OrderItem instance to the database
+    //                 $orderItem->save();
+    //             }
+    //         }
+
+
+    //     return redirect()->back();
+    // }
+
+    // public function addInvoice(Request $request)
+    // {
+    //     // Retrieve the old and new order items from the request
+    //     $oldOrderItems = $request->input('orderItems');
+    //     $newOrderItems = [];
+
+    //     // Separate the old and new order items
+    //     foreach ($oldOrderItems as $key => $oldOrderItem) {
+    //         if (isset($oldOrderItem['orderitemid'])) {
+    //             // Existing order item, so update it
+    //             $orderItem = OrderItem::find($oldOrderItem['orderitemid']);
+    //             if ($orderItem) {
+    //                 // Calculate the total price
+    //                 $totalPrice = $oldOrderItem['rate'] * $oldOrderItem['quantity'];
+
+    //                 // Update the order item with the new data
+    //                 $orderItem->update([
+    //                     'order_item' => $oldOrderItem['item'],
+    //                     'order_description' => $oldOrderItem['description'],
+    //                     'order_quantity' => $oldOrderItem['quantity'],
+    //                     'unit_price' => $oldOrderItem['rate'],
+    //                     'total_price' => $totalPrice
+    //                 ]);
+    //             }
+    //         } else {
+    //             // New order item, so store it for later creation
+    //             $newOrderItems[$key] = $oldOrderItem;
+    //         }
+    //     }
+
+    //     // Create new order items
+    //     foreach ($newOrderItems as $newOrderItem) {
+    //         $orderItem = new OrderItem();
+
+    //         // Check if the 'item' key exists in the $newOrderItem array
+    //         if (isset($newOrderItem['item'])) {
+    //             // Set the 'order_item' attribute
+    //             $orderItem->order_item = $newOrderItem['item'];
+    //         } else {
+    //             // Handle the case where the 'item' key is not present
+    //             // You can set a default value or handle the error as per your requirement
+    //             // For example, you can log an error or skip this order item
+    //             continue; // Skip this order item and proceed to the next one
+    //         }
+
+    //         // Similarly, check and set other attributes
+    //         $orderItem->order_description = $newOrderItem['description'] ?? null;
+    //         $orderItem->order_quantity = $newOrderItem['quantity'] ?? null;
+    //         $orderItem->unit_price = $newOrderItem['rate'] ?? null;
+
+    //         // Calculate the total price
+    //         $totalPrice = ($newOrderItem['rate'] ?? 0) * ($newOrderItem['quantity'] ?? 0);
+    //         $orderItem->total_price = $totalPrice;
+
+    //         // Save the new order item
+    //         $orderItem->save();
+    //     }
+
+    //     return redirect()->back();
+    // }
+
+
+    // Only can update old order item
+    // public function addInvoice(Request $request)
+    // {
+    //     // dd($request->all());
+
+    //     // Retrieve the old order items from the request
+    //     $oldOrderItems = $request->input('orderItems');
+
+    //     // Loop through the old order items
+    //     foreach ($oldOrderItems as $oldOrderItem) {
+    //         // Check if the expected keys exist in the $oldOrderItem array
+    //         if (
+    //             isset($oldOrderItem['orderitemid']) &&
+    //             isset($oldOrderItem['item']) &&
+    //             isset($oldOrderItem['description']) &&
+    //             isset($oldOrderItem['quantity']) &&
+    //             isset($oldOrderItem['rate'])
+    //         ) {
+    //             // Retrieve the order item from the database based on its ID
+    //             $orderItem = OrderItem::find($oldOrderItem['orderitemid']);
+
+    //             // Update the order item with the new data from the request
+    //             $orderItem->order_item = $oldOrderItem['item'];
+    //             $orderItem->order_description = $oldOrderItem['description'];
+    //             $orderItem->order_quantity = $oldOrderItem['quantity'];
+    //             $orderItem->unit_price = $oldOrderItem['rate'];
+
+    //             // Calculate the total price
+    //             $totalPrice = $orderItem->unit_price * $orderItem->order_quantity;
+
+    //             // Update the total price field
+    //             $orderItem->total_price = $totalPrice;
+
+    //             // Save the updated order item
+    //             $orderItem->save();
+    //         }
+    //     }
+
+    //     $items = $request->input('items');
+    //     $descriptions = $request->input('descriptions');
+    //     $quantities = $request->input('quantities');
+    //     $unitPrices = $request->input('unit_prices');
+
+    //     // Check if all arrays have values
+    //     if ($items && $descriptions && $quantities && $unitPrices) {
+    //         // Initialize an empty array to store the combined data
+    //         $combinedData = [];
+
+    //         // Loop through the arrays simultaneously
+    //         $count = max(count($items), count($descriptions), count($quantities), count($unitPrices));
+    //         for ($i = 0; $i < $count; $i++) {
+    //             // Create an inner array representing a row of data
+    //             $rowData = [
+    //                 'item' => $items[$i] ?? null,
+    //                 'description' => $descriptions[$i] ?? null,
+    //                 'quantity' => $quantities[$i] ?? null,
+    //                 'unit_price' => $unitPrices[$i] ?? null,
+    //             ];
+
+    //             // Add the inner array to the combined data array
+    //             $combinedData[] = $rowData;
+    //         }
+
+    //         foreach ($combinedData as $data) {
+    //             // Create a new OrderItem instance
+    //             $orderItem = new OrderItem();
+
+    //             // Assign values from the combined data to the OrderItem instance
+    //             $orderItem->order_item = $data['item'];
+    //             $orderItem->order_description = $data['description'];
+    //             $orderItem->order_quantity = $data['quantity'];
+    //             $orderItem->unit_price = $data['unit_price'];
+
+    //             // Calculate the total price
+    //             $totalPrice = $orderItem->unit_price * $orderItem->order_quantity;
+
+    //             // Assign the total price to the OrderItem instance
+    //             $orderItem->total_price = $totalPrice;
+
+    //             // Save the OrderItem instance to the database
+    //             $orderItem->save();
+    //         }
+    //     }
+
+    //     return redirect()->back();
+
+    // }
+
 
     public function addInvoice(Request $request)
     {
-        // dd($request->all());
+        dd($request->all());
+        // Retrieve the order items from the request
+        $orderItems = $request->input('orderItems');
 
-        // Retrieve the old order items from the request
-        $oldOrderItems = $request->input('orderItems');
+        // Loop through the order items
+        foreach ($orderItems as $orderItem) {
+            // Check if the order item has an orderitemid (indicating it's an old item)
+            if (isset($orderItem['orderitemid']) && $orderItem['orderitemid'] !== null) {
+                // Retrieve the order item from the database based on its ID
+                // $order = Order::find($orderItem['orderitemid']);
+                $order = OrderItem::where('id', $orderItem['orderitemid'])->first();
 
-        // Loop through the old order items
-        foreach ($oldOrderItems as $oldOrderItem) {
-            // Retrieve the order item from the database based on its ID
-            $orderItem = OrderItem::find($oldOrderItem['orderitemid']);
+                // Update the order item with the new data from the request
+                $order->order_item = $orderItem['item'];
+                $order->order_description = $orderItem['description'];
+                $order->unit_price = $orderItem['rate'];
+                $order->order_quantity = $orderItem['quantity'];
 
-            // Update the order item with the new data from the request
-            $orderItem->order_item = $oldOrderItem['item'];
-            $orderItem->order_description = $oldOrderItem['description'];
-            $orderItem->order_quantity = $oldOrderItem['quantity'];
-            $orderItem->unit_price = $oldOrderItem['rate'];
+                // Calculate the total price
+                $totalPrice = $order->unit_price * $order->order_quantity;
 
-            // Calculate the total price
-            $totalPrice = $orderItem->unit_price * $orderItem->order_quantity;
+                // Update the total price field
+                $order->total_price = $totalPrice;
 
-            // Update the total price field
-            $orderItem->total_price = $totalPrice;
+                // Save the updated order item
+                $order->save();
+            } else {
+                // Create a new order item
+                $newOrderItem = new OrderItem();
 
-            // Save the updated order item
-            $orderItem->save();
+                // Assign values from the new data to the new order item
+                $newOrderItem->order_item = $orderItem['item'];
+                $newOrderItem->order_description = $orderItem['description'];
+                $newOrderItem->unit_price = $orderItem['rate'];
+                $newOrderItem->order_quantity = $orderItem['quantity'];
+
+                // Calculate the total price
+                $totalPrice = $newOrderItem->unit_price * $newOrderItem->order_quantity;
+
+                // Assign the total price to the new order item
+                $newOrderItem->total_price = $totalPrice;
+
+                // Save the new order item to the database
+                $newOrderItem->save();
+            }
         }
-
-        // Retrieve the items, descriptions, quantities, and unit_prices arrays from the request
-        $items = $request->input('items');
-        $descriptions = $request->input('descriptions');
-        $quantities = $request->input('quantities');
-        $unitPrices = $request->input('unit_prices');
-
-        // Initialize an empty array to store the combined data
-        $combinedData = [];
-
-        // Loop through the arrays simultaneously
-        $count = max(count($items), count($descriptions), count($quantities), count($unitPrices));
-        for ($i = 0; $i < $count; $i++) {
-            // Create an inner array representing a row of data
-            $rowData = [
-                'item' => $items[$i] ?? null,
-                'description' => $descriptions[$i] ?? null,
-                'quantity' => $quantities[$i] ?? null,
-                'unit_price' => $unitPrices[$i] ?? null,
-            ];
-
-            // Add the inner array to the combined data array
-            $combinedData[] = $rowData;
-        }
-
-        foreach ($combinedData as $data) {
-            // Create a new OrderItem instance
-            $orderItem = new OrderItem();
-
-            // Assign values from the combined data to the OrderItem instance
-            $orderItem->order_item = $data['item'];
-            $orderItem->order_description = $data['description'];
-            $orderItem->order_quantity = $data['quantity'];
-            $orderItem->unit_price = $data['unit_price'];
-
-            // Calculate the total price
-            $totalPrice = $orderItem->unit_price * $orderItem->order_quantity;
-
-            // Assign the total price to the OrderItem instance
-            $orderItem->total_price = $totalPrice;
-
-            // Save the OrderItem instance to the database
-            $orderItem->save();
-        }
-
 
         return redirect()->back();
     }
+
+
+
+
 
 
 

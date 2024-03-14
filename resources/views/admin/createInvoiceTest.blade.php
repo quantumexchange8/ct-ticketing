@@ -156,7 +156,6 @@
                         <p>Current Tech Industries Sdn. Bhd.</p>
                         <p>{{ $user->phone_number }}</p>
                     </address>
-                    <span><img alt="" src="http://www.jonathantneal.com/examples/invoice/logo.png"><input type="file" accept="image/*"></span>
                 </header>
                 <article>
                     <h1>Recipient</h1>

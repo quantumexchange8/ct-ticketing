@@ -163,6 +163,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/get-order/{id}', [AdminController::class, 'getOrderItem'])->name('getOrderItem');
 
     Route::get('/create-invoice', [AdminController::class, 'createInvoice'])->name('createInvoice');
+    Route::get('/load-order-items', [AdminController::class, 'loadOrderItems'])->name('loadOrderItems');
+
     Route::post('/add-invoice', [AdminController::class, 'addInvoice'])->name('addInvoice');
 
     Route::get('/create-invoice-test', [AdminController::class, 'createInvoiceTest'])->name('createInvoiceTest');
