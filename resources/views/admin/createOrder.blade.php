@@ -33,6 +33,22 @@
                                             <div data-repeater-item="">
                                                 <div class="form-group row d-flex align-items-end">
 
+                                                    <div class="col-sm-3">
+                                                        <label class="control-label">Item</label>
+                                                        <input type="text" class="form-control" name="car[][order_item]">
+                                                        @error('car[][order_item]')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div><!--end col-->
+
+                                                    <div class="col-sm-3">
+                                                    <label class="control-label">Description</label>
+                                                        <input type="text" class="form-control" name="car[][order_description]">
+                                                        @error('car[][order_description]')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div><!--end col-->
+
                                                     <div class="col-sm-1">
                                                         <label class="control-label">Quantity</label>
                                                         <input type="number" class="form-control" name="car[][order_quantity]" onchange="calculateTotal(this)">
@@ -41,15 +57,7 @@
                                                         @enderror
                                                     </div><!--end col-->
 
-                                                    <div class="col-sm-4">
-                                                    <label class="control-label">Description</label>
-                                                        <input type="text" class="form-control" name="car[][order_description]">
-                                                        @error('car[][order_description]')
-                                                            <span class="text-danger">{{ $message }}</span>
-                                                        @enderror
-                                                    </div><!--end col-->
-
-                                                    <div class="col-sm-3">
+                                                    <div class="col-sm-1">
                                                         <label class="control-label">Unit Price</label>
                                                         <input type="text" class="form-control" name="car[][unit_price]" onchange="calculateTotal(this)">
                                                         @error('car[][unit_price]')

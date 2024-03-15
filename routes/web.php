@@ -153,7 +153,6 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/invoice', [AdminController::class, 'invoice'])->name('invoice');
     Route::get('/invoice-summary/{project}', [AdminController::class, 'invoiceSumm'])->name('invoiceSumm');
-    Route::get('/invoice-test/{project}', [AdminController::class, 'invoiceTest'])->name('invoiceTest');
     Route::get('/create-order/{project}', [AdminController::class, 'createOrder'])->name('createOrder');
     Route::post('/add-order/{project}', [AdminController::class, 'addOrder'])->name('addOrder');
     Route::get('/edit-order/{id}', [AdminController::class, 'editOrder'])->name('editOrder');
@@ -167,7 +166,6 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::post('/add-invoice', [AdminController::class, 'addInvoice'])->name('addInvoice');
 
-    Route::get('/create-invoice-test', [AdminController::class, 'createInvoiceTest'])->name('createInvoiceTest');
 });
 
 

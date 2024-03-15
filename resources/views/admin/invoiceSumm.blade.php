@@ -51,7 +51,8 @@
                                                 <span class="checkmark"></span>
                                             </label>
                                         </th>
-                                        <th>Order Description</th>
+                                        <th>Order Item</th>
+                                        <th>Description</th>
                                         <th>Quantity</th>
                                         <th>Unit Price</th>
                                         <th>Total Price (RM)</th>
@@ -63,13 +64,16 @@
                                     @foreach ($orderItems as $orderItem)
                                     <tr data-orderitem-id="{{ $orderItem->id }}">
                                         <td>
-                                            <!-- Custom Checkbox -->
-                                            <label class="custom-checkbox">
-                                                <input type="checkbox" class="orderItemCheckbox" data-orderitem-id="{{ $orderItem->id }}">
-                                                <span class="checkmark"></span>
-                                            </label>
-                                            <!-- End Custom Checkbox -->
+                                            @if ($orderItem->order_id == null)
+                                                <!-- Custom Checkbox -->
+                                                <label class="custom-checkbox">
+                                                    <input type="checkbox" class="orderItemCheckbox" data-orderitem-id="{{ $orderItem->id }}">
+                                                    <span class="checkmark"></span>
+                                                </label>
+                                                <!-- End Custom Checkbox -->
+                                            @endif
                                         </td>
+                                        <td>{{ $orderItem->order_item }}</td>
                                         <td>{{ $orderItem->order_description }}</td>
                                         <td>{{ $orderItem->order_quantity }}</td>
                                         <td>{{ $orderItem->unit_price }}</td>
@@ -106,9 +110,9 @@
             </div> <!-- end col -->
         </div> <!-- end row -->
 
-        <div id="invoice">
+        {{-- <div id="invoice">
 
-        </div>
+        </div> --}}
 
         {{-- <div class="row">
             <div class="col-lg-12">
@@ -245,6 +249,16 @@
                 <div class="form-group row">
                     <div class="col-lg-6">
                         <div class="form-group">
+                            <label for="order_item">Order Item</label>
+                            <input type="text" class="form-control" name="order_item" id="order_item" autocomplete="off">
+                            @error('order_item')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="form-group">
                             <label for="order_description">Order Description</label>
                             <input type="text" class="form-control" name="order_description" id="order_description" autocomplete="off">
                             @error('order_description')
@@ -253,7 +267,11 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-6">
+
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4">
                         <div class="form-group">
                             <label for="order_quantity">Order Quantity</label>
                             <input type="text" class="form-control" name="order_quantity" id="order_quantity" autocomplete="off" onchange="calculateTotal(this)">
@@ -262,10 +280,8 @@
                             @enderror
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-4">
                         <div class="form-group">
                             <label for="unit_price">Unit Price</label>
                             <input type="text" class="form-control" name="unit_price" id="unit_price" autocomplete="off" onchange="calculateTotal(this)">
@@ -275,7 +291,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-6">
+                    <div class="col-lg-4">
                         <div class="form-group">
                             <label for="total_price">Total Price</label>
                             <input type="number" class="form-control  total-price" name="total_price" id="total_price" autocomplete="off" readonly>
@@ -320,6 +336,7 @@
                 success: function(response) {
 
                     // Update the modal content with the fetched title data
+                    $('#order_item').val(response.orderItem.order_item);
                     $('#order_description').val(response.orderItem.order_description);
                     $('#order_quantity').val(response.orderItem.order_quantity);
                     $('#unit_price').val(response.orderItem.unit_price);

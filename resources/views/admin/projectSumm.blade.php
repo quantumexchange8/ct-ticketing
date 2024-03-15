@@ -29,6 +29,8 @@
                                     <tr>
                                         <th>Project Name</th>
                                         <th>Description</th>
+                                        <th>Owner</th>
+                                        <th>Phone Number</th>
                                         <th>Show</th>
                                         <th>Actions</th>
                                     </tr>
@@ -38,6 +40,8 @@
                                     <tr>
                                         <td>{{ $project->project_name }}</td>
                                         <td>{{ $project->description }}</td>
+                                        <td>{{ $project->project_owner }}</td>
+                                        <td>{{ $project->project_telno }}</td>
                                         <td>{{ $project->show == 1 ? 'Yes' : 'No' }}</td>
                                         <td class="text-center">
                                             <div style="display: flex; justify-content: center; gap: 10px;">
@@ -85,7 +89,7 @@
             <form action="{{ route('addProject') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-lg-6">
                         <div class="form-group">
                             <label for="project_name">Project Name</label>
                             <input type="text" class="form-control" name="project_name" placeholder="Enter Project Name" autocomplete="off" value="{{ old('project_name') }}">
@@ -93,11 +97,35 @@
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <input type="text" class="form-control" name="description" placeholder="Enter Description" autocomplete="off" value="{{ old('description') }}">
+                            @error('description')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label for="project_owner">Owner</label>
+                            <input type="text" class="form-control" name="project_owner" placeholder="Enter Project Owner" autocomplete="off" value="{{ old('project_owner') }}">
+                            @error('project_owner')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="project_telno">Phone Number</label>
+                            <input type="text" class="form-control" name="project_telno" placeholder="Enter Phone Number" autocomplete="off" value="{{ old('project_telno') }}">
+                            @error('project_telno')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-lg-6">
                         <div class="form-group">
                             <label for="show">Show?</label>
                             <select class="form-control" name="show">
@@ -112,15 +140,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-lg-12">
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <input type="text" class="form-control" name="description" placeholder="Enter Description" autocomplete="off" value="{{ old('description') }}">
-                            @error('description')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
+
                 </div>
 
                 <div class="col-12 text-right">
@@ -155,7 +175,39 @@
                             @enderror
                         </div>
                     </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <input type="text" class="form-control" name="description" id="description" placeholder="Enter Description" autocomplete="off" value="{{ $project->description }}">
+                            @error('description')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
 
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label for="project_owner">Project Owner</label>
+                            <input type="text" class="form-control" name="project_owner" id="project_owner" placeholder="Enter Project Owner" autocomplete="off" value="{{ $project->project_owner }}">
+                            @error('project_name')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label for="project_telno">Phone Number</label>
+                            <input type="text" class="form-control" name="project_telno" id="project_telno" placeholder="Enter Phone Number" autocomplete="off" value="{{ $project->project_telno }}">
+                            @error('project_telno')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
                     <div class="col-lg-6">
                         <div class="form-group">
                             <label for="show">Show?</label>
@@ -168,14 +220,11 @@
                             @enderror
                         </div>
                     </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6" style="display: none;">
                         <div class="form-group">
-                            <label for="description">Description</label>
-                            <input type="text" class="form-control" name="description" id="description" placeholder="Enter Description" autocomplete="off" value="{{ $project->description }}">
-                            @error('description')
+                            <label for="id">ID</label>
+                            <input type="text" class="form-control" name="id" id="id" placeholder="Enter Phone Number" autocomplete="off">
+                            @error('id')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
@@ -225,7 +274,10 @@
                     // Update the modal content with the fetched title data
                     $('#project_name').val(response.project.project_name);
                     $('#description').val(response.project.description);
+                    $('#project_owner').val(response.project.project_owner);
+                    $('#project_telno').val(response.project.project_telno);
                     $('#show').val(response.project.show);
+                    $('#id').val(response.project.id);
 
                     // Show the modal
                     $('#editProjectModal').modal('show');
