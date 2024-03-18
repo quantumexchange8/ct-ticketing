@@ -361,6 +361,12 @@ class AdminController extends Controller
             $selectedYearCategory = $currentYear;
         }
 
+        if ($request->has('year_project')) {
+            $selectedYearProject = $request->year_project;
+        } else {
+            $selectedYearProject = $currentYear;
+        }
+
         // $ticketsByStatus = Ticket::select(
         //                 DB::raw('MONTH(tickets.created_at) AS month'),
         //                 'ticket_statuses.status',
@@ -406,7 +412,23 @@ class AdminController extends Controller
                     ->orderBy('support_categories.category_name')
                     ->get();
 
-        return view('admin.adminDashboard', compact('ticketStatuses', 'ticketCounts', 'currentYear', 'ticketsByStatus', 'ticketsByCategory', 'unassignedTickets','totalUnassigned', 'unassignedHigh', 'unassignedMedium', 'unassignedLow'));
+        $salesByProject = Order::select(
+                        DB::raw('MONTH(orders.created_at) AS month'),
+                        'projects.project_name',
+                        DB::raw('SUM(grand_total) AS sales')
+                    )
+                    ->join('projects', 'orders.project_id', '=', 'projects.id')
+                    ->join(DB::raw('(SELECT DISTINCT id AS project_id FROM projects) AS distinct_projects'), function ($join) {
+                        $join->on('orders.project_id', '=', 'distinct_projects.project_id');
+                    })
+                    ->whereYear('orders.created_at', $selectedYearProject)
+                    ->groupBy('month', 'projects.project_name')
+                    ->orderBy('month')
+                    ->orderBy('projects.project_name')
+                    ->get();
+
+
+        return view('admin.adminDashboard', compact('ticketStatuses', 'ticketCounts', 'currentYear', 'ticketsByStatus', 'ticketsByCategory', 'salesByProject','unassignedTickets','totalUnassigned', 'unassignedHigh', 'unassignedMedium', 'unassignedLow'));
     }
 
     public function helpdesk(Request $request)
@@ -1343,6 +1365,7 @@ class AdminController extends Controller
             'description' => 'nullable|max:255',
             'project_owner' => 'nullable|max:255',
             'project_telno' => 'nullable|max:255',
+            'project_address' => 'nullable|max:255',
         ];
 
         $messages = [
@@ -1352,6 +1375,7 @@ class AdminController extends Controller
             'description.max' => 'The Description should not exceed 255 characters.',
             'project_owner.max' => 'The Project Owner should not exceed 255 characters.',
             'project_telno.max' => 'The Project Phone Number should not exceed 255 characters.',
+            'project_address.max' => 'The Project Address should not exceed 255 characters.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -1368,7 +1392,8 @@ class AdminController extends Controller
             'description' => $request->input('description'),
             'show' => $request->input('show'),
             'project_owner' => $request->input('project_owner'),
-            'project_telno' => $request->input('project_telno')
+            'project_telno' => $request->input('project_telno'),
+            'project_address' => $request->input('project_address')
         ]);
 
         return redirect()->route('projectSumm')->with('success', 'New project created successfully.');
@@ -1395,6 +1420,7 @@ class AdminController extends Controller
             'description' => 'nullable|max:255',
             'project_owner' => 'nullable|max:255',
             'project_telno' => 'nullable|max:255',
+            'project_address' => 'nullable|max:255',
         ];
 
         $messages = [
@@ -1404,6 +1430,7 @@ class AdminController extends Controller
             'description.max' => 'The Description should not exceed 255 characters.',
             'project_owner.max' => 'The Project Owner should not exceed 255 characters.',
             'project_telno.max' => 'The Project Phone Number should not exceed 255 characters.',
+            'project_address.max' => 'The Project Address should not exceed 255 characters.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -1422,7 +1449,8 @@ class AdminController extends Controller
             'description' => $request->input('description'),
             'show' => $request->input('show'),
             'project_owner' => $request->input('project_owner'),
-            'project_telno' => $request->input('project_telno')
+            'project_telno' => $request->input('project_telno'),
+            'project_address' => $request->input('project_address')
         ]);
 
         return redirect()->route('projectSumm')->with('success', 'Project updated successfully.');
@@ -2550,11 +2578,11 @@ class AdminController extends Controller
         return view('admin.invoice', compact('projects'));
     }
 
-    public function invoiceSumm(Project $project)
+    public function orderItemSumm(Project $project)
     {
         $user = auth()->user();
         $emailSignature = EmailSignature::where('user_id', $user->id)->first();
-        $orderItems = OrderItem::where('project_id', $project->id)->get();
+        $orderItems = OrderItem::with('orders')->where('project_id', $project->id)->get();
         $projectId = $project->id;
 
         // Get the current month and year
@@ -2589,15 +2617,15 @@ class AdminController extends Controller
             $invoiceNumber = $baseInvoiceNumber . $nextNumberFormatted;
         }
 
-        return view('admin.invoiceSumm', compact('orderItems', 'project', 'user', 'emailSignature', 'projectId', 'invoiceNumber'));
+        return view('admin.orderItemSumm', compact('orderItems', 'project', 'user', 'emailSignature', 'projectId', 'invoiceNumber'));
     }
 
-    public function createOrder(Project $project)
+    public function createOrderItem(Project $project)
     {
-        return view('admin.createOrder', compact('project'));
+        return view('admin.createOrderItem', compact('project'));
     }
 
-    public function addOrder(Request $request, Project $project)
+    public function addOrderItem(Request $request, Project $project)
     {
         // Define validation rules
         $rules = [
@@ -2649,10 +2677,10 @@ class AdminController extends Controller
             $newOrderItem->save();
         }
 
-        return redirect()->route('invoiceSumm', ['project' => $project->id])->with('success', 'New order created successfully');
+        return redirect()->route('orderItemSumm', ['project' => $project->id])->with('success', 'New order created successfully');
     }
 
-    public function editOrder($id)
+    public function editOrderItem($id)
     {
         $orderItem = OrderItem::find($id);
 
@@ -2663,7 +2691,7 @@ class AdminController extends Controller
         return response()->json($response);
     }
 
-    public function updateOrder(Request $request, $id)
+    public function updateOrderItem(Request $request)
     {
         $rules = [
             'order_item' => 'required|string|max:255',
@@ -2696,7 +2724,9 @@ class AdminController extends Controller
                 ->withInput();
         }
 
-        $orderItem = OrderItem::find($request->input('id'));
+        $orderItemId = $request->input('id');
+
+        $orderItem = OrderItem::find($orderItemId);
 
         $unitPrice = $request->input('unit_price');
         $orderQuantity = $request->input('order_quantity');
@@ -2710,16 +2740,78 @@ class AdminController extends Controller
             'total_price' => $totalPrice
         ]);
 
-        // dd($orderItem);
+        // Check if the order_id of the updated orderItem is not null
+        if ($orderItem->order_id !== null) {
+            // Retrieve the order_id
+            $orderId = $orderItem->order_id;
 
-        return redirect()->route('invoiceSumm', ['project' => $orderItem->project_id])->with('success', 'Order updated successfully.');
+            $orderItems = OrderItem::where('order_id', $orderId)->get();
+
+            // Initialize total price variable
+            $totalPriceSum = 0;
+
+            // Iterate over each orderItem to calculate the total price sum
+            foreach ($orderItems as $item) {
+                $totalPriceSum += $item->total_price;
+            }
+
+            $order = Order::find($orderId);
+
+            $discount = $order->discount;
+
+            // Calculate the grand total
+            $grandTotal = $totalPriceSum - ($totalPriceSum * ($discount / 100));
+
+            // Update the grand_total field and total bill field of the order
+            $order->update([
+                'grand_total' => $grandTotal,
+                'total_bill' => $totalPriceSum
+            ]);
+        }
+
+        // return redirect()->route('orderItemSumm', ['project' => $orderItem->project_id])->with('success', 'Order updated successfully.');
+        return redirect()->back();
     }
 
-    public function deleteOrder($id)
+    public function deleteOrderItem($id)
     {
-        $order = OrderItem::find($id);
+        // Find the order item to be deleted
+        $orderItem = OrderItem::find($id);
 
-        $order->delete();
+        // Retrieve the order ID of the order item
+        $orderId = $orderItem->order_id;
+
+        // Delete the order item
+        $orderItem->delete();
+
+        // Check if the order_id of the deleted orderItem is not null
+        if ($orderId !== null) {
+            // Retrieve the order based on the order ID
+            $order = Order::find($orderId);
+
+            // Retrieve all order items associated with the order
+            $orderItems = OrderItem::where('order_id', $orderId)->get();
+
+            // Initialize total price variable
+            $totalPriceSum = 0;
+
+            // Iterate over each orderItem to calculate the total price sum
+            foreach ($orderItems as $item) {
+                $totalPriceSum += $item->total_price;
+            }
+
+            // Retrieve the discount from the order
+            $discount = $order->discount;
+
+            // Calculate the grand total
+            $grandTotal = $totalPriceSum - ($totalPriceSum * ($discount / 100));
+
+            // Update the grand_total field and total bill field of the order
+            $order->update([
+                'grand_total' => $grandTotal,
+                'total_bill' => $totalPriceSum
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Data deleted successfully.');
     }
@@ -2757,11 +2849,22 @@ class AdminController extends Controller
         $projectId = $request->query('projectId');
         $invoiceNumber = $request->query('invoiceNumber');
 
+        // Check if the invoice number already exists in the orders table
+        $existingInvoice = Order::where('order_no', $invoiceNumber)->first();
+
+        $discount = null;
+        $grandTotal = null;
+
+        if ($existingInvoice) {
+            // If the invoice number exists, update the associated data
+            $discount = $existingInvoice->discount;
+            $grandTotal = $existingInvoice->grand_total;
+        }
+
         $project = Project::find($projectId);
 
-        return view('admin.createInvoice', compact('user', 'emailSignature', 'orderItems', 'unselectedOrderItems', 'current', 'project', 'invoiceNumber', 'orderItemIds', 'projectId', 'invoiceNumber', 'totalPriceSum', 'unselectedOrderItems'));
+        return view('admin.createInvoice', compact('user', 'emailSignature', 'orderItems', 'unselectedOrderItems', 'current', 'project', 'orderItemIds', 'projectId', 'invoiceNumber', 'totalPriceSum', 'discount', 'grandTotal', 'existingInvoice'));
     }
-
 
     public function loadOrderItems(Request $request)
     {
@@ -2801,14 +2904,36 @@ class AdminController extends Controller
         // Retrieve projectId directly from the first order item
         $projectId = $request->input('project_id');
 
-        // Create the new invoice
-        $newInvoice = Order::create([
-            'order_no' => $request->input('invoice_number'),
-            'total_bill' => $request->input('total_bill'),
-            'project_id' => $projectId
-        ]);
+        $invoiceNumber = $request->input('invoice_number');
 
-        $newInvoiceId = $newInvoice->id;
+        // Check if the invoice number already exists in the orders table
+        $existingInvoice = Order::where('order_no', $invoiceNumber)->first();
+
+        if ($existingInvoice) {
+            // If the invoice number exists, update the associated data
+            $existingInvoice->update([
+                'total_bill' => $request->input('total_bill'),
+                'discount' => $request->input('discount'),
+                'grand_total' => $request->input('grand_total'),
+                'terms' => $request->input('terms'),
+                'project_id' => $projectId
+            ]);
+
+            $newInvoiceId = $existingInvoice->id;
+        } else {
+            // If the invoice number doesn't exist, create a new invoice
+            $newInvoice = Order::create([
+                'order_no' => $invoiceNumber,
+                'total_bill' => $request->input('total_bill'),
+                'discount' => $request->input('discount'),
+                'grand_total' => $request->input('grand_total'),
+                'terms' => $request->input('terms'),
+                'project_id' => $projectId
+            ]);
+
+            $newInvoiceId = $newInvoice->id;
+        }
+
 
         // Loop through the order items
         foreach ($orderItems as $key => $orderItem) {
@@ -2857,8 +2982,8 @@ class AdminController extends Controller
             }
         }
 
-        // return redirect()->back();
-        return redirect()->route('invoiceSumm', ['project' => $projectId])->with('success', 'Invoice created successfully.');
+        return redirect()->back();
+        // return redirect()->route('invoiceSumm', ['project' => $projectId])->with('success', 'Invoice created successfully.');
 
         // $viewName = 'admin.createInvoice'; // Default view name
         // // Check if projectId, orderItemIds, or invoiceNumber exist in the request
@@ -2872,11 +2997,72 @@ class AdminController extends Controller
         //                 ->header('X-Print-After-Submission', 'printAfterSubmission();');
     }
 
+    public function invoiceSumm(Project $project)
+    {
+        $orders = Order::where('project_id', $project->id)->get();
 
+        return view('admin.invoiceSumm', compact('project', 'orders'));
+    }
 
+    public function viewInvoice($id)
+    {
+        $orderItems = OrderItem::where('order_id', $id)->get();
 
+        // Extracting IDs from orderItems
+        $orderItemIds = $orderItems->pluck('id')->toArray();
 
+        $order = Order::find($id);
 
+        $projectId = $order->project_id;
 
+        $invoiceNumber = $order->order_no;
 
+        return view('admin.viewInvoice', compact('orderItems', 'orderItemIds','order', 'projectId', 'invoiceNumber'));
+    }
+
+    public function editInvoice($id)
+    {
+        $order = Order::find($id);
+
+        $response = [
+            'order' => $order,
+        ];
+
+        return response()->json($response);
+    }
+
+    public function updateInvoice(Request $request)
+    {
+        $order = Order::find($request->input('id'));
+
+        $unitPrice = $request->input('unit_price');
+        $orderQuantity = $request->input('order_quantity');
+        $totalPrice = $unitPrice * $orderQuantity;
+
+        $projectId = $order->project_id;
+
+        $order->update([
+            'total_bill' => $request->input('total_bill'),
+            'discount' => $request->input('discount'),
+            'grand_total' => $request->input('grand_total'),
+            'terms' => $request->input('terms'),
+        ]);
+
+        // dd($orderItem);
+
+        return redirect()->route('invoiceSumm', ['project' => $projectId])->with('success', 'Order updated successfully.');
+    }
+
+    public function deleteInvoice($id)
+    {
+        $orders = Order::find($id);
+
+        foreach ($orders->orderItems as $orderItem) {
+            $orderItem->delete();
+        }
+
+        $orders->delete();
+
+        return redirect()->back()->with('success', 'Order and associated order items deleted successfully.');
+    }
 }

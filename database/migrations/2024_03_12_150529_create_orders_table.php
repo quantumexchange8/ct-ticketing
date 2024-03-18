@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('order_no')->nullable();
             $table->string('total_bill')->nullable();
+            $table->string('discount')->nullable();
+            $table->string('grand_total')->nullable();
+            $table->string('terms')->nullable();
+            $table->string('project_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

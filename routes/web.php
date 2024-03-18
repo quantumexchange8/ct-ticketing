@@ -152,19 +152,22 @@ Route::group(['middleware' => 'auth'], function () {
     Route::delete('/delete-admin/{id}', [AdminController::class, 'deleteAdmin'])->name('deleteAdmin');
 
     Route::get('/invoice', [AdminController::class, 'invoice'])->name('invoice');
+    Route::get('/order-item-summary/{project}', [AdminController::class, 'orderItemSumm'])->name('orderItemSumm');
+    Route::get('/create-order-item/{project}', [AdminController::class, 'createOrderItem'])->name('createOrderItem');
+    Route::post('/add-order-item/{project}', [AdminController::class, 'addOrderItem'])->name('addOrderItem');
+    Route::get('/edit-order-item/{id}', [AdminController::class, 'editOrderItem'])->name('editOrderItem');
+    Route::post('/update-order-item/{id}', [AdminController::class, 'updateOrderItem'])->name('updateOrderItem');
+    Route::delete('/delete-order-item/{id}', [AdminController::class, 'deleteOrderItem'])->name('deleteOrderItem');
+
+    // Route::get('/get-order/{id}', [AdminController::class, 'getOrderItem'])->name('getOrderItem');
     Route::get('/invoice-summary/{project}', [AdminController::class, 'invoiceSumm'])->name('invoiceSumm');
-    Route::get('/create-order/{project}', [AdminController::class, 'createOrder'])->name('createOrder');
-    Route::post('/add-order/{project}', [AdminController::class, 'addOrder'])->name('addOrder');
-    Route::get('/edit-order/{id}', [AdminController::class, 'editOrder'])->name('editOrder');
-    Route::post('/update-order/{id}', [AdminController::class, 'updateOrder'])->name('updateOrder');
-    Route::delete('/delete-order/{id}', [AdminController::class, 'deleteOrder'])->name('deleteOrder');
-
-    Route::get('/get-order/{id}', [AdminController::class, 'getOrderItem'])->name('getOrderItem');
-
     Route::get('/create-invoice', [AdminController::class, 'createInvoice'])->name('createInvoice');
     Route::get('/load-order-items', [AdminController::class, 'loadOrderItems'])->name('loadOrderItems');
-
     Route::post('/add-invoice', [AdminController::class, 'addInvoice'])->name('addInvoice');
+    Route::get('/view-invoice/{id}', [AdminController::class, 'viewInvoice'])->name('viewInvoice');
+    Route::get('/edit-invoice/{id}', [AdminController::class, 'editInvoice'])->name('editInvoice');
+    Route::post('/update-invoice/{id}', [AdminController::class, 'updateInvoice'])->name('updateInvoice');
+    Route::delete('/delete-invoice/{id}', [AdminController::class, 'deleteInvoice'])->name('deleteInvoice');
 
 });
 

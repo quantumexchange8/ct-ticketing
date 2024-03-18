@@ -31,6 +31,7 @@
                                         <th>Description</th>
                                         <th>Owner</th>
                                         <th>Phone Number</th>
+                                        <th>Address</th>
                                         <th>Show</th>
                                         <th>Actions</th>
                                     </tr>
@@ -42,6 +43,7 @@
                                         <td>{{ $project->description }}</td>
                                         <td>{{ $project->project_owner }}</td>
                                         <td>{{ $project->project_telno }}</td>
+                                        <td>{{ $project->project_address }}</td>
                                         <td>{{ $project->show == 1 ? 'Yes' : 'No' }}</td>
                                         <td class="text-center">
                                             <div style="display: flex; justify-content: center; gap: 10px;">
@@ -127,6 +129,15 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="form-group">
+                            <label for="project_address">Address</label>
+                            <input type="text" class="form-control" name="project_address" placeholder="Enter Address" autocomplete="off" value="{{ old('project_address') }}">
+                            @error('project_address')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
                             <label for="show">Show?</label>
                             <select class="form-control" name="show">
                                 <option value="1" {{ old('show') == '1' ? 'selected' : '' }}>Yes</option>
@@ -210,6 +221,15 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="form-group">
+                            <label for="project_address">Address</label>
+                            <input type="text" class="form-control" name="project_address" id="project_address" placeholder="Enter Address" autocomplete="off" value="{{ $project->project_address }}">
+                            @error('project_address')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
                             <label for="show">Show?</label>
                             <select class="form-control" name="show" id="show">
                                 <option value="1" {{ $project->show  === '1' ? 'selected' : '' }}>Yes</option>
@@ -219,9 +239,7 @@
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
-                    </div>
-                    <div class="col-lg-6" style="display: none;">
-                        <div class="form-group">
+                        <div class="form-group"  style="display: none;">
                             <label for="id">ID</label>
                             <input type="text" class="form-control" name="id" id="id" placeholder="Enter Phone Number" autocomplete="off">
                             @error('id')
@@ -276,6 +294,7 @@
                     $('#description').val(response.project.description);
                     $('#project_owner').val(response.project.project_owner);
                     $('#project_telno').val(response.project.project_telno);
+                    $('#project_address').val(response.project.project_address);
                     $('#show').val(response.project.show);
                     $('#id').val(response.project.id);
 

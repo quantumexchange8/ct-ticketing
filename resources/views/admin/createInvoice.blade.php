@@ -3,6 +3,8 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
+
+
 <style id="bodyStyle">
     .body { box-sizing: border-box; height: 11in; margin: 0 auto; overflow: hidden; padding: 0.5in; width: 8.5in; }
     .body { background: #FFF; border-radius: 1px; box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5); }
@@ -132,11 +134,13 @@
                         <div class="card-body">
                             <p class="page-title">
                                 {{ $user->name }}
-                            </p>
-                            <p class="page-title">
+                                <br>
                                 Current Tech Industries Sdn. Bhd.
-                            </p>
-                            <p class="page-title">
+                                <br>
+                                VO60308, Signature 2, Lingkaran SV, Sunway Velocity,
+                                <br>
+                                55100 Cheras, Federal Territory of Kuala Lumpur
+                                <br>
                                 {{ $user->phone_number }}
                             </p>
                         </div>
@@ -144,6 +148,7 @@
                 </div>
 
                 <form id="invoiceForm">
+                {{-- <form id="invoiceForm" action="{{ route('addInvoice') }}" method="POST" enctype="multipart/form-data"> --}}
                     @csrf
                     <div class="box-5">
                         <div class="row">
@@ -153,13 +158,14 @@
                                         <div class="card-body">
                                             <p class="page-title">
                                                 {{ $project->project_owner }}
-                                            </p>
-                                            <p class="page-title">
+                                                <br>
                                                 {{ $project->project_name }}
-                                            </p>
-                                            <p class="page-title">
+                                                <br>
+                                                {{ $project->project_address }}
+                                                <br>
                                                 {{ $project->project_telno }}
                                             </p>
+
                                             <p class="page-title" style="display: none;">
                                                 <input type="text" name="project_id" value="{{ $project->id }}">
                                             </p>
@@ -217,54 +223,61 @@
                                             </tbody>
                                         </table><!--end /table-->
                                         <span class="float-right no-print">
+                                            {{-- @if ($existingInvoice == null) --}}
+                                                <button type="button" class="btn btn-primary" id="exportButton">Generate and Save</button>
+                                            {{-- @endif --}}
+
                                             {{-- <button type="button" class="btn btn-primary" id="exportButton">Generate and Save</button> --}}
-                                            <button type="button" class="btn btn-warning" id="exportButton">Download</button>
-                                            <button type="submit" class="btn btn-primary">Submit</button>
+
+                                            {{-- @if ($existingInvoice)
+                                                <button type="button" class="btn btn-warning" id="exportButton">Download</button>
+                                            @endif --}}
+
+                                            {{-- <button type="button" class="btn btn-warning" id="exportButton">Download</button>
+
+                                            <button type="submit" class="btn btn-primary">Submit</button> --}}
                                         </span>
                                     </div><!--end /tableresponsive-->
                                 </div><!--end card-body-->
                             </div><!--end col-->
                         </div><!--end row-->
                     </div>
-                </form>
-
-
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="row" style="display:flex; justify-content:flex-end;">
-                                <div class="col-lg-6">
-                                    <div class="card-body" style="display: grid; justify-content: flex-end;">
-                                        <table>
-                                            <tr>
-                                                <th><span contenteditable>Total (RM): </span></th>
-                                                <td>
-                                                    <input type="text" id="totalBill" name="total_bill" style="border: white; color: #303e67" value="{{$totalPriceSum}}">
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th><span contenteditable>Discount (%): </span></th>
-                                                <td>
-                                                    <input type="text" name="discount" style="border: white; color: #303e67">
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th><span contenteditable>Grand Total: </span></th>
-                                                <td>
-                                                    <input type="text" id="grandTotal" name="grand_total" style="border: white; color: #303e67">
-                                                </td>
-                                            </tr>
-                                        </table>
+                    <div class="box-5">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="row" style="display:flex; justify-content:flex-end;">
+                                    <div class="col-lg-6">
+                                        <div class="card-body" style="display: grid; justify-content: flex-end;">
+                                            <table>
+                                                <tr>
+                                                    <th><span contenteditable>Total (RM): </span></th>
+                                                    <td>
+                                                        <input type="text" id="totalBill" name="total_bill" style="border: white; color: #303e67" value="{{ $totalPriceSum }}" readonly>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th><span contenteditable>Discount (%): </span></th>
+                                                    <td>
+                                                        <input type="text" name="discount" id="discount" style="border: white; color: #303e67" autocomplete="off" value="{{ $discount }}">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th><span contenteditable>Grand Total: </span></th>
+                                                    <td>
+                                                        <input type="text" id="grandTotal" name="grand_total" style="border: white; color: #303e67" value="{{ $grandTotal }}" readonly>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
+                </form>
             </div>
-
         </div>
-
     </div>
 </div>
 <!-- end page content -->
@@ -452,6 +465,7 @@
         // Function to remove the current row
         function removeRow() {
             this.closest('tr').remove();
+            updateTotalBill();
         }
 
         // Function to calculate total price
@@ -461,11 +475,6 @@
             var quantity = parseFloat(row.querySelector('[name^="orderItems["][name$="[quantity]"]').value);
             var unitPrice = parseFloat(row.querySelector('[name^="orderItems["][name$="[rate]"]').value);
             var totalPrice = quantity * unitPrice;
-
-            // console.log('Quantity:', quantity);
-            // console.log('Unit Price:', unitPrice);
-            // console.log('Total Price:', totalPrice);
-
 
             var totalPriceInput = row.querySelector('[name^="orderItems["][name$="[price]"]');
             totalPriceInput.value = totalPrice.toFixed(2);
@@ -485,30 +494,36 @@
                 }
             });
 
-            // document.getElementById('totalBill').textContent = 'RM' + total.toFixed(2);
+            // Update the totalBill input field with the latest total value
             document.getElementById('totalBill').value = total.toFixed(2);
+
+            // Get the discount value
+            var discount = parseFloat(document.querySelector('input[name="discount"]').value);
+
+            // Check if the discount is a valid number
+            if (isNaN(discount)) {
+                discount = 0; // Set discount to 0 if it's not a valid number
+            }
+
+            // Calculate the grandTotal
+            var grandTotal = total - (total * (discount / 100));
+
+            // Check if the grandTotal is a valid number
+            if (isNaN(grandTotal)) {
+                grandTotal = 0; // Set grandTotal to 0 if it's not a valid number
+            }
+
+            // Update the grandTotal input field
+            document.getElementById('grandTotal').value = grandTotal.toFixed(2);
         }
 
         var discountInput = document.querySelector('input[name="discount"]');
-        var totalBillInput = document.getElementById('totalBill');
-        var grandTotalInput = document.getElementById('grandTotal');
-
-        // Initialize grandTotal with totalBill value
-        var grandTotal = parseFloat(totalBillInput.value);
-        grandTotalInput.value = grandTotal.toFixed(2);
 
         // Add event listener to the discount input field
         discountInput.addEventListener('input', function() {
-            // Get the discount value
-            var discount = parseFloat(this.value);
-
-            // Calculate the grandTotal
-            grandTotal = totalBill - (totalBill * (discount / 100));
-
-            // Update the grandTotal input field
-            grandTotalInput.value = grandTotal.toFixed(2);
+            // Update the totalBill input field with the latest total value
+            updateTotalBill();
         });
-
 
         // Find the form
         var form = document.getElementById('invoiceForm');
@@ -539,179 +554,7 @@
     });
 </script>
 
-{{-- <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var tbody = document.getElementById('invoiceItems');
-
-        // Function to load order items using AJAX
-        function loadOrderItems() {
-            fetch('{{ route("loadOrderItems") }}?orderItemIds={{ $orderItemIds }}&projectId={{ $projectId }}&invoiceNumber={{ $invoiceNumber }}')
-                .then(response => response.json())
-                .then(data => {
-                    // Clear existing rows
-                    tbody.innerHTML = '';
-
-                         // Check if the received data is an array
-                     // Check if the received data contains the orderItems property
-            if (data.hasOwnProperty('orderItems')) {
-                // Iterate over orderItems and populate the table
-                data.orderItems.forEach(orderItem => {
-                    var newRow = createRow(orderItem, {{ $projectId }});
-                    tbody.appendChild(newRow);
-                });
-            } else {
-                console.error('Received data does not contain orderItems property:', data);
-            }
-
-
-                    // Update the total bill after loading order items
-                    updateTotalBill();
-                })
-                .catch(error => {
-                    console.error('Error loading order items:', error);
-                });
-        }
-
-        // Function to add a new row
-        function addRow(projectId) {
-            console.log('Project Id: ',projectId);
-            var newRow = createRow({
-                orderitemid: null,
-                order_item: 'New Item',
-                order_description: 'New Description',
-                unit_price: '1',
-                order_quantity: '0.00',
-                total_price: '0.00',
-                project_id: projectId, // Assign the projectId here
-            });
-            tbody.appendChild(newRow);
-        }
-
-        // Function to create a new row with order item data
-        function createRow(orderItem, projectId) {
-            var newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td class="no-print">
-                    <button type="button" class="btn btn-sm btn-soft-success btn-circle add-row">
-                        <i class="dripicons-plus"></i>
-                    </button>
-                    <button type="button" class="btn btn-sm btn-soft-danger btn-circle remove-row">
-                        <i class="dripicons-minus"></i>
-                    </button>
-                </td>
-                <td style="display: none;">
-                    <span contenteditable style="color: #303e67;">${orderItem.id}</span>
-                    <input type="hidden" name="orderItems[${orderItem.id}][orderitemid]" value="${orderItem.id}">
-                </td>
-                <td>
-                    <span contenteditable style="color: #303e67;">${orderItem.order_item}</span>
-                    <input type="hidden" name="orderItems[${orderItem.id}][item]" value="${orderItem.order_item}">
-                </td>
-                <td>
-                    <span contenteditable style="color: #303e67;">${orderItem.order_description}</span>
-                    <input type="hidden" name="orderItems[${orderItem.id}][description]" value="${orderItem.order_description}">
-                </td>
-                <td>
-                    <input type="number" class="w-100" style="border: white; color: #303e67;" name="orderItems[${orderItem.id}][rate]" value="${orderItem.unit_price}">
-                </td>
-                <td>
-                    <input type="number" class="w-100" style="border: white; color: #303e67;" name="orderItems[${orderItem.id}][quantity]" value="${orderItem.order_quantity}">
-                </td>
-                <td>
-                    <input type="number" class="w-100" style="border: white; color: #303e67;" id="totalPrice" name="orderItems[${orderItem.id}][price]" value="${orderItem.total_price}" readonly>
-                </td>
-                <td style="display: none;">
-                    <span contenteditable>${projectId}</span>
-                    <input type="hidden" name="orderItems[${orderItem.id}][projectid]" value="${projectId}">
-                </td>
-            `;
-
-
-            // Add event listeners to the buttons in the new row
-             newRow.querySelector('.add-row').addEventListener('click', function() {
-                addRow(projectId); // Call addRow with projectId when clicked
-            });
-            newRow.querySelector('.remove-row').addEventListener('click', removeRow);
-
-            // Add event listeners to quantity and rate fields for auto calculation
-            newRow.querySelector('[name^="orderItems["][name$="[quantity]"]').addEventListener('input', calculateTotalPrice);
-            newRow.querySelector('[name^="orderItems["][name$="[rate]"]').addEventListener('input', calculateTotalPrice);
-
-            return newRow;
-        }
-
-        // Function to remove the current row
-        function removeRow() {
-            this.closest('tr').remove();
-        }
-
-        // Function to calculate total price
-        function calculateTotalPrice() {
-            console.log('calculateTotalPrice function called');
-            var row = this.closest('tr');
-            var quantity = parseFloat(row.querySelector('[name^="orderItems["][name$="[quantity]"]').value);
-            var unitPrice = parseFloat(row.querySelector('[name^="orderItems["][name$="[rate]"]').value);
-            var totalPrice = quantity * unitPrice;
-
-            // console.log('Quantity:', quantity);
-            // console.log('Unit Price:', unitPrice);
-            // console.log('Total Price:', totalPrice);
-
-
-            var totalPriceInput = row.querySelector('[name^="orderItems["][name$="[price]"]');
-            totalPriceInput.value = totalPrice.toFixed(2);
-
-            updateTotalBill();
-        }
-
-        // Function to update total bill
-        function updateTotalBill() {
-            var total = 0;
-            var totalPriceInputs = document.querySelectorAll('input[name^="orderItems["][name$="[price]"]');
-
-            totalPriceInputs.forEach(function(input) {
-                var price = parseFloat(input.value);
-                if (!isNaN(price)) { // Check if the parsed price is a valid number
-                    total += price;
-                }
-            });
-
-            // document.getElementById('totalBill').textContent = 'RM' + total.toFixed(2);
-            document.getElementById('totalBill').value = total.toFixed(2);
-        }
-
-        // Find the form
-        var form = document.getElementById('invoiceForm');
-
-        // Add event listener to the form's submit event
-        form.addEventListener('submit', function (event) {
-            // Find all the rows in the table body
-            var rows = document.querySelectorAll('#invoiceItems tr');
-
-            // Loop through each row
-            rows.forEach(function (row, index) {
-                // Find the contenteditable elements in the row
-                var contentEditableElements = row.querySelectorAll('[contenteditable]');
-
-                // Loop through each contenteditable element
-                contentEditableElements.forEach(function (element) {
-                    // Get the corresponding input field for the group
-                    var hiddenInput = element.parentElement.querySelector('input[type="hidden"]');
-
-                    // Update the value of the input field with the current contenteditable element's value
-                    hiddenInput.value = element.textContent.trim();
-                });
-            });
-        });
-
-        // Load order items
-        loadOrderItems();
-    });
-</script> --}}
-
-
 {{-- Print --}}
-
 
 {{-- Title = CT Ticketing --}}
 {{-- <script>
@@ -839,7 +682,7 @@
 
 
 {{-- Title = Invoice --}}
-<script>
+{{-- <script>
     // Print contentToPrint or allContentToPrint based on user selection
     document.getElementById("exportButton").addEventListener("click", function() {
         PrintElem("contentToPrint");
@@ -961,14 +804,13 @@
         }
         return true;
     }
-</script>
+</script> --}}
 
 
-
-
-{{-- <script>
+<script>
     document.getElementById("exportButton").addEventListener("click", function() {
-        // Retrieve form data
+
+         // Retrieve form data
         var formData = new FormData(document.getElementById("invoiceForm"));
 
         // Send form data to the server
@@ -981,15 +823,25 @@
                 throw new Error('Network response was not ok');
             }
             // Handle success response
-            console.log('Invoice data sent successfully');
-            PrintElem("contentToPrint");
+            var totalBill = parseFloat(document.getElementById('totalBill').value);
+            var grandTotal = parseFloat(document.getElementById('grandTotal').value);
+            var discountInput = document.getElementById('discount');
+            var discount = parseFloat(discountInput.value);
+
+            // Check if discount is NaN, if so, set it to 0
+            if (isNaN(discount)) {
+                discount = 0;
+            }
+
+            // Call the PrintElem function to generate and print the custom invoice
+            PrintElem('contentToPrint', totalBill, grandTotal, discount);
         })
         .catch(error => {
             console.error('Error sending invoice data:', error);
         });
     });
 
-    function PrintElem(elem) {
+    function PrintElem(elem, totalBill, grandTotal, discount) {
         var mywindow = window.open('', 'PRINT', 'height=400,width=600');
         mywindow.document.write('<html><head>');
 
@@ -999,8 +851,8 @@
         // Create a style element and set its content to the specified CSS styles
         var style = document.createElement('style');
         style.textContent = `
-            .body { box-sizing: border-box; height: 11in; margin: 0 auto; overflow: hidden; padding: 0.5in; width: 8.5in; gap:5px;}
-            .body { background: #FFF; border-radius: 1px; box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5); }
+            .body { box-sizing: border-box; height: 12in; margin: 0 auto; overflow: hidden; padding: 0.5in; width: 9.5in; gap:5px;}
+            .body { background: #FFF; border-radius: 1px; }
 
             .card-body {
                 margin: 0;
@@ -1046,7 +898,7 @@
             .box {
                 display: flex;
                 flex-direction: column;
-                gap: 50px;
+                gap:20px;
             }
 
             .box-1 {
@@ -1072,40 +924,55 @@
             .box-5 {
                 display: flex;
                 flex-direction: column;
-                gap: 50px;
+                gap:20px;
             }
-
         `;
         mywindow.document.head.appendChild(style);
         mywindow.document.write('</head><body>');
+
+        // Write the HTML content of the invoice
+        mywindow.document.write('<div class="body">');
         mywindow.document.write(document.getElementById(elem).innerHTML);
+
+        // Update the values of total bill and grand total
+        mywindow.document.getElementById('totalBill').value = totalBill.toFixed(2);
+        mywindow.document.getElementById('grandTotal').value = grandTotal.toFixed(2);
+        mywindow.document.getElementById('discount').value = discount.toFixed(2);
+
+        // Find all rate, quantity, and total_price inputs and update their values in the printed invoice
+        var rateInputs = document.querySelectorAll('input[name^="orderItems["][name$="[rate]"]');
+        var quantityInputs = document.querySelectorAll('input[name^="orderItems["][name$="[quantity]"]');
+        var totalPriceInputs = document.querySelectorAll('input[name^="orderItems["][name$="[price]"]');
+
+        rateInputs.forEach(function(input) {
+            var id = input.getAttribute('name').match(/\[(.*?)\]/)[1];
+            mywindow.document.querySelector('input[name="orderItems[' + id + '][rate]"]').value = input.value;
+        });
+
+        quantityInputs.forEach(function(input) {
+            var id = input.getAttribute('name').match(/\[(.*?)\]/)[1];
+            mywindow.document.querySelector('input[name="orderItems[' + id + '][quantity]"]').value = input.value;
+        });
+
+        totalPriceInputs.forEach(function(input) {
+            var id = input.getAttribute('name').match(/\[(.*?)\]/)[1];
+            mywindow.document.querySelector('input[name="orderItems[' + id + '][price]"]').value = input.value;
+        });
+
+        mywindow.document.write('</div>');
+
         mywindow.document.write('</body></html>');
 
-        // Wait for images to load before printing
-        var images = mywindow.document.getElementsByTagName('img');
-        if (images.length === 0) { // If no images, proceed to print
-            mywindow.document.close(); // necessary for IE >= 10
-            mywindow.focus(); // necessary for IE >= 10
-            mywindow.print();
-            mywindow.close();
-            return;
-        }
+        // Print the window
+        mywindow.document.close(); // necessary for IE >= 10
+        mywindow.focus(); // necessary for IE >= 10
+        mywindow.print();
+        mywindow.close();
 
-        var loaded = 0;
-        for (var i = 0; i < images.length; i++) {
-            images[i].onload = function() {
-                loaded++;
-                if (loaded === images.length) {
-                    mywindow.document.close(); // necessary for IE >= 10
-                    mywindow.focus(); // necessary for IE >= 10
-                    mywindow.print();
-                    mywindow.close();
-                }
-            };
-        }
         return true;
     }
-</script> --}}
+
+</script>
 
 {{-- If use controller to display data --}}
 {{-- <script>

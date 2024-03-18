@@ -122,7 +122,124 @@ $(function() {
 });
 
 
+$(function() {
 
+    var chartData = salesProjectData;
+
+    // Initialize empty series array
+    var series = [];
+
+    var projectNames = chartData.reduce(function(acc, curr) {
+        if (!acc.includes(curr.project_name)) {
+            acc.push(curr.project_name);
+        }
+        return acc;
+    }, []);
+
+
+    // Loop through unique status names and generate series data
+    projectNames.forEach(function(projectNames) {
+        var data = chartData.filter(function(data) {
+            return data.project_name === projectNames;
+        }).map(function(data) {
+            return data.sales;
+        });
+
+        // console.log('ticket_count for ' + categoryNames + ':', data);
+
+        // Push series object with dynamically generated data and series name
+        series.push({
+            name: projectNames,
+            data: data
+        });
+    });
+
+    console.log(projectNames);
+
+    // Extract unique month values from chartData
+    var uniqueMonths = chartData.reduce(function(acc, curr) {
+        if (!acc.includes(curr.month)) {
+            acc.push(curr.month);
+        }
+        return acc;
+    }, []);
+
+    // Map numerical month values to month names (optional)
+    var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var categories = uniqueMonths.map(function(month) {
+        return monthNames[month - 1]; // Adjust index to match month names array (January is 1, February is 2, etc.)
+    });
+
+    var options = {
+        chart: {
+            height: 350,
+            type: 'bar',
+            toolbar: {
+                show: false
+            }
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '30%',
+            },
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 1,
+            colors: ['transparent']
+        },
+        colors: ['#F76C5E', '#F77D5F', '#F68E5F', '#F6B678', '#F5DD90', '#949083', '#324376', '#45578D', '#586BA4'],
+        series: series,
+        xaxis: {
+            categories: categories,
+            axisBorder: {
+              show: false,
+              color: '#bec7e0',
+            },
+            axisTicks: {
+              show: false,
+              color: '#bec7e0',
+            },
+        },
+        legend: {
+          offsetY: 6,
+        },
+        yaxis: {
+            title: {
+                text: 'Sales',
+            },
+        },
+        fill: {
+            opacity: 1
+
+        },
+        grid: {
+            row: {
+                colors: ['transparent', 'transparent'], // takes an array which will be repeated on columns
+                opacity: 0.2,
+            },
+            strokeDashArray: 2.5,
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return "" + val
+                }
+            }
+        }
+    }
+
+    var chart = new ApexCharts(
+    document.querySelector("#ana_dash_2"),
+    options
+    );
+
+    chart.render();
+});
 
 
 

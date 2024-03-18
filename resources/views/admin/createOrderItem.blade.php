@@ -14,7 +14,7 @@
                             <h4 class="card-title">Create Order</h4>
                         </div><!--end card-header-->
                         <div class="card-body">
-                            <form action="{{route('addOrder', ['project' => $project])}}" method="POST" enctype="multipart/form-data">
+                            <form action="{{route('addOrderItem', ['project' => $project])}}" method="POST" enctype="multipart/form-data">
                                 @csrf
 
                                 {{-- @if ($errors->any())

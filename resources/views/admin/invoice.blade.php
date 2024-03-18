@@ -48,8 +48,8 @@
                                     <a href="{{ route('invoiceSumm', ['project' => $project->id]) }}" class="btn btn-primary btn-m">Order List</a>
                                 </div> --}}
                                 <div style="display: flex; justify-content: center; gap:10px;">
-                                    <a href="#" class="btn btn-primary btn-m">Invoice</a>
-                                    <a href="{{ route('invoiceSumm', ['project' => $project->id]) }}" class="btn btn-primary btn-m">Order List</a>
+                                    <a href="{{ route('orderItemSumm', ['project' => $project->id]) }}" class="btn btn-primary btn-m">Order List</a>
+                                    <a href="{{ route('invoiceSumm', ['project' => $project->id]) }}" class="btn btn-primary btn-m">Invoice List</a>
                                 </div>
                             </div><!--end card-body-->
                         </div><!--end card-->

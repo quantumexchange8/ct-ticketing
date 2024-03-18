@@ -17,6 +17,7 @@ return new class extends Migration
             $table->longText('description')->nullable();
             $table->string('project_owner')->nullable();
             $table->string('project_telno')->nullable();
+            $table->longText('project_address')->nullable();
             $table->string('show')->nullable();
             $table->timestamps();
             $table->softDeletes();

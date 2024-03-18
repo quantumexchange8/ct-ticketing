@@ -179,6 +179,44 @@
             </div> <!--end col-->
         </div><!--end row-->
 
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h4 class="card-title">Sales Group By Project</h4>
+                            </div><!--end col-->
+                            <div class="col-auto">
+                                <div class="dropdown">
+                                    <a href="#" class="btn btn-sm btn-outline-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Year<i class="las la-angle-down ml-1"></i>
+                                    </a>
+                                    <form id="yearFormProject" method="GET" action="/dashboard">
+                                        <div class="dropdown-menu dropdown-menu-right" id="yearDropdownProject">
+                                            @php
+                                                $currentYear = now()->year;
+                                                $startYear = max(2022, $currentYear - 2);
+                                            @endphp
+                                            @for ($year = $currentYear; $year >= $startYear; $year--)
+                                                <a class="dropdown-item" href="#" data-year="{{ $year }}">{{ $year }}</a>
+                                            @endfor
+                                        </div>
+                                        <input type="hidden" id="selectedYearProject" name="year_project">
+                                    </form>
+                                </div>
+                            </div><!--end col-->
+                        </div>  <!--end row-->
+                    </div><!--end card-header-->
+                    <div class="card-body">
+                        <div class="">
+                            <div id="ana_dash_2" class="apex-charts"></div>
+                        </div>
+                    </div><!--end card-body-->
+                </div><!--end card-->
+            </div> <!--end col-->
+        </div><!--end row-->
+
     </div><!-- container -->
 </div>
 <!-- end page content -->
@@ -209,6 +247,7 @@
 <script>
     var ticketStatusData = {!! json_encode($ticketsByStatus) !!};
     var ticketCategoryData = {!! json_encode($ticketsByCategory) !!};
+    var salesProjectData = {!! json_encode($salesByProject) !!};
 </script>
 
 <script>
@@ -225,6 +264,13 @@
             var year = $(this).data('year');
             $('#selectedYearCategory').val(year);
             $('#yearFormCategory').submit();
+        });
+
+        $('#yearDropdownProject').on('click', '.dropdown-item', function(e) {
+            e.preventDefault();
+            var year = $(this).data('year');
+            $('#selectedYearProject').val(year);
+            $('#yearFormProject').submit();
         });
     });
 </script>
