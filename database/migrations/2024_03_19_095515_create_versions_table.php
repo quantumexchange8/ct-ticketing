@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('enhancements', function (Blueprint $table) {
+        Schema::create('versions', function (Blueprint $table) {
             $table->id();
-            $table->string('enhancement_title')->nullable();
-            $table->string('enhancement_description')->nullable();
-            $table->string('version_id')->nullable();
+            $table->string('month')->nullable();
+            $table->string('year')->nullable();
+            $table->string('major_update')->nullable();
+            $table->string('table_migrate')->nullable();
+            $table->string('minor_update')->nullable();
             $table->string('project_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('enhancements');
+        Schema::dropIfExists('versions');
     }
 };

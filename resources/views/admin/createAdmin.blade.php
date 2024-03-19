@@ -80,7 +80,6 @@
                                         <label for="category_id">Category</label>
                                         <select class="form-control" name="category_id" value="{{ old('category_id') }}">
                                             <option value="">Select Category</option>
-                                            {{-- <option value="0">All</option> --}}
                                             @foreach($supportCategories as $supportCategory)
                                                 <option value="{{ $supportCategory->id }}" {{ old('category_id') == $supportCategory->id ? 'selected' : '' }}>
                                                     {!! $supportCategory->category_name !!}
@@ -159,7 +158,6 @@
                                     <div class="form-group">
                                         <label for="role_id">Role</label>
                                         <select class="form-control" id="role" name="role_id" value="{{ old('role_id') }}">
-                                            {{-- <option value="">Select Role</option> --}}
                                             @foreach($roles as $role)
                                                 <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
                                                     {!! $role->role_name !!}
@@ -180,17 +178,6 @@
                                         <h4 class="card-title">Privileges - Main</h4>
                                     </div>
                                 </div>
-
-                                {{-- <div class="row all-ticket">
-                                    <div class="col-xl-4" style="display: none;">
-                                        <div class="checkbox checkbox-primary">
-                                            <input id="manage-all-ticket" name="manage_all_ticket" class="privilege-checkbox" type="checkbox" value="1">
-                                            <label for="manage-all-ticket">
-                                                Able to manage all ticket
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div> --}}
 
                                 <div class="row ticket-management-row" >
                                     <div class="col-xl-4">
@@ -235,46 +222,7 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                {{-- <div class="row">
-                                    <div class="col-xl-4">
-                                        <div class="checkbox checkbox-primary">
-                                            <input id="manage-subtitle" name="manage_subtitle" class="privilege-checkbox" type="checkbox" value="1">
-                                            <label for="manage-subtitle">
-                                                Able to manage subtitle
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4">
-                                        <div class="checkbox checkbox-primary">
-                                            <input id="manage-subcategory" name="manage_support_subcategory" class="privilege-checkbox" type="checkbox" value="1">
-                                            <label for="manage-subcategory">
-                                                Able to manage support subcategory
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-xl-4">
-                                        <div class="checkbox checkbox-primary">
-                                            <input id="manage-content" name="manage_content" class="privilege-checkbox" type="checkbox" value="1">
-                                            <label for="manage-content">
-                                                Able to manage content
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4">
-                                        <div class="checkbox checkbox-primary">
-                                            <input id="manage-status" name="manage_status" class="privilege-checkbox" type="checkbox" value="1">
-                                            <label for="manage-status">
-                                                Able to manage status
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div> --}}
                             </div>
-
                             <div class="col-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>

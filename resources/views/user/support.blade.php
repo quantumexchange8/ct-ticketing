@@ -23,12 +23,10 @@
                                 <div class="dropdown-menu dropdown-menu-right dropdown-lg p-0">
                                     <!-- Top Search Bar -->
                                     <div class="app-search-topbar">
-                                        {{-- <form action="{{ route('searchSupportTools') }}" method="get"> --}}
-                                            <div>
-                                                <input type="search" name="search" id="searchInput" class="from-control top-search mb-0" autocomplete="off" placeholder="Type text...">
-                                                <button id="search-button" type="button"><i class="ti-search"></i></button>
-                                            </div>
-                                        {{-- </form> --}}
+                                        <div>
+                                            <input type="search" name="search" id="searchInput" class="from-control top-search mb-0" autocomplete="off" placeholder="Type text...">
+                                            <button id="search-button" type="button"><i class="ti-search"></i></button>
+                                        </div>
                                     </div>
                                 </div>
                             </div><!--end col-->
@@ -111,9 +109,6 @@
                             var cardHeader = $('#' + subCategoryId);
 
                             if (cardHeader.length > 0) {
-                                // if (cardHeader.css('background-color') !== 'rgba(0, 0, 0, 0)') {
-                                // }
-
                                 cardHeader.css('background-color', '#cFFCAB1');
                             }
                         });
@@ -124,9 +119,6 @@
                             var cardHeader = $('#' + subCategoryId);
 
                             if (cardHeader.length > 0) {
-                                // if (cardHeader.css('background-color') !== 'rgba(0, 0, 0, 0)') {
-                                // }
-
                                 cardHeader.css('background-color', 'white');
                             }
                         });
@@ -137,9 +129,6 @@
                             var cardHeader = $('#' + subCategoryId);
 
                             if (cardHeader.length > 0) {
-                                // if (cardHeader.css('background-color') !== 'rgba(0, 0, 0, 0)') {
-                                // }
-
                                 cardHeader.css('background-color', 'white');
                             }
                         });

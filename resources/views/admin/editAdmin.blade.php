@@ -137,9 +137,6 @@
                                                 <div class="col-lg-6">
                                                     <div class="form-group">
                                                         <label for="profile_picture">Profile Picture</label>
-                                                        {{-- <div style="margin-bottom: 15px;">
-                                                            <a href="{{ asset('storage/profilePicture/' . $user->profile_picture) }}" class="file-modal-link">{{$user->profile_picture}}</a>
-                                                        </div> --}}
                                                         <div>
                                                             <input type="file" class="theme-input-style" name="profile_picture" id="profilePictureFile">
                                                         </div>
@@ -188,17 +185,6 @@
                                     </div>
                                 </div>
 
-                                {{-- <div class="row all-ticket" style="display: none;">
-                                    <div class="col-xl-4">
-                                        <div class="checkbox checkbox-primary">
-                                            <input id="manage-all-ticket" name="manage_all_ticket" class="privilege-checkbox" type="checkbox" value="1" <?php if ($user->manage_all_ticket == 1) echo 'checked'; ?>>
-                                            <label for="manage-all-ticket">
-                                                Able to manage all ticket
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div> --}}
-
                                 <div class="row ticket-management-row">
                                     <div class="col-xl-4">
                                         <div class="checkbox checkbox-primary">
@@ -242,46 +228,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                {{-- <div class="row">
-                                    <div class="col-xl-4">
-                                        <div class="checkbox checkbox-primary">
-                                            <input id="manage-subtitle" name="manage_subtitle" class="privilege-checkbox" type="checkbox" value="1" <?php if ($user->manage_subtitle == 1) echo 'checked'; ?>>
-                                            <label for="manage-subtitle">
-                                                Able to manage subtitle
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-xl-4">
-                                        <div class="checkbox checkbox-primary">
-                                            <input id="manage-subcategory" name="manage_support_subcategory" class="privilege-checkbox" type="checkbox" value="1" <?php if ($user->manage_support_subcategory == 1) echo 'checked'; ?>>
-                                            <label for="manage-subcategory">
-                                                Able to manage support subcategory
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-xl-4">
-                                        <div class="checkbox checkbox-primary">
-                                            <input id="manage-content" name="manage_content" class="privilege-checkbox" type="checkbox" value="1" <?php if ($user->manage_content == 1) echo 'checked'; ?>>
-                                            <label for="manage-content">
-                                                Able to manage content
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4">
-                                        <div class="checkbox checkbox-primary">
-                                            <input id="manage-status" name="manage_status" class="privilege-checkbox" type="checkbox" value="1" <?php if ($user->manage_status == 1) echo 'checked'; ?>>
-                                            <label for="manage-status">
-                                                Able to manage status
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div> --}}
                             </div>
                             <div class="col-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>

@@ -209,7 +209,6 @@
             var datepick = $('#datepick').val();
             var projectId = $('#project').val();
 
-            // console.log(datepick);
             loadTickets(currentPage, perPage, categoryId, priority, datepick, projectId);
         });
 
@@ -260,12 +259,6 @@
                 },
                 success: function(response) {
 
-                    // console.log('Search Term:', searchTerm);
-                    // console.log('Category ID:', categoryId);
-                    // console.log('Operator:', operator);
-                    // console.log('Priority:', priority);
-                    // console.log('Date:', datepick);
-
                     var tickets = response.tickets;
 
                     // Total entries before filtering or searching
@@ -273,9 +266,6 @@
 
                     // Total entries after filtering or searching
                     currentEntries = response.current_entries;
-
-                    // console.log('Current entries: ', currentEntries);
-                    // console.log('Total entries: ', totalEntries);
 
                     // Clear existing table rows
                     $('#ticketTableBody').empty();

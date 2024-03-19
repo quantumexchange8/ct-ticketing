@@ -29,6 +29,8 @@ use App\Models\TicketLog;
 use App\Models\Enhancement;
 use App\Models\OrderItem;
 use App\Models\Order;
+use App\Models\Version;
+
 class AdminController extends Controller
 {
 
@@ -428,7 +430,7 @@ class AdminController extends Controller
                     ->get();
 
 
-        return view('admin.adminDashboard', compact('ticketStatuses', 'ticketCounts', 'currentYear', 'ticketsByStatus', 'ticketsByCategory', 'salesByProject','unassignedTickets','totalUnassigned', 'unassignedHigh', 'unassignedMedium', 'unassignedLow'));
+        return view('admin.adminDashboard', compact('ticketStatuses', 'ticketCounts', 'currentYear', 'ticketsByStatus', 'ticketsByCategory', 'salesByProject','unassignedTickets','totalUnassigned', 'unassignedHigh', 'unassignedMedium', 'unassignedLow', 'authUser'));
     }
 
     public function helpdesk(Request $request)
@@ -1191,14 +1193,6 @@ class AdminController extends Controller
         $note->delete();
 
         return response()->json(['message' => 'Note deleted successfully.']);
-    }
-
-    public function viewTicketImage($id)
-    {
-        $ticketImages = TicketImage::where('ticket_id', $id)->get();
-        $tickets = Ticket::find($id);
-
-        return view('admin.viewTicketImage', compact('ticketImages', 'tickets'));
     }
 
     public function performance()
@@ -2426,9 +2420,27 @@ class AdminController extends Controller
 
     public function enhancementSumm(Project $project)
     {
-        $enhancements = Enhancement::where('project_id', $project->id)->get();
+        $enhancements = Enhancement::with('versions')->where('project_id', $project->id)->get();
 
-        return view('admin.enhancementSumm', compact('enhancements', 'project'));
+        foreach ($enhancements as $enhancement) {
+            $versionId = $enhancement->version_id;
+
+            $version = Version::where('id', $versionId)->first();
+
+            $month = $version->month;
+
+            $year = $version->year;
+
+            $majorUpdate = $version->major_update;
+
+            $tableMigrate = $version->table_migrate;
+
+            $minorUpdate = $version->minor_update;
+
+            $versionNumber = $month . $year . '.' . $majorUpdate . '.' . $tableMigrate . '.' . $minorUpdate;
+        }
+
+        return view('admin.enhancementSumm', compact('enhancements', 'project', 'versionNumber'));
     }
 
     public function createEnhancement()
@@ -2459,20 +2471,17 @@ class AdminController extends Controller
                     ->withInput();
         }
 
-        // Get the latest enhancement version
+        // Get the latest version
+        $latestVersion = Version::where('project_id', $project->id)->latest()->first();
         $latestEnhancement = Enhancement::where('project_id', $project->id)->latest()->first();
 
         // Extract the components of the latest version number or set initial values
-        if ($latestEnhancement) {
-            $versionParts = explode('.', $latestEnhancement->version);
-
-            // $month = $versionParts[0];
-            // $year = $versionParts[1];
+        if ($latestVersion) {
             $month = date('m');
             $year = date('y');
-            $majorUpdate = $versionParts[1];
-            $tableMigrate = $versionParts[2];
-            $minorUpdate = $versionParts[3];
+            $majorUpdate = $latestVersion->major_update;
+            $tableMigrate = $latestVersion->table_migrate;
+            $minorUpdate = $latestVersion->minor_update;
 
         } else {
             // If no existing enhancements, set initial version components
@@ -2498,18 +2507,45 @@ class AdminController extends Controller
 
         // If no checkbox was ticked, reuse the latest version
         if (!$request->hasAny(['major_update', 'table_migrate', 'minor_update']) && $latestEnhancement) {
-            $version = $latestEnhancement->version;
+            $version = $latestEnhancement->version_id;
         } else {
             // Construct the new version number
             $version = $month . $year . '.' . $majorUpdate . '.' . $tableMigrate . '.' . $minorUpdate;
         }
 
 
+        // if ($latestVersion) {
+        //     $updateVersion = Version::where('project_id', $project->id)->first();
+
+        //     $newVersion = $updateVersion->update([
+        //         'major_update' => $majorUpdate,
+        //         'table_migrate' => $tableMigrate,
+        //         'minor_update' => $minorUpdate,
+        //         'project_id' => $project->id
+        //     ]);
+
+        //     $versionId = $updateVersion->id;
+
+        // } else {
+
+        // }
+
+        $newVersion = Version::create([
+            'month' => $month,
+            'year' => $year,
+            'major_update' => $majorUpdate,
+            'table_migrate' => $tableMigrate,
+            'minor_update' => $minorUpdate,
+            'project_id' => $project->id
+        ]);
+
+        $versionId = $newVersion->id;
+
         // Create the new enhancement
         $enhancement = Enhancement::create([
             'enhancement_title' => $request->input('enhancement_title'),
             'enhancement_description' => $request->input('enhancement_description'),
-            'version' => $version,
+            'version_id' => $versionId,
             'project_id' => $project->id
         ]);
 
@@ -2934,7 +2970,6 @@ class AdminController extends Controller
             $newInvoiceId = $newInvoice->id;
         }
 
-
         // Loop through the order items
         foreach ($orderItems as $key => $orderItem) {
             // Check if the array key is "undefined" or if the order item has a valid orderitemid
@@ -2984,17 +3019,6 @@ class AdminController extends Controller
 
         return redirect()->back();
         // return redirect()->route('invoiceSumm', ['project' => $projectId])->with('success', 'Invoice created successfully.');
-
-        // $viewName = 'admin.createInvoice'; // Default view name
-        // // Check if projectId, orderItemIds, or invoiceNumber exist in the request
-        // if ($request->has('projectId') && $request->has('orderItemIds') && $request->has('invoiceNumber')) {
-        //     // Construct a dynamic view name based on request parameters
-        //     $viewName = 'createInvoice_' . $request->projectId . '_' . $request->orderItemIds . '_' . $request->invoiceNumber;
-        // }
-
-        // return response()->view($viewName, [], 200)
-        //                 ->header('Content-Type', 'text/html')
-        //                 ->header('X-Print-After-Submission', 'printAfterSubmission();');
     }
 
     public function invoiceSumm(Project $project)

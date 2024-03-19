@@ -187,7 +187,6 @@
                                     </div><!--end col-->
                                 @endforeach
                             </div>
-
                             <div class="col-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
@@ -403,7 +402,7 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                console.log(noteId);
+
                 $.ajax({
                     url: '/delete-note/' + noteId,
                     type: 'DELETE',

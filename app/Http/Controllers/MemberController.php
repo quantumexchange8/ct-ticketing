@@ -18,6 +18,7 @@ use App\Models\TicketImage;
 use App\Models\Project;
 use App\Models\TicketLog;
 use App\Models\Enhancement;
+use App\Models\Version;
 
 class MemberController extends Controller
 {
@@ -116,7 +117,7 @@ class MemberController extends Controller
     public function openTicket(Project $project)
     {
         $supportCategories = SupportCategory::all();
-        $projects = Project::all();
+        $projects = Project::where('id', $project->id)->get();
 
         return view('user.openTicket', compact('supportCategories', 'projects', 'project'));
     }
@@ -277,23 +278,57 @@ class MemberController extends Controller
 
         $enhancements = Enhancement::with('projects')->where('project_id', $project->id)->orderByDesc('created_at')->get();
 
-        $latestEnhancement = Enhancement::where('project_id', $project->id)->latest()->first();
+        $latestEnhancement = Enhancement::with('versions')->where('project_id', $project->id)->latest()->first();
+
+        $versionId = $latestEnhancement->version_id;
+
+        // dd($versionId);
+        $version = Version::where('id', $versionId)->first();
+
+        $month = $version->month;
+
+        $year = $version->year;
+
+        $majorUpdate = $version->major_update;
+
+        $tableMigrate = $version->table_migrate;
+
+        $minorUpdate = $version->minor_update;
+
+        $versionNumber = $month . $year . '.' . $majorUpdate . '.' . $tableMigrate . '.' . $minorUpdate;
+
+        // // Group the ticket logs by date
+        // $groupedTicketLogs = $ticketLogs->groupBy(function ($ticketLog) {
+        //     // Convert the created_at timestamp to a formatted date string
+        //     return $ticketLog->created_at->formatLocalized('%d %B %Y'); // %d: day, %B: full month name, %Y: year
+        // });
+
+        // // Group the enhancement by date
+        // $groupedEnhancements = $enhancements->groupBy(function ($enhancements) {
+        //     // Convert the created_at timestamp to a formatted date string
+        //     return $enhancements->created_at->formatLocalized('%d %B %Y'); // %d: day, %B: full month name, %Y: year
+        // });
+
+        // Sort the ticket logs by created_at in descending order
+        $sortedTicketLogs = $ticketLogs->sortByDesc('created_at');
 
         // Group the ticket logs by date
-        $groupedTicketLogs = $ticketLogs->groupBy(function ($ticketLog) {
+        $groupedTicketLogs = $sortedTicketLogs->groupBy(function ($ticketLog) {
             // Convert the created_at timestamp to a formatted date string
             return $ticketLog->created_at->formatLocalized('%d %B %Y'); // %d: day, %B: full month name, %Y: year
         });
 
-        // Group the enhancement by date
-        $groupedEnhancements = $enhancements->groupBy(function ($enhancements) {
+        // Sort the enhancements by created_at in descending order
+        $sortedEnhancements = $enhancements->sortByDesc('created_at');
+
+        // Group the enhancements by date
+        $groupedEnhancements = $sortedEnhancements->groupBy(function ($enhancement) {
             // Convert the created_at timestamp to a formatted date string
-            return $enhancements->created_at->formatLocalized('%d %B %Y'); // %d: day, %B: full month name, %Y: year
+            return $enhancement->created_at->formatLocalized('%d %B %Y'); // %d: day, %B: full month name, %Y: year
         });
 
-        // dd($groupedTicketLogs);
 
-        return view('user.releaseNote', compact('groupedTicketLogs', 'groupedEnhancements', 'latestEnhancement'));
+        return view('user.releaseNote', compact('groupedTicketLogs', 'groupedEnhancements', 'versionNumber'));
     }
 
 

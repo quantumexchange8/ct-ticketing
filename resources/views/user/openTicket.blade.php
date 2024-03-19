@@ -39,7 +39,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="project_id">Project</label>
-                                        <select class="form-control" name="project_id" disabled>
+                                        <select class="form-control" name="project_id">
                                             @foreach($projects as $projectSelected)
                                                 <option value="{{ $projectSelected->id }}" {{ $projectSelected->id == $project->id ? 'selected' : '' }}>
                                                     {!! $projectSelected->project_name !!}
@@ -112,9 +112,7 @@
                                             <div class="form-group row d-flex align-items-end">
 
                                                 <div class="col-sm-11">
-                                                    {{-- <input type="file" id="input-file-now" name="t_image" class="dropify" /> --}}
                                                     <input type="file" id="input-file-now" name="car[][t_image]">
-
                                                 </div><!--end col-->
 
                                                 <div class="col-sm-1">

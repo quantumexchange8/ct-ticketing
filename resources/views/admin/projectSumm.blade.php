@@ -58,7 +58,6 @@
                                                         <i class="dripicons-trash"></i>
                                                     </button>
                                                 </form>
-
                                             </div>
                                         </td>
                                     </tr>
@@ -149,11 +148,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="row">
-
-                </div>
-
                 <div class="col-12 text-right">
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
@@ -327,7 +321,6 @@
 <script>
     function confirmDelete(formId) {
         var projectId = document.getElementById(formId).getAttribute('data-project-id');
-        // console.log('Title ID:', titleId);
 
         Swal.fire({
             title: 'Are you sure?',

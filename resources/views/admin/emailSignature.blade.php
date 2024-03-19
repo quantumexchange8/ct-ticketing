@@ -19,14 +19,7 @@
         <!-- end page title end breadcrumb -->
         <div class="row">
             @php
-                // if ($profile_picture) {
-                //     $profilePictureUrl = asset("storage/profilePicture/{$profile_picture}");
-                // }
-                // else {
-                //     $profilePictureUrl = asset('assets/images/current-tech-logo-black.png');
-                // }
                 $logoUrl = asset('assets/images/current-tech-logo-black.png');
-
             @endphp
             {{-- <div class="col-lg-6" id="emailSignatureData">
                 <div class="card">
@@ -384,8 +377,6 @@
         })
         .catch(error => console.error('Error:', error));
     }
-
-
 </script>
 
 @endsection

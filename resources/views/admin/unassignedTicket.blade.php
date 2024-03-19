@@ -28,21 +28,11 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    {{-- <div class="card-header">
-                        <h4 class="card-title">{{ $status->status }}</h4>
-                    </div><!--end card-header--> --}}
                     <div class="card-body">
                         <div class="table-responsive">
                             <table id="datatable2" class="table table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
-                                        {{-- <th>
-                                            <!-- Custom Checkbox -->
-                                            <label class="custom-checkbox">
-                                                <input type="checkbox">
-                                                <span class="checkmark"></span>
-                                            </label>
-                                        </th> --}}
                                         <th>Date</th>
                                         <th>Ticket No.</th>
                                         <th>Name</th>
@@ -108,9 +98,7 @@
                 </div><!--end card-->
             </div> <!-- end col -->
         </div> <!-- end row -->
-
     </div><!-- container -->
-
 </div>
 <!-- end page content -->
 
@@ -133,7 +121,6 @@
 <script>
     function confirmDelete(formId) {
         var ticketId = document.getElementById(formId).getAttribute('data-ticket-id');
-        // console.log('Ticket ID:', ticketId);
 
         Swal.fire({
             title: 'Are you sure?',
@@ -153,7 +140,6 @@
     $('#exportButton').click(function() {
         var status = $('.page-title').text().trim();
 
-        // console.log(status);
         exportToExcel(status);
     });
 
@@ -206,22 +192,5 @@
         XLSX.writeFile(wb, filename);
     }
 </script>
-
-{{-- <script>
-    // Get the checkbox in the table header
-    const headerCheckbox = document.querySelector('thead input[type="checkbox"]');
-
-    // Get all checkboxes in the table body
-    const bodyCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
-
-    // Add event listener to the header checkbox
-    headerCheckbox.addEventListener('change', function() {
-        // Loop through all checkboxes in the table body
-        bodyCheckboxes.forEach(function(checkbox) {
-            // Set the checked state of each checkbox to match the header checkbox
-            checkbox.checked = headerCheckbox.checked;
-        });
-    });
-</script> --}}
 @endsection
 

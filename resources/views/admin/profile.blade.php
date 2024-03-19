@@ -110,9 +110,6 @@
                                                 <div class="col-lg-6">
                                                     <div class="form-group">
                                                         <label for="profile_picture">Profile Picture</label>
-                                                        {{-- <div style="margin-bottom: 15px;">
-                                                            <a href="{{ asset('storage/profilePicture/' . $user->profile_picture) }}" class="file-modal-link">{{$user->profile_picture}}</a>
-                                                        </div> --}}
                                                         <div>
                                                             <input type="file" class="theme-input-style" name="profile_picture" id="profilePictureFile">
                                                         </div>
@@ -136,7 +133,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-12 text-right mt-2">
                                 <button type="submit" class="btn btn-primary">Update</button>
                             </div>

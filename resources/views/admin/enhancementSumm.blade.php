@@ -44,7 +44,7 @@
                                     <tr>
                                         <td>{{ $enhancement->enhancement_title }}</td>
                                         <td>{{ $enhancement->enhancement_description ?? null }}</td>
-                                        <td>{{ $enhancement->version ?? null }}</td>
+                                        <td>{{ $versionNumber }}</td>
                                         <td class="text-center">
                                             <div style="display: flex; justify-content: center; gap: 10px;">
                                                 {{-- <a href="{{ route('editEnhancement', ['id' => $enhancement->id]) }}" class="btn btn-sm btn-soft-success btn-circle"> --}}
@@ -257,7 +257,6 @@
 <script>
     function confirmDelete(formId) {
         var enhancementId = document.getElementById(formId).getAttribute('data-enhancement-id');
-        // console.log('Title ID:', titleId);
 
         Swal.fire({
             title: 'Are you sure?',

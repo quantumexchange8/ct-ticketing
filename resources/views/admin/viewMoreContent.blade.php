@@ -16,11 +16,6 @@
                                 <a href="{{ route('viewMoreSubtitle', ['id' => $title->id]) }}">{{ $subtitles->first() ? $subtitles->first()->title->title_name : '' }}</a>
                                 - {{$subtitles->subtitle_name ? $subtitles->subtitle_name : ''}}
                             </h4>
-                            {{-- <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('titleSumm') }}">Title</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('viewMoreSubtitle', ['id' => $subtitle->id]) }}">{{ $subtitle->title_name }}</a></li>
-                                <li class="breadcrumb-item active">{{ $contents->first() ? $contents->first()->subtitle->subtitle_name : '' }}</li>
-                            </ol> --}}
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -77,9 +72,6 @@
                             </table>
                         </div>
                         <span class="float-right">
-                            {{-- <button id="but_add" class="btn btn-danger">Add New Title</button>
-                            <button class="btn  btn-primary" id="submit_data" data-endpoint="update-title" >Submit</button> --}}
-
                             <a href="{{route('createContent')}}">
                                 <button class="btn btn-danger mt-2">Add New Content</button>
                             </a>
@@ -88,9 +80,7 @@
                 </div><!--end card-->
             </div> <!-- end col -->
         </div> <!-- end row -->
-
     </div><!-- container -->
-
 </div>
 <!-- end page content -->
 <!-- Sweet-Alert  -->

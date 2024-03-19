@@ -47,7 +47,6 @@
                                                     <a href="{{ route('editSub', ['id' => $supportSubCategory->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
                                                         <i class="dripicons-pencil"></i>
                                                     </a>
-
                                                     <form action="{{ route('deleteSub', ['id' => $supportSubCategory->id]) }}" method="POST" id="deleteForm{{ $supportSubCategory->id }}" data-subcategory-id="{{ $supportSubCategory->id }}">
                                                         @method('DELETE')
                                                         @csrf

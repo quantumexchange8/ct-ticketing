@@ -49,11 +49,9 @@
                                                     <i class="dripicons-preview"></i>
                                                 </a>
 
-                                                {{-- <a href="{{ route('editTitle', ['id' => $title->id]) }}" class="btn btn-sm btn-soft-success btn-circle edit-title" data-title-id="{{ $title->id }}"> --}}
-                                                    <button class="btn btn-sm btn-soft-success btn-circle edit-title" data-title-id="{{ $title->id }}">
-                                                        <i class="dripicons-pencil"></i>
-                                                    </button>
-                                                {{-- </a> --}}
+                                                <button class="btn btn-sm btn-soft-success btn-circle edit-title" data-title-id="{{ $title->id }}">
+                                                    <i class="dripicons-pencil"></i>
+                                                </button>
 
                                                 <form action="{{ route('deleteTitle', ['id' => $title->id]) }}" method="POST" id="deleteForm{{ $title->id }}" data-title-id="{{ $title->id }}">
                                                     @method('DELETE')
@@ -71,11 +69,7 @@
                             </table>
                         </div>
                         <span class="float-right">
-                            {{-- <button id="but_add" class="btn btn-danger">Add New Title</button>
-                            <button class="btn  btn-primary" id="submit_data" data-endpoint="update-title" >Submit</button> --}}
-                            {{-- <a href="{{ route('createTitle', ['project' => $project->id]) }}"> --}}
-                                <button class="btn btn-danger mt-2" id="addTitle">Add New Title</button>
-                            {{-- </a> --}}
+                            <button class="btn btn-danger mt-2" id="addTitle">Add New Title</button>
                         </span><!--end table-->
                     </div><!--end card-body-->
                 </div><!--end card-->
@@ -226,7 +220,6 @@
 <script>
     function confirmDelete(formId) {
         var titleId = document.getElementById(formId).getAttribute('data-title-id');
-        // console.log('Title ID:', titleId);
 
         Swal.fire({
             title: 'Are you sure?',

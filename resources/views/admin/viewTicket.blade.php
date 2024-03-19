@@ -14,10 +14,6 @@
                     <div class="row">
                         <div class="col">
                             <h4 class="page-title">Ticket</h4>
-                            {{-- <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('ticketSumm', ['status' => $ticket->ticketStatus->id])}}">{{ $ticket->ticketStatus->status }}</a></li>
-                                <li class="breadcrumb-item active">View More</li>
-                            </ol> --}}
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -115,7 +111,7 @@
                                     <select class="form-control" name="project_id" disabled>
                                         <option value="">Select Project</option>
                                         @foreach($projects as $project)
-                                            <option value="{{ $project->id }}" {{ $ticket->projects->id == $project->id ? 'selected' : '' }}>
+                                            <option value="{{ $project->id }}" {{ optional($ticket->projects)->id == $project->id ? 'selected' : '' }}>
                                                 {!! $project->project_name !!}
                                             </option>
                                         @endforeach
@@ -153,14 +149,6 @@
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
-
-                                {{-- <div class="form-group">
-                                    <label for="message">Remarks</label>
-                                    <textarea type="text" class="form-control" name="remarks" placeholder="Remarks" rows="5" readonly>{{ $ticket->remarks }}</textarea>
-                                    @error('remarks')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div> --}}
                             </div>
 
                             <div class="col-lg-6">
@@ -328,7 +316,7 @@
 
 <script>
     $(document).ready(function() {
-        // console.log('Jquery is working');
+
         $('.file-modal-link').on('click', function(event) {
             event.preventDefault();
             var imageUrl = $(this).attr('href');

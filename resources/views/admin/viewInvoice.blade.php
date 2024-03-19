@@ -12,14 +12,12 @@
                 <div class="page-title-box">
                     <div class="row">
                         <div class="col">
-                            <h4 class="page-title mt-2">{{ $order->order_no }}</h4>
+                            <h4 class="page-title mt-2">
+                                <a href="{{ route('invoiceSumm', ['project' => $projectId]) }}">
+                                    {{ $order->order_no }}
+                                </a>
+                            </h4>
                         </div><!--end col-->
-                        {{-- <div class="col-2" style="display: flex; justify-content: flex-end; align-items: flex-end;">
-
-                            <button type="button" class="btn" >
-                                <i data-feather="download"></i>
-                            </button>
-                        </div> --}}
                     </div><!--end row-->
                 </div><!--end page-title-box-->
             </div><!--end col-->
@@ -28,9 +26,6 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    {{-- <div class="card-header">
-                        <h4 class="card-title">{{ $status->status }}</h4>
-                    </div><!--end card-header--> --}}
                     <div class="card-body">
                         <div class="table-responsive">
                             <table id="datatable2" class="table table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -119,8 +114,6 @@
                             @enderror
                         </div>
                     </div>
-
-
                 </div>
 
                 <div class="row">
@@ -224,7 +217,6 @@
 <script>
     function confirmDelete(formId) {
         var orderId = document.getElementById(formId).getAttribute('data-order-id');
-        // console.log('Title ID:', titleId);
 
         Swal.fire({
             title: 'Are you sure?',
@@ -267,7 +259,6 @@
                 checkbox.checked = false;
             });
         }
-        console.log('Checked IDs:', checkedIds);
     }
 
     // Add event listener to the select all checkbox in the table head
@@ -279,7 +270,6 @@
         checkbox.addEventListener('change', function(event) {
             var isChecked = event.target.checked;
             var orderId = event.target.dataset.orderitemId;
-            console.log('Checkbox ID:', orderId, 'Checked:', isChecked);
         });
     });
 </script>
@@ -336,16 +326,11 @@
             return;
         }
 
-        // Log quantity, unit price, and total
-        console.log('Quantity:', quantity);
-        console.log('Unit Price:', unitPrice);
-
         // Calculate total
         var total = quantity * unitPrice;
         totalInput.value = total;
     }
 </script>
-
 
 @endsection
 

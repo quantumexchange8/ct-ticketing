@@ -16,13 +16,6 @@
                                 <a href="{{ route('titleSumm', ['project' => $project->id]) }}">{{ $project->project_name }}</a>
                                  - {{ $subtitles->first() ? $subtitles->first()->title->title_name : '' }}
                             </h4>
-
-                            {{-- <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('titleSumm', ['project' => $project->id]) }}">Title ({{ $subtitles->first() ? $subtitles->first()->title->title_name : '' }})</a></li>
-                                <li class="breadcrumb-item active">
-                                    Subtitle
-                                </li>
-                            </ol> --}}
                         </div><!--end col-->
                     </div><!--end row-->
                 </div><!--end page-title-box-->
@@ -78,12 +71,7 @@
                             </table>
                         </div>
                         <span class="float-right">
-                            {{-- <button id="but_add" class="btn btn-danger">Add New Title</button>
-                            <button class="btn  btn-primary" id="submit_data" data-endpoint="update-title" >Submit</button> --}}
-
-                            {{-- <a href="{{route('createSubtitle', ['title' => $title->id])}}"> --}}
-                                <button class="btn btn-danger mt-2" id="addSubtitle">Add New Subtitle</button>
-                            {{-- </a> --}}
+                            <button class="btn btn-danger mt-2" id="addSubtitle">Add New Subtitle</button>
                         </span><!--end table-->
                     </div><!--end card-body-->
                 </div><!--end card-->
@@ -203,7 +191,7 @@
                 type: 'GET',
                 data: { id: subtitleId },
                 success: function(response) {
-                    console.log(response.subtitle.s_sequence);
+
                     // Update the modal content with the fetched title data
                     $('#s_sequence').val(response.subtitle.s_sequence);
                     $('#subtitle_name').val(response.subtitle.subtitle_name);
@@ -235,7 +223,6 @@
 <script>
     function confirmDelete(formId) {
         var subtitleId = document.getElementById(formId).getAttribute('data-subtitle-id');
-        // console.log('Title ID:', titleId);
 
         Swal.fire({
             title: 'Are you sure?',

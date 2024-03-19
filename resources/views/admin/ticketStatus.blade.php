@@ -36,11 +36,9 @@
                                     <tr>
                                         <td>{{ $ticketStatus->status }}</td>
                                         <td class="text-center" style="display: flex; justify-content: center; gap: 10px;">
-                                            {{-- <a href="{{ route('editTicketStatus', ['id' => $ticketStatus->id]) }}" class="btn btn-sm btn-soft-success btn-circle"> --}}
-                                                <button class="btn btn-sm btn-soft-success btn-circle edit-status" data-status-id="{{ $ticketStatus->id }}">
-                                                    <i class="dripicons-pencil"></i>
-                                                </button>
-                                            {{-- </a> --}}
+                                            <button class="btn btn-sm btn-soft-success btn-circle edit-status" data-status-id="{{ $ticketStatus->id }}">
+                                                <i class="dripicons-pencil"></i>
+                                            </button>
 
                                             <form action="{{ route('deleteTicketStatus', ['id' => $ticketStatus->id]) }}" method="POST" id="deleteForm{{ $ticketStatus->id }}" data-status-id="{{ $ticketStatus->id }}">
                                                 @method('DELETE')
@@ -56,12 +54,7 @@
                             </table>
                         </div>
                         <span class="float-right">
-                            {{-- <button id="but_add" class="btn btn-danger">Add New Status</button>
-                            <button class="btn  btn-primary" id="submit_data" data-endpoint="update-ticket-status" >Submit</button> --}}
-
-                            {{-- <a href="{{ route('createTicketStatus') }}"> --}}
-                                <button class="btn btn-danger mt-2" id="addStatus">Add New Ticket Status</button>
-                            {{-- </a> --}}
+                            <button class="btn btn-danger mt-2" id="addStatus">Add New Ticket Status</button>
                         </span><!--end table-->
                     </div><!--end card-body-->
                 </div><!--end card-->

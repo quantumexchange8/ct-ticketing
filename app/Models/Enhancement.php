@@ -16,4 +16,9 @@ class Enhancement extends Model
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
+
+    public function versions()
+    {
+        return $this->belongsTo(Version::class, 'version_id', 'id');
+    }
 }

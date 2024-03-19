@@ -143,8 +143,6 @@
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
-
-
                                 </div>
                             </div>
 
@@ -173,7 +171,6 @@
                                             </span>
                                             <button type="submit" class="btn btn-primary px-4">Submit</button>
                                         </div><!--end col-->
-
                                     </div><!--end row-->
                                 </div> <!--end repeter-->
                             </fieldset><!--end fieldset-->

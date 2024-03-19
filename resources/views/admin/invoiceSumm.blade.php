@@ -12,13 +12,11 @@
                 <div class="page-title-box">
                     <div class="row" style="display: flex; align-items: center;">
                         <div class="col-8">
-                            <h4 class="page-title">{{ $project->project_name }} - Invoice</h4>
+                            <h4 class="page-title">
+                                <a href="{{ route('invoice') }}">{{ $project->project_name }}</a>
+                                - Invoice
+                            </h4>
                         </div><!--end col-->
-                        {{-- <div class="col-4" style="display: flex; justify-content: flex-end;">
-                            <a href="{{route('createSub', ['project' => $project])}}">
-                                <button type="button" class="btn btn-soft-primary waves-effect waves-light">Add FAQ</button>
-                            </a>
-                        </div> --}}
                     </div><!--end row-->
                 </div><!--end page-title-box-->
             </div><!--end col-->
@@ -75,11 +73,6 @@
                                 </tbody>
                             </table><!--end /table-->
                         </div><!--end /tableresponsive-->
-                        {{-- <span class="float-right">
-                            <a href="{{ route('createTicket') }}">
-                                <button class="btn btn-danger mt-2">Add New Ticket</button>
-                            </a>
-                        </span> --}}
                     </div><!--end card-body-->
                 </div><!--end card-->
             </div> <!-- end col -->
@@ -256,10 +249,6 @@
             console.error('Grand total input not found within parent element.');
             return;
         }
-
-        // Log quantity, unit price, and total
-        console.log('Total bill:', totalBill);
-        console.log('Discount:', discount);
 
         // Check if the discount is a valid number
         if (isNaN(discount)) {

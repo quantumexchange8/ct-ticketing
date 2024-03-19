@@ -179,6 +179,7 @@
             </div> <!--end col-->
         </div><!--end row-->
 
+        @if ($authUser->role_id == 1)
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
@@ -216,10 +217,11 @@
                 </div><!--end card-->
             </div> <!--end col-->
         </div><!--end row-->
-
+        @endif
     </div><!-- container -->
 </div>
 <!-- end page content -->
+
 <!-- Sweet-Alert  -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>

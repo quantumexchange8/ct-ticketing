@@ -22,57 +22,6 @@
             </div><!--end col-->
         </div><!--end row-->
         <!-- end page title end breadcrumb -->
-        {{-- <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($supportCategories as $supportCategory)
-                                    <tr>
-                                        <td>{!! $supportCategory->category_name !!}</td>
-                                        <td class="text-center">
-                                            <div style="display: flex; justify-content: center; gap: 10px;">
-                                                @if (Auth::user()->manage_support_subcategory == 1)
-                                                    <a href="{{ route('supportSubSumm', ['supportCategory' => $supportCategory->id, 'project' => $project->id]) }}" class="btn btn-sm btn-soft-purple btn-circle">
-                                                        <i class="dripicons-preview"></i>
-                                                    </a>
-                                                @endif
-
-                                                @if (Auth::user()->manage_support_category == 1)
-                                                    <a href="{{ route('editCategory', ['id' => $supportCategory->id]) }}" class="btn btn-sm btn-soft-success btn-circle">
-                                                        <i class="dripicons-pencil"></i>
-                                                    </a>
-                                                @endif
-
-                                                @if (Auth::user()->manage_support_category == 1)
-                                                    <form action="{{ route('deleteCategory', ['id' => $supportCategory->id]) }}" method="POST" id="deleteForm{{ $supportCategory->id }}" data-category-id="{{ $supportCategory->id }}">
-                                                        @method('DELETE')
-                                                        @csrf
-                                                        <button type="button" class="btn btn-sm btn-soft-danger btn-circle" onclick="confirmDelete('deleteForm{{ $supportCategory->id }}')">
-                                                            <i class="dripicons-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div><!--end card-body-->
-                </div><!--end card-->
-            </div> <!-- end col -->
-        </div> <!-- end row --> --}}
-
         @php
             $colors = ['#bed3fe', '#e3e6f0', '#b8f4db', '#bde6fa', '#ffebc1', '#99a1b7', '#b2bfc2'];
             $colorIndex = 0;

@@ -18,9 +18,6 @@
                                  - Order
                             </h4>
                         </div><!--end col-->
-                            {{-- <div class="col-4" style="display: flex; justify-content: flex-end;">
-                                <button type="button" id="billButton" class="btn btn-soft-primary waves-effect waves-light">Bill</button>
-                            </div> --}}
                         {{-- @if ($orderItems->isNotEmpty()) --}}
                             <div class="col-4" style="display: flex; justify-content: flex-end;">
                                 <div class="col-4" style="display: flex; justify-content: flex-end;">
@@ -407,10 +404,6 @@
             return;
         }
 
-        // Log quantity, unit price, and total
-        console.log('Quantity:', quantity);
-        console.log('Unit Price:', unitPrice);
-
         // Calculate total
         var total = quantity * unitPrice;
         totalInput.value = total;
@@ -449,7 +442,6 @@
                 checkbox.checked = false;
             });
         }
-        console.log('Checked IDs:', checkedIds);
     }
 
     // Add event listener to the select all checkbox in the table head
@@ -461,7 +453,6 @@
         checkbox.addEventListener('change', function(event) {
             var isChecked = event.target.checked;
             var orderId = event.target.dataset.orderitemId;
-            console.log('Checkbox ID:', orderId, 'Checked:', isChecked);
         });
     });
 </script>
@@ -488,7 +479,6 @@
 <script>
     function confirmDelete(formId) {
         var orderId = document.getElementById(formId).getAttribute('data-order-id');
-        // console.log('Title ID:', titleId);
 
         Swal.fire({
             title: 'Are you sure?',

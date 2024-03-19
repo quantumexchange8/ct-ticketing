@@ -50,7 +50,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/get-ticket', [AdminController::class, 'getTicket'])->name('getTicket');
 
     Route::get('/ticket-summary/{status}', [AdminController::class, 'ticketSumm'])->name('ticketSumm');
-    Route::get('/view-ticket-image/{id}', [AdminController::class, 'viewTicketImage'])->name('viewTicketImage');
     Route::get('/view-ticket/{id}', [AdminController::class, 'viewTicket'])->name('viewTicket');
 
     Route::get('/unassigned-ticket', [AdminController::class, 'unassignedTicket'])->name('unassignedTicket');
